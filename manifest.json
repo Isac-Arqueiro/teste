@@ -1,12 +1,10 @@
 {
-  "name": "IPTV Player",
-  "short_name": "IPTV",
+  "name": "Meu App",
+  "short_name": "App",
   "start_url": "./",
-  "scope": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#1e90ff",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "https://i.imgur.com/jFQiZvL.jpeg",
