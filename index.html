@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
   <meta charset="UTF-8">
   <title>Site em Teste</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -45,15 +47,11 @@
     .top-buttons button { width:100%; padding:10px; margin-bottom:8px; background:#181818; border:1px solid #333; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; transition:0.2s; }
     .top-buttons button:hover { background:#1e90ff33; border-color:#1e90ff; }
     h2 { margin-top:15px; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:6px; }
-    .category-label { background:linear-gradient(to right,#1e90ff55,#0000); padding:6px 8px; margin-top:10px; border-left:3px solid #1e90ff; border-radius:4px; font-size:14px; }
-    .channel { display:flex; align-items:center; padding:10px; margin-top:5px; border-radius:8px; cursor:pointer; transition:0.15s; }
-    .channel:hover { background:#1e1e1e; transform:translateX(4px); }
-    .channel img { width:50px; height:50px; margin-right:12px; border-radius:6px; border:1px solid #444; }
-    .channel-name { flex:1; font-size:15px; }
-    .favorite-btn { font-size:20px; background:none; border:none; cursor:pointer; color:gold; }
-    .favorite-btn.not-fav { color:#555; }
-    .main { flex:1; }
-    #videoContainer { width:100%; height:100vh; background:#000; display:none; border-left:2px solid #1e90ff; }
+    .category-label { background:linear-gradient(to right,#1e90ff55,#0000); padding:10px; border-radius:6px; margin-top:10px; cursor:pointer; font-weight:bold; }
+    .channel-item { display:flex; align-items:center; padding:10px; cursor:pointer; border-bottom:1px solid #222; }
+    .channel-item img { width:50px; height:50px; border-radius:6px; margin-right:10px; }
+    .main { flex:1; overflow-y:auto; }
+    #videoContainer { width:100%; height:100vh; background:#000; display:none; }
     #videoContainer.active { display:block; }
     #player { width:100%; height:100%; }
     .player-controls { position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:5; display:flex; gap:10px; }
@@ -70,7 +68,6 @@
     <p>Para manter o projeto funcionando e garantir atualizações constantes, contamos com você!<br><strong>Torne-se um Sócio Mantenedor</strong> e ajude nossa equipe.</p>
     <p>Aproveite os canais, navegue à vontade e, se puder, apoie o projeto.<br><strong>Sua participação faz toda a diferença!</strong></p>
 
-    <!-- BOTÕES VISÍVEIS NA TELA DE LOGIN -->
     <button id="testarGratisBtnLogin" class="btn-neon">Testar Grátis</button>
     <a href="https://sites.google.com/view/teste-helyssom/in%C3%ADcio" target="_blank">
       <button class="btn-neon" style="font-size:13px; padding:10px 20px; margin-top:10px;">Seja Sócio</button>
@@ -78,7 +75,6 @@
     <button id="installPWA" class="btn-neon" style="display:none; margin-top:10px;">Instalar APP</button>
   </div>
 
-  <!-- FORMULÁRIO DE LOGIN -->
   <div style="display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:15px;">
     <input id="senhaInput" type="password" placeholder="Digite sua senha">
     <button id="senhaBtn">Entrar</button>
@@ -91,7 +87,7 @@
     <div class="top-buttons">
       <button id="btnListaSalva">Lista Salva</button>
       <button id="btnVip">+ MAIS CANAIS</button>
-      <button id="btnTodos">Todos</button>
+      <button id="btnTodos">Categorias</button>
       <button id="btnFavoritos">Favoritos</button>
     </div>
     <h2>CANAIS</h2>
@@ -115,7 +111,7 @@ const listaSalvaUrl = "https://raw.githubusercontent.com/Isac-Arqueiro/vip01/ref
 const categoriasValidas = ['Classic','Series','Kids','Religioso','Variedade','Canal aberto','Esporte','Animação','RunTime','Filmes','News','URBAN'];
 const senhasValidas = ["2025","A0C02550","A0X02551","A0Z02552"];
 let allChannels = [], currentIndex=0, favorites=JSON.parse(localStorage.getItem("favorites")||"[]");
-const senhaSection=document.getElementById("senhaSection"), container=document.querySelector(".container"), channelList=document.getElementById("channelList"), banner=document.getElementById("banner"), videoContainer=document.getElementById("videoContainer");
+const senhaSection=document.getElementById("senhaSection"), container=document.querySelector(".container"), channelList=document.getElementById("channelList"), videoContainer=document.getElementById("videoContainer");
 let clapprPlayer=null;
 
 // LOGIN
@@ -125,42 +121,18 @@ document.getElementById("senhaBtn").onclick=()=> {
     localStorage.setItem("iptv_password", senha);
     senhaSection.style.display="none";
     container.style.display="flex";
-
-    if(senha==="2025"){
-      document.getElementById("testarGratisBtnLogin").style.display="inline-block";
-      document.getElementById("installPWA").style.display="inline-block";
-    } else {
-      document.getElementById("testarGratisBtnLogin").style.display="none";
-      document.getElementById("installPWA").style.display="none";
-    }
-
-    banner.style.display="block";
-    setTimeout(()=>banner.style.display="none",30000);
     carregarLista(listaSalvaUrl);
   } else alert("Senha incorreta!");
 }
 
-// Manter login se já tiver senha salva
+// LOGIN AUTO
 window.onload = ()=>{
   const savedSenha = localStorage.getItem("iptv_password");
   if(senhasValidas.includes(savedSenha)){
     senhaSection.style.display="none";
     container.style.display="flex";
-    if(savedSenha==="2025"){
-      document.getElementById("testarGratisBtnLogin").style.display="inline-block";
-      document.getElementById("installPWA").style.display="inline-block";
-    } else {
-      document.getElementById("testarGratisBtnLogin").style.display="none";
-      document.getElementById("installPWA").style.display="none";
-    }
     carregarLista(listaSalvaUrl);
   }
-}
-
-// Testar grátis
-document.getElementById("testarGratisBtnLogin").onclick=()=> {
-  document.getElementById("senhaInput").value="2025";
-  document.getElementById("senhaBtn").click();
 }
 
 // CARREGAR LISTA
@@ -169,7 +141,7 @@ async function carregarLista(url){
     const res=await fetch(url);
     const data=await res.text();
     allChannels=parseM3U(data);
-    renderChannelList(allChannels);
+    renderCategorias();
   }catch{ alert("Erro ao carregar lista."); }
 }
 
@@ -182,132 +154,118 @@ function parseM3U(txt){
   return canais;
 }
 
-function renderChannelList(canais){
-  channelList.innerHTML=""; let ultimaCategoria="";
-  canais.forEach((canal,index)=>{
-    if(categoriasValidas.includes(canal.group_title)&&canal.group_title!==ultimaCategoria){
-      const cat=document.createElement("div"); cat.className="category-label"; cat.textContent=canal.group_title; channelList.appendChild(cat); ultimaCategoria=canal.group_title;
-    }
-    const div=document.createElement("div"); div.className="channel"; div.dataset.index=index; div.onclick=()=>{ currentIndex=index; playChannel(canal); };
-    div.innerHTML=`<img src="${canal.tvg_logo||'https://via.placeholder.com/50'}"><span class="channel-name">${canal.tvg_name}</span><button class="favorite-btn ${favorites.includes(canal.tvg_name)?"":"not-fav"}">${favorites.includes(canal.tvg_name)?"★":"☆"}</button>`;
-    div.querySelector("button").onclick=(e)=>{ e.stopPropagation(); toggleFavorite(canal.tvg_name,e.target); };
+// MOSTRAR CATEGORIAS NA ESQUERDA
+function renderCategorias(){
+  channelList.innerHTML="";
+  let categorias = [...new Set(allChannels.map(c=>c.group_title).filter(c=>categoriasValidas.includes(c)))];
+
+  categorias.forEach(cat=>{
+    const div=document.createElement("div");
+    div.className="category-label";
+    div.textContent = cat;
+    div.onclick = () => mostrarCanaisDaCategoria(cat);
     channelList.appendChild(div);
   });
 }
 
-function toggleFavorite(name,btn){
-  if(favorites.includes(name)) favorites=favorites.filter(n=>n!==name);
-  else favorites.push(name);
-  localStorage.setItem("favorites",JSON.stringify(favorites));
-  btn.textContent=favorites.includes(name)?"★":"☆";
-  btn.classList.toggle("not-fav");
+// MOSTRAR CANAIS NO LADO DIREITO
+function mostrarCanaisDaCategoria(cat){
+  const main = document.querySelector(".main");
+  main.innerHTML="";
+
+  const lista = allChannels.filter(c=>c.group_title===cat);
+  const box=document.createElement("div");
+  box.style.padding="20px";
+
+  lista.forEach((canal, index)=>{
+    const item=document.createElement("div");
+    item.className="channel-item";
+    item.innerHTML = `
+      <img src="${canal.tvg_logo}">
+      <span>${canal.tvg_name}</span>
+    `;
+    item.onclick = () => {
+      currentIndex = index;
+      playChannel(canal);
+      videoContainer.classList.add("active");
+    };
+    box.appendChild(item);
+  });
+
+  main.appendChild(box);
 }
 
+// PLAYER
 function playChannel(canal){
   if(!canal.url) return;
-  if(clapprPlayer) clapprPlayer.destroy(); clapprPlayer=null;
-  const box=document.getElementById("player"); box.innerHTML=""; videoContainer.classList.add("active");
-  const isHls=canal.url.includes(".m3u8"); const video=document.createElement("video"); video.controls=true; video.autoplay=true; video.style.width="100%"; video.style.height="100%; background:black"; box.appendChild(video);
-  if(isHls && video.canPlayType("application/vnd.apple.mpegurl")){ video.src=canal.url; video.play(); return; }
-  if(isHls && Hls.isSupported()){ const hls=new Hls(); hls.loadSource(canal.url); hls.attachMedia(video); return; }
-  clapprPlayer=new Clappr.Player({ parentId:"#player", source:canal.url, autoPlay:true, width:"100%", height:"100%", playback:{ playInline:true }, plugins:[DashShakaPlayback], shakaConfiguration:{ streaming:{ lowLatencyMode:true } } });
+  if(clapprPlayer) clapprPlayer.destroy();
+  const box=document.getElementById("player"); box.innerHTML="";
+  
+  clapprPlayer=new Clappr.Player({
+    parentId:"#player",
+    source:canal.url,
+    autoPlay:true,
+    width:"100%",
+    height:"100%",
+    playback:{playInline:true},
+    plugins:[DashShakaPlayback],
+    shakaConfiguration:{streaming:{lowLatencyMode:true}}
+  });
+
+  videoContainer.classList.add("active");
 }
 
 // CONTROLES
-document.getElementById("exitBtn").onclick=()=>{ if(clapprPlayer) clapprPlayer.destroy(); videoContainer.classList.remove("active"); };
-document.getElementById("prevBtn").onclick=()=>{ currentIndex=(currentIndex-1+allChannels.length)%allChannels.length; playChannel(allChannels[currentIndex]); };
-document.getElementById("nextBtn").onclick=()=>{ currentIndex=(currentIndex+1)%allChannels.length; playChannel(allChannels[currentIndex]); };
+document.getElementById("exitBtn").onclick=()=>{ 
+  if(clapprPlayer) clapprPlayer.destroy(); 
+  videoContainer.classList.remove("active"); 
+};
+document.getElementById("prevBtn").onclick=()=>{ 
+  currentIndex=(currentIndex-1+allChannels.length)%allChannels.length; 
+  playChannel(allChannels[currentIndex]); 
+};
+document.getElementById("nextBtn").onclick=()=>{ 
+  currentIndex=(currentIndex+1)%allChannels.length; 
+  playChannel(allChannels[currentIndex]); 
+};
 
 // MENU
 document.getElementById("btnListaSalva").onclick=()=> carregarLista(listaSalvaUrl);
-document.getElementById("btnTodos").onclick=()=> renderChannelList(allChannels);
-document.getElementById("btnVip").onclick=()=> window.open("https://isac-arqueiro.github.io/isacvod/","_blank").focus();
-document.getElementById("btnFavoritos").onclick=()=> renderChannelList(allChannels.filter(c=>favorites.includes(c.tvg_name)));
+document.getElementById("btnTodos").onclick=()=> renderCategorias();
+document.getElementById("btnVip").onclick=()=> window.open("https://isac-arqueiro.github.io/isacvod/","_blank");
+document.getElementById("btnFavoritos").onclick=()=> {
+  const fav = allChannels.filter(c=>favorites.includes(c.tvg_name));
+  mostrarCanaisDaCategoria("Favoritos", fav);
+};
 
-// ===== PWA =====
+// PWA
 let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-});
-
-const installBtn = document.getElementById("installPWA");
-installBtn.addEventListener('click', async () => {
-  if(!deferredPrompt) return;
+window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; });
+document.getElementById("installPWA").onclick=async ()=>{
+  if(!deferredPrompt) return; 
   deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
   deferredPrompt = null;
-  installBtn.style.display = "none";
-});
+};
 </script>
-<style>
-#pwaInstallBox {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1e90ff;
-  color: #fff;
-  padding: 15px 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 12px #0009;
-  display: none;
-  font-size: 16px;
-  font-weight: bold;
-  z-index: 99999;
-}
 
-#pwaInstallBtn {
-  margin-top: 8px;
-  padding: 10px 18px;
-  background: #fff;
-  color: #1e90ff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-</style>
-
-<div id="pwaInstallBox">
-  📲 Deseja instalar o APP?
-  <br>
-  <button id="pwaInstallBtn">Instalar</button>
-</div>
-
+<button id="btnInstall" style="display:none;">📲 Instalar App</button>
 <script>
-let deferredPrompt;
-const box = document.getElementById("pwaInstallBox");
-const btn = document.getElementById("pwaInstallBtn");
-
-// Quando o navegador permitir instalação
-window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault(); // impede o popup padrão
-    deferredPrompt = e;
-
-    // Mostra o aviso automaticamente
-    box.style.display = "block";
+let deferredPrompt2;
+const btnInstall = document.getElementById("btnInstall");
+window.addEventListener("beforeinstallprompt",(e)=>{
+  e.preventDefault(); deferredPrompt2=e; btnInstall.style.display="block";
 });
-
-// Quando o usuário clicar em instalar
-btn.addEventListener("click", async () => {
-    if (!deferredPrompt) return;
-
-    // abre o instalador nativo
-    deferredPrompt.prompt();
-
-    const escolha = await deferredPrompt.userChoice;
-    console.log("Instalação:", escolha.outcome);
-
-    // esconde caixa
-    box.style.display = "none";
-    deferredPrompt = null;
-});
-
-// Registrar service worker
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js");
+btnInstall.onclick=async ()=>{
+  if(deferredPrompt2){
+    deferredPrompt2.prompt();
+    deferredPrompt2=null;
+    btnInstall.style.display="none";
+  }
+};
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
 }
 </script>
+
 </body>
 </html>
