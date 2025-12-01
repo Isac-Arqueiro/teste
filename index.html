@@ -240,47 +240,73 @@ installBtn.addEventListener('click', async () => {
   installBtn.style.display = "none";
 });
 </script>
-<script>
-// ===============================
-// VARIÁVEIS
-// ===============================
-let deferredPrompt;
-const installBtn = document.getElementById("installPWA");
+<style>
+#pwaInstallBox {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e90ff;
+  color: #fff;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 12px #0009;
+  display: none;
+  font-size: 16px;
+  font-weight: bold;
+  z-index: 99999;
+}
 
-// ===============================
-// PWA – DETECTAR INSTALAÇÃO PERMITIDA
-// ===============================
+#pwaInstallBtn {
+  margin-top: 8px;
+  padding: 10px 18px;
+  background: #fff;
+  color: #1e90ff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+</style>
+
+<div id="pwaInstallBox">
+  📲 Deseja instalar o APP?
+  <br>
+  <button id="pwaInstallBtn">Instalar</button>
+</div>
+
+<script>
+let deferredPrompt;
+const box = document.getElementById("pwaInstallBox");
+const btn = document.getElementById("pwaInstallBtn");
+
+// Quando o navegador permitir instalação
 window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
+    e.preventDefault(); // impede o popup padrão
     deferredPrompt = e;
 
-    // mostra botão de instalação
-    installBtn.style.display = "inline-block";
+    // Mostra o aviso automaticamente
+    box.style.display = "block";
 });
 
-// ===============================
-// PWA – INSTALAR APP
-// ===============================
-installBtn.addEventListener("click", async () => {
+// Quando o usuário clicar em instalar
+btn.addEventListener("click", async () => {
     if (!deferredPrompt) return;
 
+    // abre o instalador nativo
     deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
 
-    console.log("Resultado da instalação:", outcome);
+    const escolha = await deferredPrompt.userChoice;
+    console.log("Instalação:", escolha.outcome);
 
+    // esconde caixa
+    box.style.display = "none";
     deferredPrompt = null;
-    installBtn.style.display = "none";
 });
 
-// ===============================
-// REGISTRAR SERVICE WORKER
-// ===============================
+// Registrar service worker
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker
-        .register("sw.js")
-        .then(() => console.log("Service Worker registrado."))
-        .catch(err => console.error("Erro ao registrar SW:", err));
+    navigator.serviceWorker.register("sw.js");
 }
 </script>
 </body>
