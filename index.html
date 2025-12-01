@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
   <meta charset="UTF-8">
   <title>Site em Teste</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -242,29 +240,47 @@ installBtn.addEventListener('click', async () => {
   installBtn.style.display = "none";
 });
 </script>
-<button id="btnInstall" style="display:none;">📲 Instalar App</button>
 <script>
+// ===============================
+// VARIÁVEIS
+// ===============================
 let deferredPrompt;
-const btnInstall = document.getElementById("btnInstall");
+const installBtn = document.getElementById("installPWA");
+
+// ===============================
+// PWA – DETECTAR INSTALAÇÃO PERMITIDA
+// ===============================
 window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  btnInstall.style.display = "block"; // mostra o botão
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // mostra botão de instalação
+    installBtn.style.display = "inline-block";
 });
 
-btnInstall.addEventListener("click", async () => {
-  if (deferredPrompt) {
+// ===============================
+// PWA – INSTALAR APP
+// ===============================
+installBtn.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
+
     console.log("Resultado da instalação:", outcome);
+
     deferredPrompt = null;
-    btnInstall.style.display = "none";
-  }
+    installBtn.style.display = "none";
 });
 
-// Registrar o Service Worker
+// ===============================
+// REGISTRAR SERVICE WORKER
+// ===============================
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
+    navigator.serviceWorker
+        .register("sw.js")
+        .then(() => console.log("Service Worker registrado."))
+        .catch(err => console.error("Erro ao registrar SW:", err));
 }
 </script>
 </body>
