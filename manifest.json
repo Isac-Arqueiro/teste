@@ -1,10 +1,12 @@
 {
-  "name": "Meu Site App",
-  "short_name": "SiteApp",
-  "start_url": "./index.html",
+  "name": "IPTV Player",
+  "short_name": "IPTV",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#000000",
+  "theme_color": "#1e90ff",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "https://i.imgur.com/jFQiZvL.jpeg",
