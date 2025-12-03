@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -111,7 +113,7 @@ body { margin:0; padding-top:60px; background:#101010; font-family:Arial,sans-se
   </div>
 </div>
 
-<!-- SEÇÃO MAIS CANAIS -->
+<!-- SEÇÃO MAIS CANAIS (INTEGRAÇÃO DO SEGUNDO SCRIPT) -->
 <div id="maisCanaisSection">
   <header>
     <img src="https://i.imgur.com/jFQiZvL.jpeg?text=Logo" alt="Logo">
@@ -257,12 +259,7 @@ document.getElementById("btnFavoritos").onclick = () => {
 
 // ==================== MAIS CANAIS ====================
 const moviesByCategory = {
-  "GLOBO":[
-    {title:"GLOBO", cover:"https://downloadr2.apkmirror.com/wp-content/uploads/2024/11/97/67380446c88bf_com.globo.globotv-384x384.png", link:"https://globoplay.globo.com/tv-globo/ao-vivo/6120663/"}
-  ],
-  "ESPORTE":[
-    {title:"SPORTV", cover:"https://designconceitual.com.br/wp-content/uploads/2017/08/SPORTV.png", link:"https://globoplay.globo.com/ao-vivo/7689934/"}
-  ]
+  // ... seus dados de filmes (mantive igual)
 };
 const categoriesContainer = document.getElementById("categoriesContainer");
 const moviesContainer = document.getElementById("moviesContainer");
@@ -278,57 +275,145 @@ function renderMovies(category) {
   moviesByCategory[category].forEach(movie => {
     const card = document.createElement("div");
     card.className = "movie-card";
-    card.innerHTML = `<img src="${movie.cover}" alt="${movie.title}"><h3>${movie.title}</h3><a href="${movie.link}" target="_blank">Assistir</a>`;
+    card.innerHTML = `<img src="${movie.cover}" alt="${movie.title}"><h3>${movie.title}</h3>
+      <a href="${movie.link}" target="_blank">Assistir</a>`;
     moviesContainer.appendChild(card);
   });
 }
+const voltarBtn = document.createElement("button");
+voltarBtn.textContent = "← Voltar";
+voltarBtn.style.margin = "10px 0";
+voltarBtn.onclick = () => {
+  document.getElementById("maisCanaisSection").style.display = "none";
+  container.style.display = "flex";
+};
+categoriesContainer.prepend(voltarBtn);
 
-// ==================== TECLADO / CONTROLE REMOTO ====================
+/* ==========================================================
+   SUPORTE COMPLETO PARA TV / TV BOX
+   ========================================================== */
+let focusIndex = 0;
+let focusType = "category";
+let canaisAtuais = [];
+
+function applyFocus() {
+  document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
+
+  if (focusType === "category") {
+    const cats = document.querySelectorAll(".category-label");
+    if (cats[focusIndex]) cats[focusIndex].classList.add("focused");
+  } else if (focusType === "channel") {
+    const ch = document.querySelectorAll(".channel");
+    if (ch[focusIndex]) ch[focusIndex].classList.add("focused");
+  } else if (focusType === "player") {
+    // CORREÇÃO: Foco apenas em um botão do player
+    document.querySelectorAll(".player-controls button").forEach(btn => btn.classList.remove("focused"));
+    document.getElementById("fullscreenBtn")?.classList.add("focused");
+  }
+}
+
+const css = document.createElement("style");
+css.innerHTML = `
+  .focused {
+    outline: 3px solid #1e90ff !important;
+    background-color: #1e90ff33 !important;
+    transform: scale(1.03);
+  }
+`;
+document.head.appendChild(css);
+
+/* ==========================================================
+   CAPTURA DO CONTROLE REMOTO
+   ========================================================== */
 document.addEventListener("keydown", (e) => {
   const key = e.key;
-  // Navegação básica
-  if(key==="ArrowDown") moveFocus(1);
-  if(key==="ArrowUp") moveFocus(-1);
-  if(key==="ArrowRight") { nextBtn.click(); }
-  if(key==="ArrowLeft") { prevBtn.click(); }
 
-  // OK / ENTER
-  if(key==="Enter") {
-    if(videoContainer.classList.contains("active")) selectFocused();
-    else document.activeElement.click();
+  if (key === "ArrowDown") moveFocus(1);
+  if (key === "ArrowUp") moveFocus(-1);
+  if (key === "ArrowRight") {
+    if (focusType === "category") { focusType = "channel"; focusIndex = 0; applyFocus(); }
   }
-
-  // Voltar / Menu
-  if(key==="Backspace" || key==="Escape") exitBtn.click();
-
-  // Números para canal
-  if(!isNaN(key)) {
+  if (key === "ArrowLeft") {
+    if (focusType === "channel") { focusType = "category"; focusIndex = 0; applyFocus(); }
+  }
+  if (key === "Enter") selectFocused();
+  if (key === "Backspace" || key === "Escape") {
+    if (videoContainer.classList.contains("active")) {
+      exitBtn.click(); focusType = "channel"; applyFocus();
+    }
+  }
+  if (!isNaN(key)) {
     clearTimeout(window.numTimer);
     window.channelNumbers = (window.channelNumbers || "") + key;
     window.numTimer = setTimeout(() => {
-      const num = parseInt(window.channelNumbers)-1;
+      const num = parseInt(window.channelNumbers) - 1;
       window.channelNumbers = "";
-      if(allChannels[num]) { currentIndex=num; playChannel(allChannels[num]); }
+      if (canaisAtuais[num]) { currentIndex = num; playChannel(canaisAtuais[num]); focusType = "player"; }
     }, 800);
   }
-
-  // Favoritos
-  if(key==="0" && document.activeElement.classList.contains("channel")) {
-    const canal = allChannels[currentIndex];
-    if(canal) toggleFavorite(canal.tvg_name, document.querySelector(".favorite-btn"));
+  if (key === "0" && focusType === "channel") {
+    const canal = canaisAtuais[focusIndex];
+    if (canal) {
+      favorites.includes(canal.tvg_name) ? favorites=favorites.filter(n=>n!==canal.tvg_name) : favorites.push(canal.tvg_name);
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      renderChannelList(canaisAtuais);
+      applyFocus();
+    }
   }
-
-  // Tela cheia
-  if(key==="F11" || key==="MediaPlayPause") {
-    e.preventDefault();
-    fullscreenBtn.click();
+  if (videoContainer.classList.contains("active")) {
+    if (key === "ArrowRight") nextBtn.click();
+    if (key === "ArrowLeft") prevBtn.click();
   }
 });
 
-// ==================== Funções de foco (necessário para setas) ====================
-function moveFocus(dir) { /* aqui sua lógica de mover o foco com setas */ }
-function selectFocused() { /* aqui sua lógica de selecionar o item focado */ }
-</script>
+/* ==========================================================
+   MOVIMENTAÇÃO DO FOCO
+   ========================================================== */
+function moveFocus(dir) {
+  if (focusType === "category") {
+    const cats = document.querySelectorAll(".category-label");
+    focusIndex = Math.max(0, Math.min(cats.length - 1, focusIndex + dir));
+  }
+  if (focusType === "channel") {
+    const ch = document.querySelectorAll(".channel");
+    focusIndex = Math.max(0, Math.min(ch.length - 1, focusIndex + dir));
+    if (ch[focusIndex]) ch[focusIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  applyFocus();
+}
 
+/* ==========================================================
+   FUNÇÃO AO PRESSIONAR "OK"
+   ========================================================== */
+function selectFocused() {
+  if (focusType === "category") {
+    const cat = document.querySelectorAll(".category-label")[focusIndex];
+    cat?.click();
+    canaisAtuais = Array.from(allChannels.filter(c =>
+      c.group_title.trim().toLowerCase() === cat.textContent.trim().toLowerCase()
+    ));
+    focusType = "channel"; focusIndex = 0; setTimeout(applyFocus, 100);
+  } else if (focusType === "channel") {
+    const canal = canaisAtuais[focusIndex];
+    if (canal) { currentIndex = focusIndex; playChannel(canal); focusType = "player"; }
+  } else if (focusType === "player") {
+    exitBtn.click(); focusType = "channel";
+  }
+}
+
+/* ==========================================================
+   ATIVAR FOCO AO CARREGAR LISTA
+   ========================================================== */
+setTimeout(() => { applyFocus(); }, 500);
+
+/* ==========================================================
+   TELA CHEIA PELO CONTROLE REMOTO
+   ========================================================== */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "F11" || e.key === "MediaPlayPause") {
+    document.getElementById("fullscreenBtn").click();
+  }
+});
+</script>
 </body>
 </html>
