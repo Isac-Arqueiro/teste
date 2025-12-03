@@ -500,6 +500,11 @@ function selectFocused() {
 setTimeout(() => {
   applyFocus();
 }, 500);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "F11" || e.key === "MediaPlayPause") {
+    document.getElementById("fullscreenBtn").click();
+  }
+});
 </script>
 </body>
 </html>
