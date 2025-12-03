@@ -139,20 +139,29 @@ function toggleFav(name){
   localStorage.setItem("favorites",JSON.stringify(favorites));
 }
 
-// ======== PLAY CHANNEL ========
+// ======== PLAY CHANNEL ROBUSTO ========
 function playChannel(c){
   if(hls){ hls.destroy(); hls=null; }
   videoContainer.classList.add("active");
   videoEl.pause();
   videoEl.src="";
+
+  // HLS.js se suportado
   if(c.url.includes(".m3u8") && Hls.isSupported()){
     hls=new Hls({enableWorker:false});
     hls.loadSource(c.url);
     hls.attachMedia(videoEl);
     hls.on(Hls.Events.MANIFEST_PARSED,()=>videoEl.play());
-  }else{
+    hls.on(Hls.Events.ERROR,(event,data)=>{
+      console.log("HLS error:",data);
+      // fallback para video nativo
+      videoEl.src=c.url;
+      videoEl.play().catch(()=>console.log("Erro autoplay fallback"));
+    });
+  } else {
+    // fallback nativo
     videoEl.src=c.url;
-    videoEl.play().catch(()=>{console.log("Erro autoplay");});
+    videoEl.play().catch(()=>console.log("Erro autoplay"));
   }
 }
 
@@ -162,11 +171,12 @@ document.getElementById("prevBtn").onclick=()=>{ currentIndex=(currentIndex-1+al
 document.getElementById("nextBtn").onclick=()=>{ currentIndex=(currentIndex+1)%allChannels.length; playChannel(allChannels[currentIndex]); };
 document.getElementById("fullscreenBtn").onclick=()=>{ if(videoEl.requestFullscreen) videoEl.requestFullscreen(); };
 
-// ======== NAVEGAÇÃO SIMPLES TV BOX ========
+// ======== NAVEGAÇÃO SIMPLES TV BOX (Corrigida) ========
 document.addEventListener('keydown', (e) => {
     const sidebar = document.querySelector('.sidebar');
     const categoriesBtns = [...sidebar.querySelectorAll('#categories button')];
     const allBtn = document.getElementById('btnAll');
+    const favBtn = document.getElementById('btnFav');
     const channelsDivs = [...document.querySelectorAll('#channelListRight .channel')];
     const active = document.activeElement;
 
@@ -174,15 +184,24 @@ document.addEventListener('keydown', (e) => {
         case "ArrowUp":
             if(active.classList.contains('channel') && active.previousElementSibling){
                 active.previousElementSibling.focus();
+            } else if(active === allBtn){
+                favBtn.focus();
+            } else if(active === favBtn){
+                categoriesBtns[categoriesBtns.length-1]?.focus();
             } else if(active.tagName === 'BUTTON' && sidebar.contains(active)){
                 const idx = categoriesBtns.indexOf(active);
                 if(idx > 0) categoriesBtns[idx-1].focus();
+                else allBtn.focus();
             }
             break;
 
         case "ArrowDown":
             if(active.classList.contains('channel') && active.nextElementSibling){
                 active.nextElementSibling.focus();
+            } else if(active === allBtn){
+                favBtn.focus();
+            } else if(active === favBtn){
+                categoriesBtns[0]?.focus();
             } else if(active.tagName === 'BUTTON' && sidebar.contains(active)){
                 const idx = categoriesBtns.indexOf(active);
                 if(idx >= 0 && idx < categoriesBtns.length-1) categoriesBtns[idx+1].focus();
