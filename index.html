@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -68,6 +70,7 @@ body { margin:0; padding-top:60px; background:#101010; font-family:Arial,sans-se
 </head>
 
 <body>
+
 <!-- TELA DE LOGIN -->
 <div id="senhaSection">
   <div style="max-width:480px; background:#111; padding:15px; border-radius:12px; box-shadow:0 0 12px rgba(0,0,0,0.7); color:#fff; line-height:1.4; font-size:13px;">
@@ -110,7 +113,7 @@ body { margin:0; padding-top:60px; background:#101010; font-family:Arial,sans-se
   </div>
 </div>
 
-<!-- SEÇÃO MAIS CANAIS -->
+<!-- SEÇÃO MAIS CANAIS (INTEGRAÇÃO DO SEGUNDO SCRIPT) -->
 <div id="maisCanaisSection">
   <header>
     <img src="https://i.imgur.com/jFQiZvL.jpeg?text=Logo" alt="Logo">
@@ -146,7 +149,6 @@ document.getElementById("senhaBtn").onclick = () => {
     carregarLista(listaSalvaUrl);
   } else { alert("Senha incorreta!"); }
 };
-
 window.onload = () => {
   const savedSenha = localStorage.getItem("iptv_password");
   if (senhasValidas.includes(savedSenha)) {
@@ -155,7 +157,6 @@ window.onload = () => {
     carregarLista(listaSalvaUrl);
   }
 };
-
 document.getElementById("testarGratisBtnLogin").onclick = () => {
   document.getElementById("senhaInput").value = "2025";
   document.getElementById("senhaBtn").click();
@@ -170,32 +171,21 @@ async function carregarLista(url) {
     renderCategorias();
   } catch { alert("Erro ao carregar lista."); }
 }
-
 function parseM3U(txt) {
   const linhas = txt.split("\n");
   let canais = [];
   let canal = null;
-
   for (let l of linhas) {
     l = l.trim();
-
     if (l.startsWith("#EXTINF")) {
-      canal = {
-        tvg_name: (l.match(/tvg-name="([^"]+)"/) || ["", "Sem Nome"])[1],
-        tvg_logo: (l.match(/tvg-logo="([^"]+)"/) || ["", ""])[1],
-        group_title: (l.match(/group-title="([^"]+)"/) || ["", "Outros"])[1],
-        url: ""
-      };
-    } 
-    else if (l && canal) {
-      canal.url = l;
-      canais.push(canal);
-      canal = null;
-    }
+      canal = { tvg_name: (l.match(/tvg-name="([^"]+)"/) || ["", "Sem Nome"])[1],
+                tvg_logo: (l.match(/tvg-logo="([^"]+)"/) || ["", ""])[1],
+                group_title: (l.match(/group-title="([^"]+)"/) || ["", "Outros"])[1],
+                url: "" };
+    } else if (l && canal) { canal.url = l; canais.push(canal); canal=null; }
   }
   return canais;
 }
-
 function renderCategorias() {
   channelList.innerHTML = "";
   categoriasValidas.forEach(cat => {
@@ -206,209 +196,180 @@ function renderCategorias() {
     channelList.appendChild(div);
   });
 }
-
 function renderChannelList(canais) {
   rightList.innerHTML = "";
   canais.forEach((canal, index) => {
     const div = document.createElement("div");
     div.className = "channel";
     div.dataset.index = index;
-    div.innerHTML = `
-      <img src="${canal.tvg_logo||'https://via.placeholder.com/50'}">
-      <span>${canal.tvg_name}</span>
-      <button class="favorite-btn ${favorites.includes(canal.tvg_name) ? "" : "not-fav"}">
-        ${favorites.includes(canal.tvg_name) ? "★" : "☆"}
-      </button>`;
-
-    div.querySelector("button").onclick = (e) => { 
-      e.stopPropagation(); 
-      toggleFavorite(canal.tvg_name, e.target); 
-    };
-
-    div.onclick = () => { 
-      currentIndex = index; 
-      playChannel(canal); 
-    };
-
+    div.innerHTML = `<img src="${canal.tvg_logo||'https://via.placeholder.com/50'}"><span>${canal.tvg_name}</span>
+                     <button class="favorite-btn ${favorites.includes(canal.tvg_name) ? "" : "not-fav"}">
+                     ${favorites.includes(canal.tvg_name) ? "★" : "☆"}</button>`;
+    div.querySelector("button").onclick = (e) => { e.stopPropagation(); toggleFavorite(canal.tvg_name,e.target); };
+    div.onclick = () => { currentIndex=index; playChannel(canal); };
     rightList.appendChild(div);
   });
 }
-
 function toggleFavorite(name, btn) {
-  if (favorites.includes(name)) favorites = favorites.filter(n => n !== name);
+  if(favorites.includes(name)) favorites=favorites.filter(n=>n!==name);
   else favorites.push(name);
-
   localStorage.setItem("favorites", JSON.stringify(favorites));
-  btn.textContent = favorites.includes(name) ? "★" : "☆";
+  btn.textContent = favorites.includes(name)?"★":"☆";
   btn.classList.toggle("not-fav");
 }
-
 function playChannel(canal) {
-  if (!canal.url) return;
-
-  if (clapprPlayer) clapprPlayer.destroy();
-  clapprPlayer = null;
-
-  const box = document.getElementById("player");
-  box.innerHTML = "";
-
+  if(!canal.url) return;
+  if(clapprPlayer) clapprPlayer.destroy();
+  clapprPlayer=null;
+  const box=document.getElementById("player");
+  box.innerHTML="";
   videoContainer.classList.add("active");
-
-  const isHls = canal.url.includes(".m3u8");
-  const video = document.createElement("video");
-
-  video.controls = true;
-  video.autoplay = true;
-  video.style.width = "100%";
-  video.style.height = "100%";
+  const isHls=canal.url.includes(".m3u8");
+  const video=document.createElement("video");
+  video.controls=true; video.autoplay=true; video.style.width="100%"; video.style.height="100%";
   box.appendChild(video);
-
-  if (isHls && video.canPlayType("application/vnd.apple.mpegurl")) {
-    video.src = canal.url;
-    video.play();
-    return;
-  }
-
-  if (isHls && Hls.isSupported()) {
-    const hls = new Hls();
-    hls.loadSource(canal.url);
-    hls.attachMedia(video);
-    return;
-  }
-
-  clapprPlayer = new Clappr.Player({
-    parentId:"#player",
-    source: canal.url,
-    autoPlay:true,
-    width:"100%",
-    height:"100%",
-    playback:{ playInline:true },
-    plugins:[DashShakaPlayback]
-  });
+  if(isHls && video.canPlayType("application/vnd.apple.mpegurl")) { video.src=canal.url; video.play(); return; }
+  if(isHls && Hls.isSupported()) { const hls=new Hls(); hls.loadSource(canal.url); hls.attachMedia(video); return; }
+  clapprPlayer = new Clappr.Player({ parentId:"#player", source:canal.url, autoPlay:true, width:"100%", height:"100%", playback:{playInline:true}, plugins:[DashShakaPlayback] });
 }
 
 // ==================== Controles Player ====================
-document.getElementById("exitBtn").onclick = () => {
-  if (clapprPlayer) clapprPlayer.destroy();
-  videoContainer.classList.remove("active");
-};
-
-document.getElementById("prevBtn").onclick = () => {
-  currentIndex = (currentIndex - 1 + allChannels.length) % allChannels.length;
-  playChannel(allChannels[currentIndex]);
-};
-
-document.getElementById("nextBtn").onclick = () => {
-  currentIndex = (currentIndex + 1) % allChannels.length;
-  playChannel(allChannels[currentIndex]);
-};
-
+document.getElementById("exitBtn").onclick = () => { if(clapprPlayer) clapprPlayer.destroy(); videoContainer.classList.remove("active"); };
+document.getElementById("prevBtn").onclick = () => { currentIndex=(currentIndex-1+allChannels.length)%allChannels.length; playChannel(allChannels[currentIndex]); };
+document.getElementById("nextBtn").onclick = () => { currentIndex=(currentIndex+1)%allChannels.length; playChannel(allChannels[currentIndex]); };
 document.getElementById("fullscreenBtn").onclick = () => {
-  const playerEl = document.getElementById("player");
-  if (playerEl.requestFullscreen) playerEl.requestFullscreen();
-  else if (playerEl.webkitRequestFullscreen) playerEl.webkitRequestFullscreen();
-  else if (playerEl.msRequestFullscreen) playerEl.msRequestFullscreen();
+  const playerEl=document.getElementById("player");
+  if(playerEl.requestFullscreen) playerEl.requestFullscreen();
+  else if(playerEl.webkitRequestFullscreen) playerEl.webkitRequestFullscreen();
+  else if(playerEl.msRequestFullscreen) playerEl.msRequestFullscreen();
 };
+
+// ==================== Menu ====================
+document.getElementById("btnListaSalva").onclick = () => carregarLista(listaSalvaUrl);
+document.getElementById("btnTodos").onclick = () => renderCategorias();
+document.getElementById("btnVip").onclick = () => {
+  // Oculta IPTV e mostra MAIS CANAIS
+  container.style.display = "none";
+  videoContainer.classList.remove("active");
+  document.getElementById("maisCanaisSection").style.display = "flex";
+};
+document.getElementById("btnFavoritos").onclick = () => {
+  const favChannels = allChannels.filter(c => favorites.includes(c.tvg_name));
+  renderChannelList(favChannels);
+};
+
+// ==================== MAIS CANAIS ====================
+const moviesByCategory = {
+  "GLOBO":[
+    {title:"GLOBO", cover:"https://downloadr2.apkmirror.com/wp-content/uploads/2024/11/97/67380446c88bf_com.globo.globotv-384x384.png", link:"https://globoplay.globo.com/tv-globo/ao-vivo/6120663/"},
+    {title:"FUTURA", cover:"https://www.abi.org.br/wp-content/uploads/2017/03/logo-canal-futura-1.jpg", link:"https://globoplay.globo.com/ao-vivo/7420604/"},
+    {title:"MALHAÇÂO", cover:"https://upload.wikimedia.org/wikipedia/pt/0/0d/Malha%C3%A7%C3%A3o_%2820%C2%AA_temporada%29.jpg", link:"https://globoplay.globo.com/ao-vivo/12136724/"},
+    {title:"D.P.A", cover:"https://i.pinimg.com/736x/99/66/58/996658cce9a3fd5283c6ab9aef883b16.jpg", link:"https://globoplay.globo.com/ao-vivo/12136726/"},
+    {title:"RECEITA", cover:"https://s2-receitas.glbimg.com/YrZyChoI0SfCP74ZJdv_XS_gOgo=/0x0:1920x1080/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_1f540e0b94d8437dbbc39d567a1dee68/internal_photos/bs/2023/l/M/4YWF3mRkelONGL29EE6A/arte.png", link:"https://globoplay.globo.com/ao-vivo/11134191/"},
+{title:"", cover:"https://yt3.googleusercontent.com/ytc/AIdro_mvx_mS1li0bz-96LTmNORgWyXgKP_6XRQmU_1mesZkMg=s900-c-k-c0x00ffffff-no-rj", link:""},
+{title:"", cover:"https://yt3.googleusercontent.com/ytc/AIdro_mvx_mS1li0bz-96LTmNORgWyXgKP_6XRQmU_1mesZkMg=s900-c-k-c0x00ffffff-no-rj", link:""},
+{title:"", cover:"https://yt3.googleusercontent.com/ytc/AIdro_mvx_mS1li0bz-96LTmNORgWyXgKP_6XRQmU_1mesZkMg=s900-c-k-c0x00ffffff-no-rj", link:""},
+    {title:"", cover:"https://yt3.googleusercontent.com/ytc/AIdro_mvx_mS1li0bz-96LTmNORgWyXgKP_6XRQmU_1mesZkMg=s900-c-k-c0x00ffffff-no-rj", link:""},
+    {title:"", cover:"https://yt3.googleusercontent.com/ytc/AIdro_mvx_mS1li0bz-96LTmNORgWyXgKP_6XRQmU_1mesZkMg=s900-c-k-c0x00ffffff-no-rj", link:""}
+],
+  "ESPORTE":[
+    {title:"SPORTV", cover:"https://designconceitual.com.br/wp-content/uploads/2017/08/SPORTV.png", link:"https://globoplay.globo.com/ao-vivo/7689934/"},
+    {title:"SPORT 2", cover:"https://designconceitual.com.br/wp-content/uploads/2017/08/SPORTV.png", link:"https://globoplay.globo.com/ao-vivo/7690141/"},
+    {title:"GeTV", cover:"https://set.org.br/wp-content/uploads/2025/09/GE-TV-logo.jpg", link:"https://globoplay.globo.com/ao-vivo/11134179/"},
+    {title:"SFT", cover:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC8mi_K5DiK57Av_ykPfM5-ImPS1UNCa6qQw&s", link:"https://hrm-sftc.otteravision.com/hrm/sftc/sftc_720p_high.m3u8"},
+    {title:"CAZÉ TV", cover:"https://www.claro.com.br/files/104379/860x1440/9da5b62119/capa-assistir-caze-tv-online.png/m/filters:quality(75)", link:"https://amg01391-amg01391c10-tcl-br-9630.playouts.now.amagi.tv/1080p-cc/index.m3u8"},
+    {title:"GLOBO", cover:"https://downloadr2.apkmirror.com/wp-content/uploads/2024/11/97/67380446c88bf_com.globo.globotv-384x384.png", link:"https://globoplay.globo.com/tv-globo/ao-vivo/6120663/"},
+    {title:"", cover:"https://yt3.googleusercontent.com/ytc/AIdro_mvx_mS1li0bz-96LTmNORgWyXgKP_6XRQmU_1mesZkMg=s900-c-k-c0x00ffffff-no-rj", link:""},
+    {title:"", cover:"https://yt3.googleusercontent.com/ytc/AIdro_mvx_mS1li0bz-96LTmNORgWyXgKP_6XRQmU_1mesZkMg=s900-c-k-c0x00ffffff-no-rj", link:""},
+    {title:"", cover:"https://yt3.googleusercontent.com/ytc/AIdro_mvx_mS1li0bz-96LTmNORgWyXgKP_6XRQmU_1mesZkMg=s900-c-k-c0x00ffffff-no-rj", link:""},
+    {title:"", cover:"https://yt3.googleusercontent.com/ytc/AIdro_mvx_mS1li0bz-96LTmNORgWyXgKP_6XRQmU_1mesZkMg=s900-c-k-c0x00ffffff-no-rj", link:""}
+  ]
+};
+// Renderiza botões de categorias
+const categoriesContainer = document.getElementById("categoriesContainer");
+const moviesContainer = document.getElementById("moviesContainer");
+
+Object.keys(moviesByCategory).forEach(cat => {
+  const btn = document.createElement("button");
+  btn.textContent = cat;
+  btn.onclick = () => renderMovies(cat);
+  categoriesContainer.appendChild(btn);
+});
+
+function renderMovies(category) {
+  moviesContainer.innerHTML = "";
+  if(!moviesByCategory[category]) return;
+  moviesByCategory[category].forEach(movie => {
+    const card = document.createElement("div");
+    card.className = "movie-card";
+    card.innerHTML = `
+      <img src="${movie.cover}" alt="${movie.title}">
+      <h3>${movie.title}</h3>
+      <a href="${movie.link}" target="_blank">Assistir</a>
+    `;
+    moviesContainer.appendChild(card);
+  });
+}
+
+// Botão para voltar do MAIS CANAIS ao IPTV
+const voltarBtn = document.createElement("button");
+voltarBtn.textContent = "← Voltar";
+voltarBtn.style.margin = "10px 0";
+voltarBtn.onclick = () => {
+  document.getElementById("maisCanaisSection").style.display = "none";
+  container.style.display = "flex";
+};
+categoriesContainer.prepend(voltarBtn);
 /* ==========================================================
-   SUPORTE COMPLETO PARA CONTROLE REMOTO DE TV / TV BOX
+   SUPORTE COMPLETO PARA TV / TV BOX
    ========================================================== */
 
-let focusType = "category"; // category, channel, player
-let focusIndex = 0;
-let canaisAtuais = [];
+let focusIndex = 0;           // Índice de foco atual
+let focusType = "category";   // category | channel | player
+let canaisAtuais = [];        // Canais renderizados no lado direito
 
+// Adiciona classe de foco visual
 function applyFocus() {
-  document.querySelectorAll(".focused").forEach(e => e.classList.remove("focused"));
+  document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
 
   if (focusType === "category") {
-    const items = document.querySelectorAll(".category-label");
-    if (items[focusIndex]) items[focusIndex].classList.add("focused");
-  }
+    const cats = document.querySelectorAll(".category-label");
+    if (cats[focusIndex]) cats[focusIndex].classList.add("focused");
 
-  if (focusType === "channel") {
-    const items = document.querySelectorAll(".channel");
-    if (items[focusIndex]) items[focusIndex].classList.add("focused");
-  }
+  } else if (focusType === "channel") {
+    const ch = document.querySelectorAll(".channel");
+    if (ch[focusIndex]) ch[focusIndex].classList.add("focused");
 
-  if (focusType === "player") {
+  } else if (focusType === "player") {
     document.querySelector(".player-controls")?.classList.add("focused");
   }
 }
 
-/* MOVIMENTAÇÃO DAS SETAS */
-function moveFocus(dir) {
-  let items = [];
-
-  if (focusType === "category") {
-    items = document.querySelectorAll(".category-label");
+// Marca o item de foco com borda azul
+const css = document.createElement("style");
+css.innerHTML = `
+  .focused {
+    outline: 3px solid #1e90ff !important;
+    background-color: #1e90ff33 !important;
+    transform: scale(1.03);
   }
-  else if (focusType === "channel") {
-    items = document.querySelectorAll(".channel");
-  }
+`;
+document.head.appendChild(css);
 
-  if (items.length === 0) return;
+/* ==========================================================
+   CAPTURA DO CONTROLE REMOTO
+   ========================================================== */
 
-  focusIndex += dir;
-
-  if (focusIndex < 0) focusIndex = items.length - 1;
-  if (focusIndex >= items.length) focusIndex = 0;
-
-  applyFocus();
-}
-
-/* ENTER / OK */
-function selectFocused() {
-  if (focusType === "category") {
-    const cat = document.querySelectorAll(".category-label")[focusIndex];
-    if (cat) cat.click();
-    focusType = "channel";
-    focusIndex = 0;
-    applyFocus();
-  }
-
-  else if (focusType === "channel") {
-    const item = document.querySelectorAll(".channel")[focusIndex];
-    if (item) {
-      const index = parseInt(item.dataset.index);
-      currentIndex = index;
-      canaisAtuais = Array.from(document.querySelectorAll(".channel")).map((c, i) => {
-        return allChannels.find(ch => ch.tvg_name === c.querySelector("span").innerText);
-      });
-      playChannel(allChannels[currentIndex]);
-      focusType = "player";
-      applyFocus();
-    }
-  }
-}
-
-/* DIGITAÇÃO DE NÚMEROS PARA TROCAR CANAL */
-window.channelNumbers = "";
-function typeNumberChannel(key) {
-  clearTimeout(window.numTimer);
-  window.channelNumbers += key;
-
-  window.numTimer = setTimeout(() => {
-    const num = parseInt(window.channelNumbers) - 1;
-    window.channelNumbers = "";
-
-    if (num >= 0 && allChannels[num]) {
-      currentIndex = num;
-      playChannel(allChannels[num]);
-      focusType = "player";
-      applyFocus();
-    }
-  }, 700);
-}
-
-/* SUPORTE TOTAL AO CONTROLE REMOTO */
-document.addEventListener("keydown", e => {
+document.addEventListener("keydown", (e) => {
   const key = e.key;
-  console.log("TV KEY:", key); // útil para debugar teclas da sua TV/TV Box
 
-  /* ======== NAVEGAÇÃO ======== */
-  if (key === "ArrowDown") moveFocus(1);
-  if (key === "ArrowUp") moveFocus(-1);
-
+  /* ======== SETAS ======== */
+  if (key === "ArrowDown") {
+    moveFocus(1);
+  }
+  if (key === "ArrowUp") {
+    moveFocus(-1);
+  }
   if (key === "ArrowRight") {
     if (focusType === "category") {
       focusType = "channel";
@@ -416,7 +377,6 @@ document.addEventListener("keydown", e => {
       applyFocus();
     }
   }
-
   if (key === "ArrowLeft") {
     if (focusType === "channel") {
       focusType = "category";
@@ -426,43 +386,121 @@ document.addEventListener("keydown", e => {
   }
 
   /* ======== OK / ENTER ======== */
-  if (key === "Enter" || key === "OK") {
+  if (key === "Enter") {
     selectFocused();
   }
 
-  /* ======== NÚMEROS PARA ZAPPING ======== */
-  if (!isNaN(key)) {
-    typeNumberChannel(key);
-  }
-
-  /* ======== CHANNEL UP / DOWN ======== */
-  if (key === "ChannelUp" || key === "MediaTrackNext") {
-    document.getElementById("nextBtn").click();
-  }
-
-  if (key === "ChannelDown" || key === "MediaTrackPrevious") {
-    document.getElementById("prevBtn").click();
-  }
-
-  /* ======== VOLTAR ======== */
-  if (key === "Back" || key === "Backspace" || key === "Escape") {
+  /* ======== BACK / RETURN ======== */
+  if (key === "Backspace" || key === "Escape") {
     if (videoContainer.classList.contains("active")) {
-      document.getElementById("exitBtn").click();
+      exitBtn.click();
       focusType = "channel";
       applyFocus();
-      return;
     }
   }
 
-  /* ======== TELA CHEIA ======== */
-  if (key === "F1" || key === "MediaPlayPause") {
-    document.getElementById("fullscreenBtn").click();
+  /* ======== NÚMERO → IR PARA CANAL ======== */
+  if (!isNaN(key)) {
+    clearTimeout(window.numTimer);
+    window.channelNumbers = (window.channelNumbers || "") + key;
+
+    window.numTimer = setTimeout(() => {
+      const num = parseInt(window.channelNumbers) - 1;
+      window.channelNumbers = "";
+
+      if (canaisAtuais[num]) {
+        currentIndex = num;
+        playChannel(canaisAtuais[num]);
+        focusType = "player";
+      }
+    }, 800);
   }
+
+  /* ======== FAVORITAR (0) ======== */
+  if (key === "0" && focusType === "channel") {
+    const canal = canaisAtuais[focusIndex];
+    if (canal) {
+      favorites.includes(canal.tvg_name)
+        ? favorites = favorites.filter(n => n !== canal.tvg_name)
+        : favorites.push(canal.tvg_name);
+
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      renderChannelList(canaisAtuais);
+      applyFocus();
+    }
+  }
+
+  /* ======== NEXT / PREV NO PLAYER ======== */
+  if (videoContainer.classList.contains("active")) {
+    if (key === "ArrowRight") nextBtn.click();
+    if (key === "ArrowLeft") prevBtn.click();
+  }
+
 });
 
-/* INICIA FOCO INICIAL */
-setTimeout(() => applyFocus(), 800);
+/* ==========================================================
+   MOVIMENTAÇÃO DO FOCO
+   ========================================================== */
 
+function moveFocus(dir) {
+  if (focusType === "category") {
+    const cats = document.querySelectorAll(".category-label");
+    focusIndex = Math.max(0, Math.min(cats.length - 1, focusIndex + dir));
+  }
+
+  if (focusType === "channel") {
+    const ch = document.querySelectorAll(".channel");
+    focusIndex = Math.max(0, Math.min(ch.length - 1, focusIndex + dir));
+
+    // rolagem automática
+    if (ch[focusIndex]) {
+      ch[focusIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  applyFocus();
+}
+
+/* ==========================================================
+   FUNÇÃO AO PRESSIONAR "OK"
+   ========================================================== */
+
+function selectFocused() {
+  if (focusType === "category") {
+    const cat = document.querySelectorAll(".category-label")[focusIndex];
+    cat?.click();
+
+    // após abrir canais
+    canaisAtuais = Array.from(allChannels.filter(c =>
+      c.group_title.trim().toLowerCase() === cat.textContent.trim().toLowerCase()
+    ));
+    focusType = "channel";
+    focusIndex = 0;
+    setTimeout(applyFocus, 100);
+  }
+
+  else if (focusType === "channel") {
+    const canal = canaisAtuais[focusIndex];
+    if (canal) {
+      currentIndex = focusIndex;
+      playChannel(canal);
+      focusType = "player";
+    }
+  }
+
+  else if (focusType === "player") {
+    exitBtn.click();
+    focusType = "channel";
+  }
+}
+
+/* ==========================================================
+   ATIVAR FOCO AO CARREGAR LISTA
+   ========================================================== */
+setTimeout(() => {
+  applyFocus();
+}, 500);
 </script>
 </body>
 </html>
+
