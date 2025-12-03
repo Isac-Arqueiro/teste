@@ -99,7 +99,11 @@ function parseM3U(txt){
   let c=null;
   lines.forEach(l=>{
     l=l.trim();
-    if(l.startsWith("#EXTINF")) c={tvg_name:(l.match(/tvg-name="([^"]+)"/)||["","Sem Nome"])[1], tvg_logo:(l.match(/tvg-logo="([^"]+)"/)||["",""])[1], group_title:(l.match(/group-title="([^"]+)"/)||["","Outros"])[1]};
+    if(l.startsWith("#EXTINF")) c={
+      tvg_name:(l.match(/tvg-name="([^"]+)"/)||["","Sem Nome"])[1],
+      tvg_logo:(l.match(/tvg-logo="([^"]+)"/)||["",""])[1],
+      group_title:(l.match(/group-title="([^"]+)"/)||["","Outros"])[1]
+    };
     else if(l && c){c.url=l; channels.push(c); c=null;}
   });
   return channels;
@@ -117,9 +121,11 @@ function renderCategories(){
     btn.tabIndex=0;
     categoriesDiv.appendChild(btn);
   });
+
+  // Exibir todos os canais ao abrir
   renderChannels(allChannels);
 
-  // >>> COMEÇAR COM "TODAS CATEGORIAS" SELECIONADO
+  // COMEÇA COM "TODAS CATEGORIAS" SELECIONADO
   document.getElementById("btnAll").focus();
 }
 
@@ -128,25 +134,21 @@ function renderChannels(channels){
   channelListRight.innerHTML="";
   channels.forEach((c,i)=>{
     const div=document.createElement("div");
-    div.className="channel"; div.tabIndex=0;
+    div.className="channel"; 
+    div.tabIndex=0;
     div.innerHTML=`<img src="${c.tvg_logo||'https://via.placeholder.com/50'}"><span>${c.tvg_name}</span>`;
     div.onclick=()=>{currentIndex=i; playChannel(c);};
     channelListRight.appendChild(div);
   });
 }
 
-// ======== PLAY CHANNEL COM FULLSCREEN ========
+// ======== PLAY CHANNEL (SEM FULLSCREEN AUTOMÁTICO) ========
 function playChannel(c){
   if(hls){ hls.destroy(); hls=null; }
 
   videoContainer.classList.add("active");
   videoEl.pause();
   videoEl.src="";
-
-  // FULLSCREEN AUTOMÁTICO
-  if(videoEl.requestFullscreen){
-      videoEl.requestFullscreen().catch(()=>{});
-  }
 
   if(c.url.includes(".m3u8") && Hls.isSupported()){
     hls=new Hls({enableWorker:false});
@@ -163,27 +165,27 @@ function playChannel(c){
   }
 }
 
-// ======== FULLSCREEN AO APERTAR OK NO PLAYER ========
-videoEl.addEventListener("click", () => {
-    if(videoEl.requestFullscreen){
-        videoEl.requestFullscreen().catch(()=>{});
-    }
-});
-document.addEventListener("keydown", (e) => {
-    if(e.key === "Enter" && videoContainer.classList.contains("active")){
-        if(videoEl.requestFullscreen){
-            videoEl.requestFullscreen().catch(()=>{});
-        }
-    }
-});
-
 // ======== CONTROLES PLAYER ========
-document.getElementById("exitBtn").onclick=()=>{ videoContainer.classList.remove("active"); videoEl.pause(); };
-document.getElementById("prevBtn").onclick=()=>{ currentIndex=(currentIndex-1+allChannels.length)%allChannels.length; playChannel(allChannels[currentIndex]); };
-document.getElementById("nextBtn").onclick=()=>{ currentIndex=(currentIndex+1)%allChannels.length; playChannel(allChannels[currentIndex]); };
-document.getElementById("fullscreenBtn").onclick=()=>{ if(videoEl.requestFullscreen) videoEl.requestFullscreen(); };
+document.getElementById("exitBtn").onclick=()=>{ 
+  videoContainer.classList.remove("active"); 
+  videoEl.pause(); 
+};
 
-// ======== NAVEGAÇÃO CORRIGIDA PARA TV BOX ========
+document.getElementById("prevBtn").onclick=()=>{ 
+  currentIndex=(currentIndex-1+allChannels.length)%allChannels.length; 
+  playChannel(allChannels[currentIndex]); 
+};
+
+document.getElementById("nextBtn").onclick=()=>{ 
+  currentIndex=(currentIndex+1)%allChannels.length; 
+  playChannel(allChannels[currentIndex]); 
+};
+
+document.getElementById("fullscreenBtn").onclick=()=>{ 
+  if(videoEl.requestFullscreen) videoEl.requestFullscreen(); 
+};
+
+// ======== NAVEGAÇÃO TV BOX ========
 document.addEventListener('keydown', (e) => {
     const sidebar = document.querySelector('.sidebar');
     const categoriesBtns = [...sidebar.querySelectorAll('#categories button')];
@@ -196,11 +198,11 @@ document.addEventListener('keydown', (e) => {
         case "ArrowUp":
             if(active.classList.contains('channel') && active.previousElementSibling){
                 active.previousElementSibling.focus();
-            } else if(active === favBtn){
+            } 
+            else if(active === favBtn){
                 allBtn.focus();
-            } else if(active === allBtn){
-                // nada
-            } else if(categoriesBtns.includes(active)){
+            }
+            else if(categoriesBtns.includes(active)){
                 const idx = categoriesBtns.indexOf(active);
                 if(idx > 0) categoriesBtns[idx-1].focus();
                 else favBtn.focus();
@@ -210,11 +212,14 @@ document.addEventListener('keydown', (e) => {
         case "ArrowDown":
             if(active.classList.contains('channel') && active.nextElementSibling){
                 active.nextElementSibling.focus();
-            } else if(active === allBtn){
+            } 
+            else if(active === allBtn){
                 favBtn.focus();
-            } else if(active === favBtn){
+            }
+            else if(active === favBtn){
                 categoriesBtns[0]?.focus();
-            } else if(categoriesBtns.includes(active)){
+            }
+            else if(categoriesBtns.includes(active)){
                 const idx = categoriesBtns.indexOf(active);
                 if(idx < categoriesBtns.length-1) categoriesBtns[idx+1].focus();
             }
@@ -238,7 +243,8 @@ document.addEventListener('keydown', (e) => {
 
         case "Backspace":
         case "Escape":
-            if(videoContainer.classList.contains("active")) document.getElementById("exitBtn").click();
+            if(videoContainer.classList.contains("active")) 
+                document.getElementById("exitBtn").click();
             break;
     }
 
