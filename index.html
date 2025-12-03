@@ -118,6 +118,9 @@ function renderCategories(){
     categoriesDiv.appendChild(btn);
   });
   renderChannels(allChannels);
+
+  // >>> COMEÇAR COM "TODAS CATEGORIAS" SELECIONADO
+  document.getElementById("btnAll").focus();
 }
 
 // ======== RENDER CANAIS ========
@@ -132,38 +135,47 @@ function renderChannels(channels){
   });
 }
 
-// ======== TOGGLE FAVORITOS ========
-function toggleFav(name){ 
-  if(favorites.includes(name)) favorites=favorites.filter(n=>n!==name); 
-  else favorites.push(name);
-  localStorage.setItem("favorites",JSON.stringify(favorites));
-}
-
-// ======== PLAY CHANNEL ROBUSTO ========
+// ======== PLAY CHANNEL COM FULLSCREEN ========
 function playChannel(c){
   if(hls){ hls.destroy(); hls=null; }
+
   videoContainer.classList.add("active");
   videoEl.pause();
   videoEl.src="";
 
-  // HLS.js se suportado
+  // FULLSCREEN AUTOMÁTICO
+  if(videoEl.requestFullscreen){
+      videoEl.requestFullscreen().catch(()=>{});
+  }
+
   if(c.url.includes(".m3u8") && Hls.isSupported()){
     hls=new Hls({enableWorker:false});
     hls.loadSource(c.url);
     hls.attachMedia(videoEl);
     hls.on(Hls.Events.MANIFEST_PARSED,()=>videoEl.play());
-    hls.on(Hls.Events.ERROR,(event,data)=>{
-      console.log("HLS error:",data);
-      // fallback para video nativo
+    hls.on(Hls.Events.ERROR,()=>{
       videoEl.src=c.url;
-      videoEl.play().catch(()=>console.log("Erro autoplay fallback"));
+      videoEl.play().catch(()=>{});
     });
   } else {
-    // fallback nativo
     videoEl.src=c.url;
-    videoEl.play().catch(()=>console.log("Erro autoplay"));
+    videoEl.play().catch(()=>{});
   }
 }
+
+// ======== FULLSCREEN AO APERTAR OK NO PLAYER ========
+videoEl.addEventListener("click", () => {
+    if(videoEl.requestFullscreen){
+        videoEl.requestFullscreen().catch(()=>{});
+    }
+});
+document.addEventListener("keydown", (e) => {
+    if(e.key === "Enter" && videoContainer.classList.contains("active")){
+        if(videoEl.requestFullscreen){
+            videoEl.requestFullscreen().catch(()=>{});
+        }
+    }
+});
 
 // ======== CONTROLES PLAYER ========
 document.getElementById("exitBtn").onclick=()=>{ videoContainer.classList.remove("active"); videoEl.pause(); };
@@ -171,7 +183,7 @@ document.getElementById("prevBtn").onclick=()=>{ currentIndex=(currentIndex-1+al
 document.getElementById("nextBtn").onclick=()=>{ currentIndex=(currentIndex+1)%allChannels.length; playChannel(allChannels[currentIndex]); };
 document.getElementById("fullscreenBtn").onclick=()=>{ if(videoEl.requestFullscreen) videoEl.requestFullscreen(); };
 
-// ======== NAVEGAÇÃO SIMPLES TV BOX (Corrigida) ========
+// ======== NAVEGAÇÃO CORRIGIDA PARA TV BOX ========
 document.addEventListener('keydown', (e) => {
     const sidebar = document.querySelector('.sidebar');
     const categoriesBtns = [...sidebar.querySelectorAll('#categories button')];
@@ -184,14 +196,14 @@ document.addEventListener('keydown', (e) => {
         case "ArrowUp":
             if(active.classList.contains('channel') && active.previousElementSibling){
                 active.previousElementSibling.focus();
-            } else if(active === allBtn){
-                favBtn.focus();
             } else if(active === favBtn){
-                categoriesBtns[categoriesBtns.length-1]?.focus();
-            } else if(active.tagName === 'BUTTON' && sidebar.contains(active)){
+                allBtn.focus();
+            } else if(active === allBtn){
+                // nada
+            } else if(categoriesBtns.includes(active)){
                 const idx = categoriesBtns.indexOf(active);
                 if(idx > 0) categoriesBtns[idx-1].focus();
-                else allBtn.focus();
+                else favBtn.focus();
             }
             break;
 
@@ -202,9 +214,9 @@ document.addEventListener('keydown', (e) => {
                 favBtn.focus();
             } else if(active === favBtn){
                 categoriesBtns[0]?.focus();
-            } else if(active.tagName === 'BUTTON' && sidebar.contains(active)){
+            } else if(categoriesBtns.includes(active)){
                 const idx = categoriesBtns.indexOf(active);
-                if(idx >= 0 && idx < categoriesBtns.length-1) categoriesBtns[idx+1].focus();
+                if(idx < categoriesBtns.length-1) categoriesBtns[idx+1].focus();
             }
             break;
 
