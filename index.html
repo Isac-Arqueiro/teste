@@ -162,56 +162,55 @@ document.getElementById("prevBtn").onclick=()=>{ currentIndex=(currentIndex-1+al
 document.getElementById("nextBtn").onclick=()=>{ currentIndex=(currentIndex+1)%allChannels.length; playChannel(allChannels[currentIndex]); };
 document.getElementById("fullscreenBtn").onclick=()=>{ if(videoEl.requestFullscreen) videoEl.requestFullscreen(); };
 
-// ======== NAVEGAÇÃO TV BOX ========
+// ======== NAVEGAÇÃO SIMPLES TV BOX ========
 document.addEventListener('keydown', (e) => {
     const sidebar = document.querySelector('.sidebar');
     const categoriesBtns = [...sidebar.querySelectorAll('#categories button')];
     const allBtn = document.getElementById('btnAll');
-    const favBtn = document.getElementById('btnFav');
     const channelsDivs = [...document.querySelectorAll('#channelListRight .channel')];
     const active = document.activeElement;
 
     switch(e.key){
         case "ArrowUp":
-            if(active.classList.contains('channel')){
-                if(active.previousElementSibling){
-                    active.previousElementSibling.focus();
-                } else if(categoriesBtns.length) {
-                    categoriesBtns[categoriesBtns.length-1].focus();
-                } else {
-                    allBtn.focus();
-                }
+            if(active.classList.contains('channel') && active.previousElementSibling){
+                active.previousElementSibling.focus();
             } else if(active.tagName === 'BUTTON' && sidebar.contains(active)){
                 const idx = categoriesBtns.indexOf(active);
                 if(idx > 0) categoriesBtns[idx-1].focus();
-                else allBtn.focus();
             }
             break;
+
         case "ArrowDown":
-            if(active.classList.contains('channel')){
-                if(active.nextElementSibling) active.nextElementSibling.focus();
+            if(active.classList.contains('channel') && active.nextElementSibling){
+                active.nextElementSibling.focus();
             } else if(active.tagName === 'BUTTON' && sidebar.contains(active)){
                 const idx = categoriesBtns.indexOf(active);
                 if(idx >= 0 && idx < categoriesBtns.length-1) categoriesBtns[idx+1].focus();
-                else if(channelsDivs.length) channelsDivs[0].focus();
-            } else if(active === allBtn || active === favBtn){
-                if(categoriesBtns.length) categoriesBtns[0].focus();
             }
             break;
-        case "ArrowLeft":
-            if(videoContainer.classList.contains("active")) document.getElementById("prevBtn").click();
-            break;
+
         case "ArrowRight":
-            if(videoContainer.classList.contains("active")) document.getElementById("nextBtn").click();
+            if(sidebar.contains(active) && channelsDivs.length){
+                channelsDivs[0].focus();
+            }
             break;
+
+        case "ArrowLeft":
+            if(active.classList.contains('channel')){
+                allBtn.focus();
+            }
+            break;
+
         case "Enter":
             if(active) active.click();
             break;
+
         case "Backspace":
         case "Escape":
             if(videoContainer.classList.contains("active")) document.getElementById("exitBtn").click();
             break;
     }
+
     e.preventDefault();
 });
 </script>
