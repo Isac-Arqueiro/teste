@@ -6,24 +6,29 @@
 <title>IPTV Smart TV</title>
 <link rel="icon" href="https://i.imgur.com/jFQiZvL.jpeg">
 <style>
-body{margin:0;padding:0;background:#101010;color:#fff;font-family:sans-serif;overflow:hidden;}
-#login{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:15px;}
-#login input{padding:12px;width:260px;text-align:center;border-radius:6px;border:none;background:#222;color:#fff;}
-#login button{padding:10px 20px;border:none;border-radius:6px;background:#1e90ff;color:#fff;cursor:pointer;}
-.container{display:none;height:100vh;flex-direction:row;}
-.sidebar{width:260px;background:#111;overflow-y:auto;padding:10px;}
-.sidebar button{width:100%;padding:10px;margin:5px 0;background:#181818;border:none;color:#fff;border-radius:6px;cursor:pointer;}
-.sidebar button:focus{outline:2px solid #1e90ff;}
-.main{flex:1;position:relative;}
-#playerContainer{width:100%;height:100%;background:#000;display:none;position:relative;}
-#playerContainer.active{display:block;}
-video{width:100%;height:100%;background:#000;}
-.player-controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:10px;}
-.player-controls button{padding:6px 12px;border-radius:6px;background:rgba(0,0,0,0.55);color:#fff;border:1px solid #333;cursor:pointer;}
-.channel-list{margin-top:10px;}
-.channel{display:flex;align-items:center;padding:8px;border-radius:6px;cursor:pointer;background:#181818;margin:4px 0;}
-.channel img{width:50px;height:50px;margin-right:10px;border-radius:4px;}
-.channel:focus{outline:2px solid #1e90ff;background:#222;}
+body { margin:0; padding:0; background:#101010; color:#fff; font-family:sans-serif; overflow:hidden; }
+#login { height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:15px; }
+#login input { padding:12px; width:260px; text-align:center; border-radius:6px; border:none; background:#222; color:#fff; }
+#login button { padding:10px 20px; border:none; border-radius:6px; background:#1e90ff; color:#fff; cursor:pointer; }
+#login button:focus { outline:2px solid #00e5ff; }
+.container { display:none; height:100vh; flex-direction:row; }
+.sidebar { width:260px; background:#111; overflow-y:auto; padding:10px; }
+.sidebar button { width:100%; padding:10px; margin:5px 0; background:#181818; border:none; color:#fff; border-radius:6px; cursor:pointer; }
+.sidebar button:focus { outline:2px solid #00e5ff; }
+.main { flex:1; position:relative; display:flex; flex-direction:column; }
+#playerContainer { width:100%; height:50%; background:#000; display:none; position:relative; }
+#playerContainer.active { display:block; }
+video { width:100%; height:100%; background:#000; }
+.player-controls { position:absolute; bottom:15px; left:50%; transform:translateX(-50%); display:flex; gap:10px; }
+.player-controls button { padding:6px 12px; border-radius:6px; background:rgba(0,0,0,0.55); color:#fff; border:1px solid #333; cursor:pointer; }
+.player-controls button:focus { outline:2px solid #00e5ff; }
+.channel-list { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; }
+.channel { display:flex; align-items:center; padding:8px; border-radius:6px; cursor:pointer; background:#181818; margin:4px 0; }
+.channel img { width:50px; height:50px; margin-right:10px; border-radius:4px; }
+.channel:focus { outline:2px solid #00e5ff; background:#222; }
+.categories-container { margin-top:10px; display:flex; flex-direction:column; }
+.categories-container button { margin:5px 0; padding:10px; border:none; border-radius:6px; background:#181818; color:#fff; cursor:pointer; }
+.categories-container button:focus { outline:2px solid #00e5ff; background:#222; }
 </style>
 </head>
 <body>
@@ -38,21 +43,21 @@ video{width:100%;height:100%;background:#000;}
 <!-- CONTAINER PRINCIPAL -->
 <div class="container">
   <div class="sidebar">
-    <button id="btnAll">Todas Categorias</button>
-    <button id="btnFav">Favoritos</button>
-    <div id="categories"></div>
+    <button id="btnAll" tabindex="0">Todas Categorias</button>
+    <button id="btnFav" tabindex="0">Favoritos</button>
+    <div class="categories-container" id="categories"></div>
   </div>
   <div class="main">
     <div id="playerContainer">
       <video id="video" playsinline webkit-playsinline></video>
       <div class="player-controls">
-        <button id="exitBtn">Menu</button>
-        <button id="prevBtn">⏮️</button>
-        <button id="nextBtn">⏭️</button>
-        <button id="fullscreenBtn">⛶</button>
+        <button id="exitBtn" tabindex="0">Menu</button>
+        <button id="prevBtn" tabindex="0">⏮️</button>
+        <button id="nextBtn" tabindex="0">⏭️</button>
+        <button id="fullscreenBtn" tabindex="0">⛶</button>
       </div>
     </div>
-    <div id="channelListRight" class="channel-list"></div>
+    <div id="channelListRight" class="channel-list" tabindex="0"></div>
   </div>
 </div>
 
@@ -105,8 +110,8 @@ function renderCategories(){
   cats.forEach(cat=>{
     const btn=document.createElement("button");
     btn.textContent=cat;
-    btn.onclick=()=>renderChannels(allChannels.filter(c=>c.group_title===cat));
     btn.tabIndex=0;
+    btn.onclick=()=>renderChannels(allChannels.filter(c=>c.group_title===cat));
     categoriesDiv.appendChild(btn);
   });
   renderChannels(allChannels);
@@ -122,13 +127,8 @@ function renderChannels(channels){
     div.onclick=()=>{currentIndex=i; playChannel(c);};
     channelListRight.appendChild(div);
   });
-}
-
-// ======== TOGGLE FAVORITOS ========
-function toggleFav(name){ 
-  if(favorites.includes(name)) favorites=favorites.filter(n=>n!==name); 
-  else favorites.push(name);
-  localStorage.setItem("favorites",JSON.stringify(favorites));
+  // Foca no primeiro canal automaticamente
+  setTimeout(()=>{ if(channelListRight.firstChild) channelListRight.firstChild.focus(); }, 100);
 }
 
 // ======== PLAY CHANNEL ========
@@ -154,16 +154,23 @@ document.getElementById("prevBtn").onclick=()=>{ currentIndex=(currentIndex-1+al
 document.getElementById("nextBtn").onclick=()=>{ currentIndex=(currentIndex+1)%allChannels.length; playChannel(allChannels[currentIndex]); };
 document.getElementById("fullscreenBtn").onclick=()=>{ if(videoEl.requestFullscreen) videoEl.requestFullscreen(); };
 
-// ======== NAVEGAÇÃO TV ========
+// ======== NAVEGAÇÃO REMOTO TV ========
 document.addEventListener('keydown',(e)=>{
   const active=document.activeElement;
   switch(e.key){
-    case "ArrowUp": if(active && active.previousElementSibling) active.previousElementSibling.focus(); break;
-    case "ArrowDown": if(active && active.nextElementSibling) active.nextElementSibling.focus(); break;
+    case "ArrowUp":
+      if(active && active.previousElementSibling) active.previousElementSibling.focus();
+      break;
+    case "ArrowDown":
+      if(active && active.nextElementSibling) active.nextElementSibling.focus();
+      break;
     case "ArrowLeft": document.getElementById("prevBtn").click(); break;
     case "ArrowRight": document.getElementById("nextBtn").click(); break;
     case "Enter": if(active) active.click(); break;
-    case "Backspace": case "Escape": if(videoContainer.classList.contains("active")) document.getElementById("exitBtn").click(); break;
+    case "Backspace":
+    case "Escape":
+      if(videoContainer.classList.contains("active")) document.getElementById("exitBtn").click();
+      break;
   }
 });
 </script>
