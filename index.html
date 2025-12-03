@@ -319,6 +319,186 @@ voltarBtn.onclick = () => {
   container.style.display = "flex";
 };
 categoriesContainer.prepend(voltarBtn);
+/* ==========================================================
+   SUPORTE COMPLETO PARA TV / TV BOX
+   ========================================================== */
+
+let focusIndex = 0;           // Índice de foco atual
+let focusType = "category";   // category | channel | player
+let canaisAtuais = [];        // Canais renderizados no lado direito
+
+// Adiciona classe de foco visual
+function applyFocus() {
+  document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
+
+  if (focusType === "category") {
+    const cats = document.querySelectorAll(".category-label");
+    if (cats[focusIndex]) cats[focusIndex].classList.add("focused");
+
+  } else if (focusType === "channel") {
+    const ch = document.querySelectorAll(".channel");
+    if (ch[focusIndex]) ch[focusIndex].classList.add("focused");
+
+  } else if (focusType === "player") {
+    document.querySelector(".player-controls")?.classList.add("focused");
+  }
+}
+
+// Marca o item de foco com borda azul
+const css = document.createElement("style");
+css.innerHTML = `
+  .focused {
+    outline: 3px solid #1e90ff !important;
+    background-color: #1e90ff33 !important;
+    transform: scale(1.03);
+  }
+`;
+document.head.appendChild(css);
+
+/* ==========================================================
+   CAPTURA DO CONTROLE REMOTO
+   ========================================================== */
+
+document.addEventListener("keydown", (e) => {
+  const key = e.key;
+
+  /* ======== SETAS ======== */
+  if (key === "ArrowDown") {
+    moveFocus(1);
+  }
+  if (key === "ArrowUp") {
+    moveFocus(-1);
+  }
+  if (key === "ArrowRight") {
+    if (focusType === "category") {
+      focusType = "channel";
+      focusIndex = 0;
+      applyFocus();
+    }
+  }
+  if (key === "ArrowLeft") {
+    if (focusType === "channel") {
+      focusType = "category";
+      focusIndex = 0;
+      applyFocus();
+    }
+  }
+
+  /* ======== OK / ENTER ======== */
+  if (key === "Enter") {
+    selectFocused();
+  }
+
+  /* ======== BACK / RETURN ======== */
+  if (key === "Backspace" || key === "Escape") {
+    if (videoContainer.classList.contains("active")) {
+      exitBtn.click();
+      focusType = "channel";
+      applyFocus();
+    }
+  }
+
+  /* ======== NÚMERO → IR PARA CANAL ======== */
+  if (!isNaN(key)) {
+    clearTimeout(window.numTimer);
+    window.channelNumbers = (window.channelNumbers || "") + key;
+
+    window.numTimer = setTimeout(() => {
+      const num = parseInt(window.channelNumbers) - 1;
+      window.channelNumbers = "";
+
+      if (canaisAtuais[num]) {
+        currentIndex = num;
+        playChannel(canaisAtuais[num]);
+        focusType = "player";
+      }
+    }, 800);
+  }
+
+  /* ======== FAVORITAR (0) ======== */
+  if (key === "0" && focusType === "channel") {
+    const canal = canaisAtuais[focusIndex];
+    if (canal) {
+      favorites.includes(canal.tvg_name)
+        ? favorites = favorites.filter(n => n !== canal.tvg_name)
+        : favorites.push(canal.tvg_name);
+
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      renderChannelList(canaisAtuais);
+      applyFocus();
+    }
+  }
+
+  /* ======== NEXT / PREV NO PLAYER ======== */
+  if (videoContainer.classList.contains("active")) {
+    if (key === "ArrowRight") nextBtn.click();
+    if (key === "ArrowLeft") prevBtn.click();
+  }
+
+});
+
+/* ==========================================================
+   MOVIMENTAÇÃO DO FOCO
+   ========================================================== */
+
+function moveFocus(dir) {
+  if (focusType === "category") {
+    const cats = document.querySelectorAll(".category-label");
+    focusIndex = Math.max(0, Math.min(cats.length - 1, focusIndex + dir));
+  }
+
+  if (focusType === "channel") {
+    const ch = document.querySelectorAll(".channel");
+    focusIndex = Math.max(0, Math.min(ch.length - 1, focusIndex + dir));
+
+    // rolagem automática
+    if (ch[focusIndex]) {
+      ch[focusIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  applyFocus();
+}
+
+/* ==========================================================
+   FUNÇÃO AO PRESSIONAR "OK"
+   ========================================================== */
+
+function selectFocused() {
+  if (focusType === "category") {
+    const cat = document.querySelectorAll(".category-label")[focusIndex];
+    cat?.click();
+
+    // após abrir canais
+    canaisAtuais = Array.from(allChannels.filter(c =>
+      c.group_title.trim().toLowerCase() === cat.textContent.trim().toLowerCase()
+    ));
+    focusType = "channel";
+    focusIndex = 0;
+    setTimeout(applyFocus, 100);
+  }
+
+  else if (focusType === "channel") {
+    const canal = canaisAtuais[focusIndex];
+    if (canal) {
+      currentIndex = focusIndex;
+      playChannel(canal);
+      focusType = "player";
+    }
+  }
+
+  else if (focusType === "player") {
+    exitBtn.click();
+    focusType = "channel";
+  }
+}
+
+/* ==========================================================
+   ATIVAR FOCO AO CARREGAR LISTA
+   ========================================================== */
+setTimeout(() => {
+  applyFocus();
+}, 500);
 </script>
 </body>
 </html>
