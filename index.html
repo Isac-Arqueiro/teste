@@ -389,15 +389,31 @@ function selectFocused() {
   if (focusType === "category") {
     const cat = document.querySelectorAll(".category-label")[focusIndex];
     cat?.click();
+
+    // após abrir canais
     canaisAtuais = Array.from(allChannels.filter(c =>
       c.group_title.trim().toLowerCase() === cat.textContent.trim().toLowerCase()
     ));
-    focusType = "channel"; focusIndex = 0; setTimeout(applyFocus, 100);
-  } else if (focusType === "channel") {
+    focusType = "channel";
+    focusIndex = 0;
+    setTimeout(applyFocus, 100);
+  }
+
+  else if (focusType === "channel") {
     const canal = canaisAtuais[focusIndex];
-    if (canal) { currentIndex = focusIndex; playChannel(canal); focusType = "player"; }
-  } else if (focusType === "player") {
-    exitBtn.click(); focusType = "channel";
+    if (canal) {
+      currentIndex = focusIndex;
+      playChannel(canal);
+      focusType = "player";
+      focusIndex = 0; // inicia o foco no primeiro botão do player
+      applyFocus();
+    }
+  }
+
+  else if (focusType === "player") {
+    // Aqui pegamos o botão em foco dentro dos controles do player
+    const btn = document.querySelector(".player-controls button.focused");
+    if (btn) btn.click(); // clica no botão correto (Menu, Prev, Next ou Tela Cheia)
   }
 }
 
