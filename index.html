@@ -15,18 +15,17 @@ body{margin:0;padding:0;background:#101010;color:#fff;font-family:sans-serif;ove
 .sidebar button{width:100%;padding:10px;margin:5px 0;background:#181818;border:none;color:#fff;border-radius:6px;cursor:pointer;}
 .sidebar button:focus{outline:2px solid #1e90ff;}
 .main{flex:1;display:flex;position:relative;}
-#playerContainer{width:70%;height:100%;background:#000;display:none;position:relative;}
+#channelListRight{width:35%;overflow-y:auto;padding:10px;}
+#playerContainer{flex:1;height:100%;background:#000;display:none;position:relative;}
 #playerContainer.active{display:block;}
 video{width:100%;height:100%;background:#000;}
 .player-controls{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:10px;}
 .player-controls button{padding:6px 12px;border-radius:6px;background:rgba(0,0,0,0.55);color:#fff;border:1px solid #333;cursor:pointer;}
-.channel-list{width:30%;overflow-y:auto;padding-left:10px;}
 .channel{display:flex;align-items:center;padding:8px;border-radius:6px;cursor:pointer;background:#181818;margin:4px 0;justify-content:space-between;}
 .channel img{width:50px;height:50px;margin-right:10px;border-radius:4px;}
 .channel:focus{outline:2px solid #1e90ff;background:#222;}
-.star{font-size:26px;cursor:pointer;color:#ccc;outline:none;}
+.star{font-size:16px;color:#888;margin-left:5px;}
 .star.fav{color:#FFD700;}
-.star:focus{outline:2px solid #1e90ff;border-radius:4px;}
 </style>
 </head>
 <body>
@@ -46,7 +45,7 @@ video{width:100%;height:100%;background:#000;}
     <div id="categories"></div>
   </div>
   <div class="main">
-    <div class="channel-list" id="channelListRight"></div>
+    <div id="channelListRight" class="channel-list"></div>
     <div id="playerContainer">
       <video id="video" playsinline webkit-playsinline tabindex="0"></video>
       <div class="player-controls">
@@ -221,34 +220,50 @@ document.getElementById("fullscreenBtn").onclick=()=>{
 // NAVEGAÇÃO COM SETAS
 document.addEventListener("keydown", e=>{
     const active = document.activeElement;
+    const categories = [...document.querySelectorAll(".sidebar button")];
     const channels = [...document.querySelectorAll(".channel")];
-    const cats = [...document.querySelectorAll(".sidebar button")];
 
     switch(e.key){
         case "ArrowUp":
             if(active.classList.contains("channel")){
                 const idx = channels.indexOf(active);
                 if(idx>0) channels[idx-1].focus();
+                else categories[0].focus();
+            } else if(categories.includes(active)){
+                const idx = categories.indexOf(active);
+                if(idx>0) categories[idx-1].focus();
             } else if(active === videoEl){
                 channels[currentIndex]?.focus();
             }
             break;
+
         case "ArrowDown":
             if(active.classList.contains("channel")){
                 const idx = channels.indexOf(active);
                 if(idx<channels.length-1) channels[idx+1].focus();
+            } else if(categories.includes(active)){
+                const idx = categories.indexOf(active);
+                if(idx<categories.length-1) categories[idx+1].focus();
+                else channels[0]?.focus();
             }
             break;
+
         case "ArrowRight":
-            if(active.classList.contains("channel")){
+            if(categories.includes(active)){
+                channels[0]?.focus();
+            } else if(active.classList.contains("channel")){
                 videoEl.focus();
             }
             break;
+
         case "ArrowLeft":
             if(active === videoEl){
                 channels[currentIndex]?.focus();
+            } else if(active.classList.contains("channel")){
+                categories[0].focus();
             }
             break;
+
         case "Enter":
             if(active === videoEl){
                 if(videoEl.requestFullscreen) videoEl.requestFullscreen();
@@ -256,6 +271,7 @@ document.addEventListener("keydown", e=>{
                 handleChannelEnter(channels.indexOf(active));
             }
             break;
+
         case "Backspace":
         case "Escape":
             if(document.fullscreenElement) document.exitFullscreen();
