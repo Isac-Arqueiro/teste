@@ -341,8 +341,12 @@ function applyFocus() {
     if (ch[focusIndex]) ch[focusIndex].classList.add("focused");
 
   } else if (focusType === "player") {
-    document.querySelector(".player-controls")?.classList.add("focused");
-  }
+    // Remove foco de qualquer botão anterior
+    document.querySelectorAll(".player-controls button").forEach(btn => btn.classList.remove("focused"));
+    
+    // Aplica foco apenas no botão "fullscreenBtn" (ou outro se quiser)
+    document.getElementById("fullscreenBtn")?.classList.add("focused");
+}
 }
 
 // Marca o item de foco com borda azul
