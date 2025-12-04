@@ -507,6 +507,17 @@ document.addEventListener("keydown", (e) => {
     document.getElementById("fullscreenBtn").click();
   }
 });
+// =========================================================
+//  GARANTE QUE O CONTROLE VOLTA A FUNCIONAR AO SAIR DO MX
+// =========================================================
+setInterval(() => {
+  if (!document.hasFocus()) return; // só executa quando o navegador recupera o foco
+  window.focus();
+  document.body.focus();
+
+  // Reaplica o foco visual no item atual
+  applyFocus();
+}, 500);
 </script>
 </body>
 </html>
