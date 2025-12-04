@@ -243,48 +243,59 @@ function abrirNoMX(url) {
    PLAYCHANNEL (AGORA COM MX PLAYER)
    ====================================================== */
 function playChannel(canal) {
+  if (!canal.url) return;
 
-  // 📌 Android 7 → Usar MX Player
-  if (isOldAndroid) {
-    abrirNoMX(canal.url);
-    return;
+  // 🔥 TESTE: Todos os M3U8 vão abrir no MX Player
+  if (canal.url.includes(".m3u8")) {
+    const intent = `intent:${canal.url}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;end`;
+    window.location.href = intent;
+
+    // Se MX não estiver instalado, alerta
+    setTimeout(() => {
+      alert("MX Player não encontrado. Instale na Play Store.");
+    }, 1200);
+
+    return; // impede que o player interno carregue
   }
 
-  // 📌 Para Android moderno → usar player normal
-  if(!canal.url) return;
-  if(clapprPlayer) clapprPlayer.destroy();
-  clapprPlayer=null;
+  // 🔵 Outros formatos continuam usando o player interno
+  if (clapprPlayer) clapprPlayer.destroy();
+  clapprPlayer = null;
 
-  const box=document.getElementById("player");
-  box.innerHTML="";
+  const box = document.getElementById("player");
+  box.innerHTML = "";
   videoContainer.classList.add("active");
 
-  const isHls=canal.url.includes(".m3u8");
-  const video=document.createElement("video");
-  video.controls=true; video.autoplay=true;
-  video.style.width="100%"; video.style.height="100%";
+  const video = document.createElement("video");
+  video.controls = true;
+  video.autoplay = true;
+  video.style.width = "100%";
+  video.style.height = "100%";
   box.appendChild(video);
 
-  if(isHls && video.canPlayType("application/vnd.apple.mpegurl")) {
-    video.src=canal.url;
+  const isHls = canal.url.includes(".m3u8");
+
+  if (isHls && video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = canal.url;
     video.play();
     return;
   }
-  if(isHls && Hls.isSupported()) {
-    const hls=new Hls();
+
+  if (isHls && Hls.isSupported()) {
+    const hls = new Hls();
     hls.loadSource(canal.url);
     hls.attachMedia(video);
     return;
   }
 
   clapprPlayer = new Clappr.Player({
-    parentId:"#player",
-    source:canal.url,
-    autoPlay:true,
-    width:"100%",
-    height:"100%",
-    playback:{playInline:true},
-    plugins:[DashShakaPlayback]
+    parentId: "#player",
+    source: canal.url,
+    autoPlay: true,
+    width: "100%",
+    height: "100%",
+    playback: { playInline: true },
+    plugins: [DashShakaPlayback]
   });
 }
 
