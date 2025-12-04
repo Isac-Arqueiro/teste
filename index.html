@@ -1,6 +1,5 @@
-
-
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -227,7 +226,8 @@ function toggleFavorite(name, btn) {
    ====================================================== */
 const isOldAndroid = (() => {
   const ua = navigator.userAgent;
-  return ua.includes("Android 7") || ua.includes("Android 6") || ua.includes("Android 5");
+  return ua.includes("Android 9") || ua.includes("Android 8") || 
+         ua.includes("Android 7") || ua.includes("Android 6") || ua.includes("Android 5");
 })();
 
 function abrirNoMX(url) {
