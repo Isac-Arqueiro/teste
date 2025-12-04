@@ -192,7 +192,11 @@ function renderCategorias() {
     const div = document.createElement("div");
     div.className = "category-label";
     div.textContent = cat;
-    div.onclick = () => renderChannelList(allChannels.filter(c => c.group_title === cat));
+    div.onclick = () => {
+      const canais = allChannels.filter(c => c.group_title === cat);
+      canaisAtuais = canais;
+      renderChannelList(canais);
+    };
     channelList.appendChild(div);
   });
 }
@@ -217,20 +221,71 @@ function toggleFavorite(name, btn) {
   btn.textContent = favorites.includes(name)?"★":"☆";
   btn.classList.toggle("not-fav");
 }
+
+/* ======================================================
+   🔥 SUPORTE PARA MX PLAYER (Android 7, 6 e 5)
+   ====================================================== */
+const isOldAndroid = (() => {
+  const ua = navigator.userAgent;
+  return ua.includes("Android 7") || ua.includes("Android 6") || ua.includes("Android 5");
+})();
+
+function abrirNoMX(url) {
+  const intent = `intent:${url}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;end`;
+  window.location.href = intent;
+
+  setTimeout(() => {
+    alert("MX Player não encontrado. Instale-o na Play Store.");
+  }, 1200);
+}
+
+/* ======================================================
+   PLAYCHANNEL (AGORA COM MX PLAYER)
+   ====================================================== */
 function playChannel(canal) {
+
+  // 📌 Android 7 → Usar MX Player
+  if (isOldAndroid) {
+    abrirNoMX(canal.url);
+    return;
+  }
+
+  // 📌 Para Android moderno → usar player normal
   if(!canal.url) return;
   if(clapprPlayer) clapprPlayer.destroy();
   clapprPlayer=null;
+
   const box=document.getElementById("player");
   box.innerHTML="";
   videoContainer.classList.add("active");
+
   const isHls=canal.url.includes(".m3u8");
   const video=document.createElement("video");
-  video.controls=true; video.autoplay=true; video.style.width="100%"; video.style.height="100%";
+  video.controls=true; video.autoplay=true;
+  video.style.width="100%"; video.style.height="100%";
   box.appendChild(video);
-  if(isHls && video.canPlayType("application/vnd.apple.mpegurl")) { video.src=canal.url; video.play(); return; }
-  if(isHls && Hls.isSupported()) { const hls=new Hls(); hls.loadSource(canal.url); hls.attachMedia(video); return; }
-  clapprPlayer = new Clappr.Player({ parentId:"#player", source:canal.url, autoPlay:true, width:"100%", height:"100%", playback:{playInline:true}, plugins:[DashShakaPlayback] });
+
+  if(isHls && video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src=canal.url;
+    video.play();
+    return;
+  }
+  if(isHls && Hls.isSupported()) {
+    const hls=new Hls();
+    hls.loadSource(canal.url);
+    hls.attachMedia(video);
+    return;
+  }
+
+  clapprPlayer = new Clappr.Player({
+    parentId:"#player",
+    source:canal.url,
+    autoPlay:true,
+    width:"100%",
+    height:"100%",
+    playback:{playInline:true},
+    plugins:[DashShakaPlayback]
+  });
 }
 
 // ==================== Controles Player ====================
@@ -254,21 +309,24 @@ document.getElementById("btnVip").onclick = () => {
 };
 document.getElementById("btnFavoritos").onclick = () => {
   const favChannels = allChannels.filter(c => favorites.includes(c.tvg_name));
+  canaisAtuais = favChannels;
   renderChannelList(favChannels);
 };
 
-// ==================== MAIS CANAIS ====================
-const moviesByCategory = {
-  // ... seus dados de filmes (mantive igual)
-};
+// ======================================================
+// MAIS CANAIS (mantive tudo igual)
+// ======================================================
+const moviesByCategory = {};
 const categoriesContainer = document.getElementById("categoriesContainer");
 const moviesContainer = document.getElementById("moviesContainer");
+
 Object.keys(moviesByCategory).forEach(cat => {
   const btn = document.createElement("button");
   btn.textContent = cat;
   btn.onclick = () => renderMovies(cat);
   categoriesContainer.appendChild(btn);
 });
+
 function renderMovies(category) {
   moviesContainer.innerHTML = "";
   if(!moviesByCategory[category]) return;
@@ -280,6 +338,7 @@ function renderMovies(category) {
     moviesContainer.appendChild(card);
   });
 }
+
 const voltarBtn = document.createElement("button");
 voltarBtn.textContent = "← Voltar";
 voltarBtn.style.margin = "10px 0";
@@ -289,16 +348,15 @@ voltarBtn.onclick = () => {
 };
 categoriesContainer.prepend(voltarBtn);
 
-/* ==========================================================
-   SUPORTE COMPLETO PARA TV / TV BOX
-   ========================================================== */
+// ======================================================
+// SUPORTE REMOTO / NAVEGAÇÃO (mantive tudo original)
+// ======================================================
 let focusIndex = 0;
 let focusType = "category";
 let canaisAtuais = [];
 
 function applyFocus() {
   document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
-
   if (focusType === "category") {
     const cats = document.querySelectorAll(".category-label");
     if (cats[focusIndex]) cats[focusIndex].classList.add("focused");
@@ -306,28 +364,17 @@ function applyFocus() {
     const ch = document.querySelectorAll(".channel");
     if (ch[focusIndex]) ch[focusIndex].classList.add("focused");
   } else if (focusType === "player") {
-    // CORREÇÃO: Foco apenas em um botão do player
     document.querySelectorAll(".player-controls button").forEach(btn => btn.classList.remove("focused"));
     document.getElementById("fullscreenBtn")?.classList.add("focused");
   }
 }
 
 const css = document.createElement("style");
-css.innerHTML = `
-  .focused {
-    outline: 3px solid #1e90ff !important;
-    background-color: #1e90ff33 !important;
-    transform: scale(1.03);
-  }
-`;
+css.innerHTML = `.focused { outline: 3px solid #1e90ff !important; background-color: #1e90ff33 !important; transform: scale(1.03);} `;
 document.head.appendChild(css);
 
-/* ==========================================================
-   CAPTURA DO CONTROLE REMOTO
-   ========================================================== */
 document.addEventListener("keydown", (e) => {
   const key = e.key;
-
   if (key === "ArrowDown") moveFocus(1);
   if (key === "ArrowUp") moveFocus(-1);
   if (key === "ArrowRight") {
@@ -366,9 +413,6 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* ==========================================================
-   MOVIMENTAÇÃO DO FOCO
-   ========================================================== */
 function moveFocus(dir) {
   if (focusType === "category") {
     const cats = document.querySelectorAll(".category-label");
@@ -382,9 +426,6 @@ function moveFocus(dir) {
   applyFocus();
 }
 
-/* ==========================================================
-   FUNÇÃO AO PRESSIONAR "OK"
-   ========================================================== */
 function selectFocused() {
   if (focusType === "category") {
     const cat = document.querySelectorAll(".category-label")[focusIndex];
@@ -401,14 +442,8 @@ function selectFocused() {
   }
 }
 
-/* ==========================================================
-   ATIVAR FOCO AO CARREGAR LISTA
-   ========================================================== */
 setTimeout(() => { applyFocus(); }, 500);
 
-/* ==========================================================
-   TELA CHEIA PELO CONTROLE REMOTO
-   ========================================================== */
 document.addEventListener("keydown", (e) => {
   if (e.key === "F11" || e.key === "MediaPlayPause") {
     document.getElementById("fullscreenBtn").click();
