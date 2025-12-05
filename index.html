@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -53,18 +52,6 @@ body { margin:0; padding-top:60px; background:#101010; font-family:Arial,sans-se
 #player { width:100%; height:100%; }
 .player-controls { position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:5; display:flex; gap:10px; }
 .player-controls button { padding:6px 12px; border-radius:6px; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); color:#fff; border:1px solid #333; cursor:pointer; }
-
-/* ==================== Estilos da Segunda Interface ==================== */
-#maisCanaisSection { display:none; padding:20px; overflow-y:auto; height:100vh; background:#121212; color:#fff; flex-direction:column; }
-#maisCanaisSection header { display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:20px; }
-#maisCanaisSection header img { height:50px; }
-#categoriesContainer button { margin:0 5px 10px 5px; padding:8px 15px; background-color:#2196F3; color:white; border:none; border-radius:5px; cursor:pointer; }
-#categoriesContainer button:hover { background-color:#0b7dda; }
-.movie-container { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
-.movie-card { background-color:#1e1e1e; width:150px; border-radius:8px; overflow:hidden; text-align:center; padding-bottom:10px; }
-.movie-card img { width:100%; height:220px; object-fit:cover; }
-.movie-card h3 { font-size:16px; margin:10px 0; }
-.movie-card a { display:inline-block; margin:5px 0; padding:5px 10px; background-color:#2196F3; color:white; text-decoration:none; border-radius:4px; }
 </style>
 </head>
 
@@ -91,8 +78,6 @@ body { margin:0; padding-top:60px; background:#101010; font-family:Arial,sans-se
   <div class="sidebar">
     <div class="top-buttons">
       <button id="btnListaSalva">Lista Salva</button>
-      <button id="btnVip">+ MAIS CANAIS</button>
-      <button id="btnTodos">Todas Categorias</button>
       <button id="btnFavoritos">Favoritos</button>
     </div>
     <h2>Categorias</h2>
@@ -110,16 +95,6 @@ body { margin:0; padding-top:60px; background:#101010; font-family:Arial,sans-se
       </div>
     </div>
   </div>
-</div>
-
-<!-- SEÇÃO MAIS CANAIS (INTEGRAÇÃO DO SEGUNDO SCRIPT) -->
-<div id="maisCanaisSection">
-  <header>
-    <img src="https://i.imgur.com/jFQiZvL.jpeg?text=Logo" alt="Logo">
-    <h2>Filmes por Categoria</h2>
-  </header>
-  <div class="categories" id="categoriesContainer"></div>
-  <div class="movie-container" id="moviesContainer"></div>
 </div>
 
 <script>
@@ -221,9 +196,7 @@ function toggleFavorite(name, btn) {
   btn.classList.toggle("not-fav");
 }
 
-/* ======================================================
-   🔥 SUPORTE PARA MX PLAYER (Android 7, 6 e 5)
-   ====================================================== */
+// ==================== MX PLAYER & PLAYCHANNEL ====================
 const isOldAndroid = (() => {
   const ua = navigator.userAgent;
   return ua.includes("Android 9") || ua.includes("Android 8") || 
@@ -239,73 +212,16 @@ function abrirNoMX(url) {
   }, 1200);
 }
 
-/* ======================================================
-   PLAYCHANNEL (AGORA COM MX PLAYER)
-   ====================================================== */
 function playChannel(canal) {
   if (!canal.url) return;
 
-  // 🔥 TESTE: Todos os M3U8 vão abrir no MX Player
+  // Todos M3U8 vão abrir no MX Player
   if (canal.url.includes(".m3u8")) {
     const intent = `intent:${canal.url}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;end`;
     window.location.href = intent;
-
-    // Se MX não estiver instalado, alerta
-    function playChannel(canal) {
-  if (!canal.url) return;
-
-  // 🔥 TESTE: Todos os M3U8 vão abrir no MX Player
-  if (canal.url.includes(".m3u8")) {
-    const intent = `intent:${canal.url}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;end`;
-    window.location.href = intent;
-    return; // impede o player interno
-  }
-
-  // 🔵 Outros formatos continuam no player interno
-  if (clapprPlayer) clapprPlayer.destroy();
-  clapprPlayer = null;
-
-  const box = document.getElementById("player");
-  box.innerHTML = "";
-  videoContainer.classList.add("active");
-
-  const video = document.createElement("video");
-  video.controls = true;
-  video.autoplay = true;
-  video.style.width = "100%";
-  video.style.height = "100%";
-  box.appendChild(video);
-
-  const isHls = canal.url.includes(".m3u8");
-
-  if (isHls && video.canPlayType("application/vnd.apple.mpegurl")) {
-    video.src = canal.url;
-    video.play();
     return;
   }
 
-  if (isHls && Hls.isSupported()) {
-    const hls = new Hls();
-    hls.loadSource(canal.url);
-    hls.attachMedia(video);
-    return;
-  }
-
-  clapprPlayer = new Clappr.Player({
-    parentId: "#player",
-    source: canal.url,
-    autoPlay: true,
-    width: "100%",
-    height: "100%",
-    playback: { playInline: true },
-    plugins: [DashShakaPlayback]
-  });
-}
-
-    return; // impede que o player interno carregue
-  }
-
-  // 🔵 Outros formatos continuam usando o player interno
   if (clapprPlayer) clapprPlayer.destroy();
   clapprPlayer = null;
 
@@ -359,56 +275,13 @@ document.getElementById("fullscreenBtn").onclick = () => {
 
 // ==================== Menu ====================
 document.getElementById("btnListaSalva").onclick = () => carregarLista(listaSalvaUrl);
-document.getElementById("btnTodos").onclick = () => renderCategorias();
-document.getElementById("btnVip").onclick = () => {
-  container.style.display = "none";
-  videoContainer.classList.remove("active");
-  document.getElementById("maisCanaisSection").style.display = "flex";
-};
 document.getElementById("btnFavoritos").onclick = () => {
   const favChannels = allChannels.filter(c => favorites.includes(c.tvg_name));
   canaisAtuais = favChannels;
   renderChannelList(favChannels);
 };
 
-// ======================================================
-// MAIS CANAIS (mantive tudo igual)
-// ======================================================
-const moviesByCategory = {};
-const categoriesContainer = document.getElementById("categoriesContainer");
-const moviesContainer = document.getElementById("moviesContainer");
-
-Object.keys(moviesByCategory).forEach(cat => {
-  const btn = document.createElement("button");
-  btn.textContent = cat;
-  btn.onclick = () => renderMovies(cat);
-  categoriesContainer.appendChild(btn);
-});
-
-function renderMovies(category) {
-  moviesContainer.innerHTML = "";
-  if(!moviesByCategory[category]) return;
-  moviesByCategory[category].forEach(movie => {
-    const card = document.createElement("div");
-    card.className = "movie-card";
-    card.innerHTML = `<img src="${movie.cover}" alt="${movie.title}"><h3>${movie.title}</h3>
-      <a href="${movie.link}" target="_blank">Assistir</a>`;
-    moviesContainer.appendChild(card);
-  });
-}
-
-const voltarBtn = document.createElement("button");
-voltarBtn.textContent = "← Voltar";
-voltarBtn.style.margin = "10px 0";
-voltarBtn.onclick = () => {
-  document.getElementById("maisCanaisSection").style.display = "none";
-  container.style.display = "flex";
-};
-categoriesContainer.prepend(voltarBtn);
-
-// ======================================================
-// SUPORTE REMOTO / NAVEGAÇÃO (mantive tudo original)
-// ======================================================
+// ==================== Controle remoto / foco ====================
 let focusIndex = 0;
 let focusType = "category";
 let canaisAtuais = [];
@@ -421,9 +294,9 @@ function applyFocus() {
   } else if (focusType === "channel") {
     const ch = document.querySelectorAll(".channel");
     if (ch[focusIndex]) ch[focusIndex].classList.add("focused");
-  } else if (focusType === "player") {
-    document.querySelectorAll(".player-controls button").forEach(btn => btn.classList.remove("focused"));
-    document.getElementById("fullscreenBtn")?.classList.add("focused");
+  } else if (focusType === "menu") {
+    const btns = document.querySelectorAll(".top-buttons button");
+    if (btns[focusIndex]) btns[focusIndex].classList.add("focused");
   }
 }
 
@@ -435,89 +308,59 @@ document.addEventListener("keydown", (e) => {
   const key = e.key;
   if (key === "ArrowDown") moveFocus(1);
   if (key === "ArrowUp") moveFocus(-1);
+
   if (key === "ArrowRight") {
     if (focusType === "category") { focusType = "channel"; focusIndex = 0; applyFocus(); }
+    else if (focusType === "menu") { focusType = "category"; focusIndex = 0; applyFocus(); }
   }
   if (key === "ArrowLeft") {
     if (focusType === "channel") { focusType = "category"; focusIndex = 0; applyFocus(); }
+    else if (focusType === "category") { focusType = "menu"; focusIndex = 0; applyFocus(); }
   }
+
   if (key === "Enter") selectFocused();
   if (key === "Backspace" || key === "Escape") {
-    if (videoContainer.classList.contains("active")) {
-      exitBtn.click(); focusType = "channel"; applyFocus();
-    }
+    if (videoContainer.classList.contains("active")) { exitBtn.click(); focusType = "channel"; applyFocus(); }
   }
+
   if (!isNaN(key)) {
-    clearTimeout(window.numTimer);
-    window.channelNumbers = (window.channelNumbers || "") + key;
-    window.numTimer = setTimeout(() => {
-      const num = parseInt(window.channelNumbers) - 1;
-      window.channelNumbers = "";
-      if (canaisAtuais[num]) { currentIndex = num; playChannel(canaisAtuais[num]); focusType = "player"; }
-    }, 800);
-  }
-  if (key === "0" && focusType === "channel") {
-    const canal = canaisAtuais[focusIndex];
-    if (canal) {
-      favorites.includes(canal.tvg_name) ? favorites=favorites.filter(n=>n!==canal.tvg_name) : favorites.push(canal.tvg_name);
-      localStorage.setItem("favorites", JSON.stringify(favorites));
-      renderChannelList(canaisAtuais);
-      applyFocus();
-    }
-  }
-  if (videoContainer.classList.contains("active")) {
-    if (key === "ArrowRight") nextBtn.click();
-    if (key === "ArrowLeft") prevBtn.click();
+    const n = parseInt(key)-1;
+    if (focusType==="channel" && canaisAtuais[n]) { currentIndex=n; playChannel(canaisAtuais[n]); }
   }
 });
 
 function moveFocus(dir) {
   if (focusType === "category") {
     const cats = document.querySelectorAll(".category-label");
-    focusIndex = Math.max(0, Math.min(cats.length - 1, focusIndex + dir));
-  }
-  if (focusType === "channel") {
+    focusIndex = Math.max(0, Math.min(cats.length-1, focusIndex+dir));
+  } else if (focusType === "channel") {
     const ch = document.querySelectorAll(".channel");
-    focusIndex = Math.max(0, Math.min(ch.length - 1, focusIndex + dir));
-    if (ch[focusIndex]) ch[focusIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+    focusIndex = Math.max(0, Math.min(ch.length-1, focusIndex+dir));
+  } else if (focusType === "menu") {
+    const btns = document.querySelectorAll(".top-buttons button");
+    focusIndex = Math.max(0, Math.min(btns.length-1, focusIndex+dir));
   }
   applyFocus();
 }
 
 function selectFocused() {
   if (focusType === "category") {
-    const cat = document.querySelectorAll(".category-label")[focusIndex];
-    cat?.click();
-    canaisAtuais = Array.from(allChannels.filter(c =>
-      c.group_title.trim().toLowerCase() === cat.textContent.trim().toLowerCase()
-    ));
-    focusType = "channel"; focusIndex = 0; setTimeout(applyFocus, 100);
+    const cats = document.querySelectorAll(".category-label");
+    cats[focusIndex]?.click();
   } else if (focusType === "channel") {
-    const canal = canaisAtuais[focusIndex];
-    if (canal) { currentIndex = focusIndex; playChannel(canal); focusType = "player"; }
-  } else if (focusType === "player") {
-    exitBtn.click(); focusType = "channel";
+    const ch = document.querySelectorAll(".channel");
+    ch[focusIndex]?.click();
+  } else if (focusType === "menu") {
+    const btns = document.querySelectorAll(".top-buttons button");
+    btns[focusIndex]?.click();
+    focusType = "category";
+    focusIndex = 0;
+    applyFocus();
   }
 }
 
-setTimeout(() => { applyFocus(); }, 500);
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "F11" || e.key === "MediaPlayPause") {
-    document.getElementById("fullscreenBtn").click();
-  }
-});
-// =========================================================
-//  GARANTE QUE O CONTROLE VOLTA A FUNCIONAR AO SAIR DO MX
-// =========================================================
-setInterval(() => {
-  if (!document.hasFocus()) return; // só executa quando o navegador recupera o foco
-  window.focus();
-  document.body.focus();
-
-  // Reaplica o foco visual no item atual
-  applyFocus();
-}, 500);
+// ==================== Foco inicial ====================
+setTimeout(() => { focusType = "category"; focusIndex = 0; applyFocus(); }, 800);
 </script>
 </body>
 </html>
