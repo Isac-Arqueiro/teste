@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor de Cifras Pro</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+
+<style>
+/* ----------------------- LOGIN ----------------------- */
+@keyframes brilhoBtn {
+  from { filter: drop-shadow(0 0 5px #ff3b3b); }
+  to { filter: drop-shadow(0 0 20px #ff3b3b); }
+}
+
+/* ----------------------- EDITOR ----------------------- */
+body{
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:10px;
+    background:#f4f4f4;
+}
+
+header{
+    background:#222;
+    color:white;
+    padding:10px;
+    border-radius:8px;
+}
+
+.botoes-topo button,
+.botoes button,
+.acoes button{
+    padding:8px 12px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.botoes-topo button{
+    background:#ddd;
+    margin:2px;
+}
+
+.botoes{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    margin:10px 0;
+}
+
+.botoes button{
+    background:#444;
+    color:white;
+}
+
+.botoes button:hover{
+    background:#0080ff;
+}
+
+#editor{
+    width:100%;
+    height:250px;
+    border-radius:8px;
+    padding:10px;
+    font-size:16px;
+    background:white;
+    overflow:auto;
+}
+
+.player{
+    margin-top:20px;
+    background:#222;
+    padding:15px;
+    border-radius:10px;
+    color:white;
+}
+
+.player-controles{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    margin-bottom:10px;
+}
+/* ---------------- PLAYER MODERNO ---------------- */
+
+.player {
+    margin-top: 20px;
+    background: linear-gradient(135deg, #1e1e1e, #2c2c2c);
+    padding: 20px;
+    border-radius: 20px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.player-controles {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.player button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    color: white;
+    box-shadow: 
+        5px 5px 10px #141414,
+        -5px -5px 10px #303030;
+    transition: all 0.2s ease;
+}
+
+#btnPlay {
+    width: 75px;
+    height: 75px;
+    font-size: 26px;
+    background: linear-gradient(145deg, #0080ff, #005fcc);
+    box-shadow: 0 5px 20px rgba(0,128,255,0.6);
+}
+
+.player button:hover {
+    transform: scale(1.08);
+}
+
+.player button:active {
+    transform: scale(0.95);
+}
+
+#barraProgresso {
+    width: 100%;
+    height: 8px;
+    border-radius: 10px;
+    appearance: none;
+    background: #444;
+    outline: none;
+}
+
+#barraProgresso::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #0080ff;
+    cursor: pointer;
+    box-shadow: 0 0 10px #0080ff;
+}
+
+#barraProgresso{
+    width:100%;
+    height:15px;
+    cursor:pointer;
+}
+.modo-visualizacao {
+    background: #999 !important;
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.editor-zoom {
+    width: 794px;
+    min-height: 1123px;
+    background: white;
+    padding: 40px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    border-radius: 0;
+}
+
+.editor-bloqueado {
+    pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ----------------------- TELA DE LOGIN ----------------------- -->
+<div id="loginScreen" style="display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); font-family:Arial; flex-direction:column;">
+  <div style="background:white; padding:40px; border-radius:15px; width:220px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+    <img src="https://i.imgur.com/kV9yJ0a.jpeg" width="100%" style="border-radius:10px; margin-bottom:20px;" alt="Imagem Login">
+    <h2 style="margin-bottom:20px;">🔐 Área de Login</h2>
+    <input type="password" id="senhaInput" placeholder="Digite sua senha" style="padding:12px; width:100%; border-radius:8px; border:1px solid #ccc; outline:none;">
+    <br><br>
+    <button onclick="verificarSenha()" style="padding:12px; width:100%; border:none; border-radius:8px; background:#28a745; color:white; font-weight:bold; cursor:pointer;">Entrar</button>
+    <button onclick="usarFree()" 
+    style="padding:12px; width:100%; border:none; border-radius:8px; 
+    background:#007bff; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">
+    Usar Free
+    </button>
+    <p id="mensagemErro" style="color:red; display:none; margin-top:10px;">Senha incorreta fale com seu master</p>
+    <hr style="margin:30px 0;">
+    <button onclick="mostrarPix()" style="background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; animation: brilhoBtn 1.5s infinite alternate;">
+      <img src="https://img.icons8.com/color/200/pix.png" width="20" alt="Pix">
+      <span style="font-size:14px; color:#00ff88; font-weight:bold; text-shadow: 0 0 5px #ff3b3b, 0 0 10px #ff3b3b, 0 0 20px #ff3b3b;">AJUDE A MANTER O SITE</span>
+    </button>
+    <div id="infoPix" style="display:none; margin-top:20px; background:#f2f2f2; padding:15px; border-radius:10px; font-size:14px;">
+      <p><strong>Seja:</strong>Mantenedor</p>
+      <p><strong>Nome:</strong> Isac Coelho Barbosa</p>
+      <p><strong>Banco:</strong> Mercado Pago</p>
+      <p><strong>Pix:</strong> 84986222876</p>
+    </div>
+    <br>
+    <button onclick="abrirWhatsapp()" style="margin-top:15px; padding:12px; width:100%; border:none; border-radius:8px; background:#25D366; color:white; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20" alt="WhatsApp"> Dúvidas / Master
+    </button>
+  </div>
+</div>
+
+<!-- ----------------------- CONTAINER DA APLICAÇÃO ----------------------- -->
+<div id="appContainer" style="display:none;">
+
+<header>
+<strong>Nova Música</strong><br>
+Tom:
+<select id="seletorTom"></select>
+|
+Compasso: 4/4
+</header>
+
+<div class="botoes-topo">
+<button onclick="inserirTexto('Intro.')">Intro</button>
+<button onclick="inserirTexto('Estrofe.')">Estrofe</button>
+<button onclick="inserirTexto('Pré-Refrão')">Pré-Refrão</button>
+<button onclick="inserirTexto('Refrão.')">Refrão</button>
+<button onclick="inserirTexto('Ponte.')">Ponte</button>
+<button onclick="ativarModoGrego()">MG</button>
+<button onclick="abrirPainelEstilo()">Tt</button>
+<button id="togglePipe" onclick="togglePipe()">|: ON</button>
+<button onclick="toggleFiguras()">Figuras</button>
+<button onclick="toggleZoom()" id="btnZoom">🔍</button>
+</div>
+
+<div class="botoes" id="botoesNotas"></div>
+<div class="botoes" id="botoesFiguras" style="display:none;"></div>
+
+<div class="botoes">
+<button onclick="inserirTexto(' % |',true)">%</button>
+<button onclick="ativarSlash()">/</button>
+<button onclick="inserirTexto('|',true)">|</button>
+<button onclick="inserirTexto('°',true)">°</button>
+<button onclick="inserirTexto('#',true)">#</button>
+<button onclick="inserirTexto('{',true)">{</button>
+<button onclick="inserirTexto('}',true)">}</button>
+<button onclick="inserirManual()">Obs</button>
+</div>
+
+<div id="editor" contenteditable="true"></div>
+<div class="botoes" id="botoesDigitos" style="display:none; margin-top:5px;"></div>
+<div class="acoes">
+<button onclick="salvar()">Salvar</button>
+<button onclick="buscar()">Buscar</button>
+<button onclick="apagar()">Limpar</button>
+<button onclick="salvarPDF()">Salvar em PDF</button>
+</div>
+
+<!-- ----------------------- PLAYER UNIFICADO ----------------------- -->
+<div class="player">
+  <input type="file" id="audioFile" accept="audio/*">
+  <input type="text" id="youtubeURL" placeholder="Cole link do YouTube">
+  <button onclick="tocarYoutube()">▶️ Tocar YouTube</button>
+
+  <div class="player-controles">
+    <button onclick="voltar5()">⏪ 5s</button>
+    <button onclick="playPause()" id="btnPlay">▶</button>
+    <button onclick="avancar5()">5s ⏩</button>
+
+    <select id="velocidade" onchange="mudarVelocidade()">
+      <option value="0.5">0.5x</option>
+      <option value="0.75">0.75x</option>
+      <option value="1" selected>1x</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x</option>
+    </select>
+
+    <button onclick="marcarInicioLoop()">A</button>
+    <button onclick="marcarFimLoop()">B</button>
+    <button onclick="desativarLoop()">Loop Off</button>
+
+    <span id="tempoAtual">0:00</span>
+  </div>
+
+  <input type="range" id="barraProgresso" value="0" min="0" max="100">
+  <div id="youtubePlayer" style="display:none;"></div>
+</div>
+
+<button id="btnInstall" style="display:none;">📲 Instalar App</button>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+// ----------------------- LOGIN -----------------------
+const senhasPermitidas = ["Shalon","00a00","10a10","20a20","30a33","40a40","50a50"];
+
+function verificarSenha() {
+  const senha = document.getElementById("senhaInput").value;
+  const erro = document.getElementById("mensagemErro");
+  if (senhasPermitidas.includes(senha)) {
+    erro.style.display = "none";
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("appContainer").style.display = "block";
+    alert("✅ Acesso liberado!");
+  } else {
+    erro.style.display = "block";
+  }
+}
+
+function usarFree() {
+  const senhaFree = "Shalon";
+  localStorage.setItem("senhaValida", senhaFree);
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("appContainer").style.display = "block";
+  alert("✅ Acesso Free liberado!");
+}
+
+function mostrarPix() {
+  const pix = document.getElementById("infoPix");
+  pix.style.display = pix.style.display === "none" ? "block" : "none";
+}
+
+function abrirWhatsapp() {
+  window.open("https://api.whatsapp.com/send?phone=5584994625560&text=ol%C3%A1", "_blank");
+}
+
+// ----------------------- EDITOR -----------------------
+let tomAtual="C";
+let pipeAtivo=true;
+
+const escalas = {
+    C: ["C","Dm","Em","F","G","Am","B°"],
+    Db: ["Db","Ebm","Fm","Gb","Ab","Bbm","C°"],
+    D: ["D","Em","F#m","G","A","Bm","C#°"],
+    Eb: ["Eb","Fm","Gm","Ab","Bb","Cm","D°"],
+    E: ["E","F#m","G#m","A","B","C#m","D#°"],
+    F: ["F","Gm","Am","Bb","C","Dm","E°"],
+    Gb: ["Gb","Abm","Bbm","Cb","Db","Ebm","F°"],
+    G: ["G","Am","Bm","C","D","Em","F#°"],
+    Ab: ["Ab","Bbm","Cm","Db","Eb","Fm","G°"],
+    A: ["A","Bm","C#m","D","E","F#m","G#°"],
+    Bb: ["Bb","Cm","Dm","Eb","F","Gm","A°"],
+    B: ["B","C#m","D#m","E","F#","G#m","A#°"]
+};
+
+const seletor=document.getElementById("seletorTom");
+Object.keys(escalas).forEach(t=>{
+    let o=document.createElement("option");
+    o.value=t;o.textContent=t;
+    seletor.appendChild(o);
+});
+seletor.value=tomAtual;
+seletor.onchange=()=>{tomAtual=seletor.value; gerarBotoes();};
+
+let modoZoom = false;
+
+function toggleZoom(){
+    const body = document.body;
+    const editor = document.getElementById("editor");
+    const btn = document.getElementById("btnZoom");
+    modoZoom = !modoZoom;
+    if(modoZoom){
+        body.classList.add("modo-visualizacao");
+        editor.classList.add("editor-zoom");
+        editor.classList.add("editor-bloqueado");
+        editor.contentEditable = "false";
+        btn.textContent = "↩ Voltar Edição";
+    } else {
+        body.classList.remove("modo-visualizacao");
+        editor.classList.remove("editor-zoom");
+        editor.classList.remove("editor-bloqueado");
+        editor.contentEditable = "true";
+        btn.textContent = "🔍";
+    }
+}
+
+function gerarBotoes(){
+    let c=document.getElementById("botoesNotas");
+    c.innerHTML="";
+    escalas[tomAtual].forEach(a=>{
+        let b=document.createElement("button");
+        b.textContent=a;
+        b.onclick=()=>inserirTexto(a);
+        c.appendChild(b);
+    });
+}
+gerarBotoes();
+
+function togglePipe(){
+    pipeAtivo=!pipeAtivo;
+    document.getElementById("togglePipe").textContent=
+    pipeAtivo?"| : ON":"| : OFF";
+}
+
+function inserirTexto(t,forcarSemPipe=false){
+    const editor=document.getElementById("editor");
+    editor.focus();
+    let semPipe=["Intro.","Refrão.","Pré-Refrão","Ponte.","Estrofe."];
+    if(!forcarSemPipe && pipeAtivo && !semPipe.includes(t)){
+        t+=" | ";
+    }
+    document.execCommand("insertText",false,t);
+}
+
+function ativarSlash(){
+    inserirTexto("/",true);
+    let c=document.getElementById("botoesDigitos");
+    c.style.display="flex";
+    c.innerHTML="";
+    ["3","5","7"].forEach(d=>{
+        let b=document.createElement("button");
+        b.textContent=d;
+        b.onclick=()=>{
+            inserirTexto(d,true);
+            c.style.display="none";
+        };
+        c.appendChild(b);
+    });
+}
+
+function ativarModoGrego(){
+    let c=document.getElementById("botoesNotas");
+    c.innerHTML="";
+    ["I","II","III","IV","V","VI","VII"].forEach(n=>{
+        let b=document.createElement("button");
+        b.textContent=n;
+        b.onclick=()=>inserirTexto(n);
+        c.appendChild(b);
+    });
+}
+
+function abrirPainelEstilo(){
+    let opcao = prompt("1-Negrito\n2-Itálico\n3-Sublinhado\n4-Aumentar\n5-Diminuir\n6-Tamanho Personalizado");
+    if(!opcao) return;
+    switch(opcao){
+        case "1": document.execCommand("bold"); break;
+        case "2": document.execCommand("italic"); break;
+        case "3": document.execCommand("underline"); break;
+        case "4": document.execCommand("fontSize",false,"5"); break;
+        case "5": document.execCommand("fontSize",false,"2"); break;
+        case "6":
+            let tamanho=prompt("Digite o tamanho (ex: 18)");
+            if(tamanho){
+                document.execCommand("fontSize",false,"7");
+                let fonts=document.getElementsByTagName("font");
+                for(let i=0;i<fonts.length;i++){
+                    if(fonts[i].size=="7"){
+                        fonts[i].removeAttribute("size");
+                        fonts[i].style.fontSize=tamanho+"px";
+                    }
+                }
+            }
+            break;
+    }
+}
+
+function inserirManual(){
+    let t = prompt("Digite observação:");
+    if(t){
+        const editor = document.getElementById("editor");
+        editor.focus();
+        document.execCommand("styleWithCSS", false, true);
+        document.execCommand("foreColor", false, "red");
+        document.execCommand("insertText", false, t);
+        document.execCommand("foreColor", false, "black");
+    }
+}
+
+const figurasMusicais = [
+    {simbolo: "♩", label: "Tempo Cheio"},
+    {simbolo: "♫", label: "Duas Colcheias"},
+    {simbolo: "♬", label: "Quatro Semicolcheias"},
+    {simbolo: "𝄐", label: "Fermata"},
+    {simbolo: "𝄾", label: "Pausa Quarto"},
+    {simbolo: "𝄿", label: "Pausa Oitavo"},
+    {simbolo: "🎹", label: "Teclado"},
+    {simbolo: "🎸", label: "Guitarra"},
+    {simbolo: "🥁", label: "Bateria"},
+    {simbolo: "🎤", label: "Voz"},
+    {simbolo: "🎷", label: "Saxofone"},
+    {simbolo: "🎶", label: "Intencidade"}
+];
+
+function toggleFiguras(){
+    const div=document.getElementById("botoesFiguras");
+    if(div.style.display==="none"){
+        div.style.display="flex";
+        div.innerHTML="";
+        figurasMusicais.forEach(f=>{
+            const btn=document.createElement("button");
+            btn.textContent=f.simbolo;
+            btn.title=f.label;
+            btn.onclick=()=>inserirTexto(f.simbolo);
+            div.appendChild(btn);
+        });
+    } else {
+        div.style.display="none";
+    }
+}
+
+function salvar(){
+    const conteudo=document.getElementById("editor").innerHTML;
+    localStorage.setItem("musicaSalva",conteudo);
+    alert("✅ Música salva!");
+}
+
+function buscar(){
+    const conteudo=localStorage.getItem("musicaSalva");
+    if(conteudo) document.getElementById("editor").innerHTML=conteudo;
+    else alert("❌ Nenhuma música encontrada");
+}
+
+function apagar(){
+    if(confirm("Deseja realmente apagar o conteúdo?")){
+        document.getElementById("editor").innerHTML="";
+    }
+}
+
+function salvarPDF(){
+    const conteudo=document.getElementById("editor").innerHTML;
+    const win=window.open("","_blank");
+    win.document.write("<html><head><title>Música</title></head><body>"+conteudo+"</body></html>");
+    win.document.close();
+    win.print();
+}
+
+// ----------------------- PLAYER UNIFICADO -----------------------
+let ytPlayer = null;
+let audioPlayer = new Audio();
+let currentSource = null;
+let loopStart = 0, loopEnd = null;
+let isPlaying = false;
+
+const fileInput = document.getElementById("audioFile");
+fileInput.addEventListener("change", function() {
+    const file = this.files[0];
+    if(!file) return;
+    currentSource = "local";
+    ytPlayer && ytPlayer.pauseVideo();
+    audioPlayer.src = URL.createObjectURL(file);
+    audioPlayer.load();
+    audioPlayer.play();
+    isPlaying = true;
+    document.getElementById("btnPlay").textContent = "⏸";
+});
+
+function onYouTubeIframeAPIReady() {
+    ytPlayer = new YT.Player('youtubePlayer', {
+        height:'0', width:'0', videoId:'',
+        playerVars:{ autoplay:0, controls:0, modestbranding:1 },
+        events:{ 'onStateChange': onPlayerStateChange }
+    });
+}
+
+function tocarYoutube() {
+    const url = document.getElementById("youtubeURL").value;
+    if(!url) return alert("Insira link do YouTube!");
+    const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+    if(!match) return alert("URL inválida!");
+    const videoId = match[1];
+    currentSource = "youtube";
+    audioPlayer.pause();
+    ytPlayer.loadVideoById(videoId);
+    isPlaying = true;
+    document.getElementById("btnPlay").textContent = "⏸";
+}
+
+function onPlayerStateChange(event){
+    const btnPlay = document.getElementById("btnPlay");
+    if(event.data === YT.PlayerState.PLAYING) isPlaying = true;
+    else isPlaying = false;
+    btnPlay.textContent = isPlaying?"⏸":"▶";
+}
+
+function playPause(){
+    if(currentSource==="local"){
+        if(audioPlayer.paused){ audioPlayer.play(); isPlaying=true; }
+        else{ audioPlayer.pause(); isPlaying=false; }
+    } else if(currentSource==="youtube"){
+        if(isPlaying) ytPlayer.pauseVideo();
+        else ytPlayer.playVideo();
+    }
+    document.getElementById("btnPlay").textContent = isPlaying?"⏸":"▶";
+}
+function avancar5(){ if(currentSource==="local") audioPlayer.currentTime+=5; else if(currentSource==="youtube") ytPlayer.seekTo(ytPlayer.getCurrentTime()+5,true);}
+function voltar5(){ if(currentSource==="local") audioPlayer.currentTime=Math.max(0,audioPlayer.currentTime-5); else if(currentSource==="youtube") ytPlayer.seekTo(Math.max(0,ytPlayer.getCurrentTime()-5),true);}
+function mudarVelocidade(){ const rate=parseFloat(document.getElementById("velocidade").value); if(currentSource==="local") audioPlayer.playbackRate=rate; else if(currentSource==="youtube") ytPlayer.setPlaybackRate(rate);}
+function marcarInicioLoop(){ loopStart=currentSource==="local"?audioPlayer.currentTime:ytPlayer.getCurrentTime();}
+function marcarFimLoop(){ loopEnd=currentSource==="local"?audioPlayer.currentTime:ytPlayer.getCurrentTime();}
+function desativarLoop(){ loopStart=0; loopEnd=null;}
+
+const barra=document.getElementById("barraProgresso");
+const tempoAtual=document.getElementById("tempoAtual");
+
+setInterval(()=>{
+    let current=0,duration=0;
+    if(currentSource==="local"&&audioPlayer.src){
+        current=audioPlayer.currentTime;
+        duration=audioPlayer.duration||0;
+        if(loopEnd && current>=loopEnd) audioPlayer.currentTime=loopStart;
+    } else if(currentSource==="youtube"&&ytPlayer&&ytPlayer.getCurrentTime){
+        current=ytPlayer.getCurrentTime();
+        duration=ytPlayer.getDuration();
+        if(loopEnd && current>=loopEnd) ytPlayer.seekTo(loopStart,true);
+    }
+    if(duration){
+        barra.value=(current/duration)*100;
+        tempoAtual.textContent=formatTime(current);
+    }
+},200);
+
+barra.addEventListener("input",()=>{
+    const val=barra.value;
+    if(currentSource==="local") audioPlayer.currentTime=(val/100)*audioPlayer.duration;
+    else if(currentSource==="youtube") ytPlayer.seekTo((val/100)*ytPlayer.getDuration(),true);
+});
+
+function formatTime(t){ const min=Math.floor(t/60); const sec=Math.floor(t%60); return `${min}:${sec.toString().padStart(2,"0")}`; }
+</script>
+</body>
+</html>
