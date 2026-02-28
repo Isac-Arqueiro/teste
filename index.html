@@ -298,11 +298,12 @@ function verificarSenha() {
   const erro = document.getElementById("mensagemErro");
 
   if (senhasPermitidas.includes(senha)) {
-    localStorage.setItem("usuarioLogado", "true");
+    // Usuário logado apenas na sessão atual
+    window.usuarioLogado = true; // variável temporária
     erro.style.display = "none";
     mostrarApp();
     alert("✅ Acesso liberado!");
-  } else {
+} else {
     erro.style.display = "block";
   }
 }
@@ -323,12 +324,6 @@ function logout() {
   location.reload();
 }
 
-// Verifica login ao carregar a página
-window.onload = function() {
-  if (localStorage.getItem("usuarioLogado") === "true") {
-    mostrarApp();
-  }
-};
 // ----------------------- EDITOR -----------------------
 let tomAtual="C";
 let pipeAtivo=true;
