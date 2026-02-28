@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -84,74 +85,14 @@ header{
     align-items:center;
     margin-bottom:10px;
 }
-/* ---------------- PLAYER MODERNO ---------------- */
 
-.player {
-    margin-top: 20px;
-    background: linear-gradient(135deg, #1e1e1e, #2c2c2c);
-    padding: 20px;
-    border-radius: 20px;
-    color: white;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+.player button{
+    background:#444;
+    color:white;
 }
 
-.player-controles {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-}
-
-.player button {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-    color: white;
-    box-shadow: 
-        5px 5px 10px #141414,
-        -5px -5px 10px #303030;
-    transition: all 0.2s ease;
-}
-
-#btnPlay {
-    width: 75px;
-    height: 75px;
-    font-size: 26px;
-    background: linear-gradient(145deg, #0080ff, #005fcc);
-    box-shadow: 0 5px 20px rgba(0,128,255,0.6);
-}
-
-.player button:hover {
-    transform: scale(1.08);
-}
-
-.player button:active {
-    transform: scale(0.95);
-}
-
-#barraProgresso {
-    width: 100%;
-    height: 8px;
-    border-radius: 10px;
-    appearance: none;
-    background: #444;
-    outline: none;
-}
-
-#barraProgresso::-webkit-slider-thumb {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #0080ff;
-    cursor: pointer;
-    box-shadow: 0 0 10px #0080ff;
+.player button:hover{
+    background:#0080ff;
 }
 
 #barraProgresso{
@@ -178,35 +119,6 @@ header{
 .editor-bloqueado {
     pointer-events: none;
 }
-/* -------- AJUSTE PARA CELULAR -------- */
-@media (max-width: 600px) {
-
-  .player {
-      padding: 15px;
-      border-radius: 15px;
-  }
-
-  .player-controles {
-      gap: 8px;
-  }
-
-  .player button {
-      width: 42px;
-      height: 42px;
-      font-size: 14px;
-  }
-
-  #btnPlay {
-      width: 55px;
-      height: 55px;
-      font-size: 18px;
-  }
-
-  #barraProgresso {
-      height: 6px;
-  }
-
-}
 </style>
 </head>
 
@@ -221,26 +133,15 @@ header{
     <br><br>
     <button onclick="verificarSenha()" style="padding:12px; width:100%; border:none; border-radius:8px; background:#28a745; color:white; font-weight:bold; cursor:pointer;">Entrar</button>
     <button onclick="usarFree()" 
-    style="padding:12px; width:100%; border:none; border-radius:8px; 
-    background:#007bff; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">
-    Usar Free
-    </button>
+style="padding:12px; width:100%; border:none; border-radius:8px; 
+background:#007bff; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">
+Visitante
+</button>
     <p id="mensagemErro" style="color:red; display:none; margin-top:10px;">Senha incorreta fale com seu master</p>
-    <hr style="margin:30px 0;">
-    <button onclick="mostrarPix()" style="background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; animation: brilhoBtn 1.5s infinite alternate;">
-      <img src="https://img.icons8.com/color/200/pix.png" width="20" alt="Pix">
-      <span style="font-size:14px; color:#00ff88; font-weight:bold; text-shadow: 0 0 5px #ff3b3b, 0 0 10px #ff3b3b, 0 0 20px #ff3b3b;">AJUDE A MANTER O SITE</span>
-    </button>
-    <div id="infoPix" style="display:none; margin-top:20px; background:#f2f2f2; padding:15px; border-radius:10px; font-size:14px;">
-      <p><strong>Seja:</strong>Mantenedor</p>
-      <p><strong>Nome:</strong> Isac Coelho Barbosa</p>
-      <p><strong>Banco:</strong> Mercado Pago</p>
-      <p><strong>Pix:</strong> 84986222876</p>
+    <hr style="margin:30px 0;">      
     </div>
     <br>
-    <button onclick="abrirWhatsapp()" style="margin-top:15px; padding:12px; width:100%; border:none; border-radius:8px; background:#25D366; color:white; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20" alt="WhatsApp"> Dúvidas / Master
-    </button>
+    
   </div>
 </div>
 
@@ -289,6 +190,7 @@ Compasso: 4/4
 <button onclick="buscar()">Buscar</button>
 <button onclick="apagar()">Limpar</button>
 <button onclick="salvarPDF()">Salvar em PDF</button>
+</button>
 </div>
 
 <!-- ----------------------- PLAYER UNIFICADO ----------------------- -->
@@ -327,15 +229,17 @@ Compasso: 4/4
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 // ----------------------- LOGIN -----------------------
+// ----------------------- LOGIN -----------------------
 const senhasPermitidas = ["Shalon","00a00","10a10","20a20","30a33","40a40","50a50"];
 
 function verificarSenha() {
   const senha = document.getElementById("senhaInput").value;
   const erro = document.getElementById("mensagemErro");
+
   if (senhasPermitidas.includes(senha)) {
+    localStorage.setItem("usuarioLogado", "true");
     erro.style.display = "none";
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("appContainer").style.display = "block";
+    mostrarApp();
     alert("✅ Acesso liberado!");
   } else {
     erro.style.display = "block";
@@ -343,22 +247,27 @@ function verificarSenha() {
 }
 
 function usarFree() {
-  const senhaFree = "Shalon";
-  localStorage.setItem("senhaValida", senhaFree);
+  localStorage.setItem("usuarioLogado", "true");
+  mostrarApp();
+  alert("✅ Acesso Visitante liberado!");
+}
+
+function mostrarApp() {
   document.getElementById("loginScreen").style.display = "none";
   document.getElementById("appContainer").style.display = "block";
-  alert("✅ Acesso Free liberado!");
 }
 
-function mostrarPix() {
-  const pix = document.getElementById("infoPix");
-  pix.style.display = pix.style.display === "none" ? "block" : "none";
+function logout() {
+  localStorage.removeItem("usuarioLogado");
+  location.reload();
 }
 
-function abrirWhatsapp() {
-  window.open("https://api.whatsapp.com/send?phone=5584994625560&text=ol%C3%A1", "_blank");
-}
-
+// Verifica login ao carregar a página
+window.onload = function() {
+  if (localStorage.getItem("usuarioLogado") === "true") {
+    mostrarApp();
+  }
+};
 // ----------------------- EDITOR -----------------------
 let tomAtual="C";
 let pipeAtivo=true;
@@ -502,12 +411,12 @@ function inserirManual(){
 }
 
 const figurasMusicais = [
-    {simbolo: "♩", label: "Tempo Cheio"},
+    {simbolo: "♩", label: "seminima"},
     {simbolo: "♫", label: "Duas Colcheias"},
     {simbolo: "♬", label: "Quatro Semicolcheias"},
+    {simbolo: "♪", label: "Cocheia"},
     {simbolo: "𝄐", label: "Fermata"},
     {simbolo: "𝄾", label: "Pausa Quarto"},
-    {simbolo: "𝄿", label: "Pausa Oitavo"},
     {simbolo: "🎹", label: "Teclado"},
     {simbolo: "🎸", label: "Guitarra"},
     {simbolo: "🥁", label: "Bateria"},
