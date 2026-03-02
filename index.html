@@ -288,6 +288,7 @@ Compasso: 4/4
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 // ----------------------- LOGIN -----------------------
 // ----------------------- LOGIN -----------------------
@@ -516,12 +517,41 @@ function apagar(){
     }
 }
 
-function salvarPDF(){
-    const conteudo=document.getElementById("editor").innerHTML;
-    const win=window.open("","_blank");
-    win.document.write("<html><head><title>Música</title></head><body>"+conteudo+"</body></html>");
-    win.document.close();
-    win.print();
+async function salvarPDF(){
+
+    const elemento = document.getElementById("editor");
+
+    const opcoes = {
+        margin: 10,
+        filename: "musica.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    };
+
+    // Gera PDF como blob
+    const pdfBlob = await html2pdf().set(opcoes).from(elemento).outputPdf("blob");
+
+    const file = new File([pdfBlob], "musica.pdf", { type: "application/pdf" });
+
+    // Se o navegador permitir compartilhamento
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+
+        await navigator.share({
+            title: "Minha Música",
+            text: "Segue minha música em PDF",
+            files: [file]
+        });
+
+    } else {
+
+        // fallback: baixar no PC
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(pdfBlob);
+        link.download = "musica.pdf";
+        link.click();
+
+    }
 }
 
 // ----------------------- PLAYER UNIFICADO -----------------------
