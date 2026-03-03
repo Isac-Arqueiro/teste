@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -665,44 +666,35 @@ async function salvarPDF(){
 
     const editor = document.getElementById("editor");
 
-    // 🔴 Guarda altura original
-    const alturaOriginal = editor.style.height;
-    const overflowOriginal = editor.style.overflow;
+    if(!editor.innerHTML.trim()){
+        alert("Editor vazio!");
+        return;
+    }
 
-    // 🟢 Remove limite temporariamente
-    editor.style.height = "auto";
-    editor.style.overflow = "visible";
+    // Criar container temporário A4
+    const container = document.createElement("div");
 
-    const opcoes = {
+    container.style.width = "794px"; // largura A4 em px
+    container.style.padding = "40px";
+    container.style.background = "white";
+    container.style.color = "black";
+    container.style.fontSize = "16px";
+    container.style.boxSizing = "border-box";
+    container.innerHTML = editor.innerHTML;
+
+    document.body.appendChild(container);
+
+    const opt = {
         margin: 10,
         filename: "musica.pdf",
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"] }
     };
 
-    const pdfBlob = await html2pdf()
-        .set(opcoes)
-        .from(editor)
-        .outputPdf("blob");
+    await html2pdf().set(opt).from(container).save();
 
-    // 🔵 Restaura editor
-    editor.style.height = alturaOriginal;
-    editor.style.overflow = overflowOriginal;
-
-    const file = new File([pdfBlob], "musica.pdf", { type: "application/pdf" });
-
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-            title: "Minha Música",
-            text: "Segue minha música em PDF",
-            files: [file]
-        });
-    } else {
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(pdfBlob);
-        link.download = "musica.pdf";
-        link.click();
-    }
+    document.body.removeChild(container);
 }
 function transporMusica(tomOrigem, tomDestino){
 
