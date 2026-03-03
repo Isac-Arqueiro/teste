@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -180,6 +181,30 @@ header{
 .editor-bloqueado {
     pointer-events: none;
 }
+/* ===== MODO PALCO ===== */
+
+.modo-palco header,
+.modo-palco .botoes-topo,
+.modo-palco .botoes,
+.modo-palco .acoes {
+    display: none !important;
+}
+
+.modo-palco #editor {
+    background: black;
+    color: white;
+    font-size: 28px;
+    min-height: 100vh;
+    padding: 60px;
+}
+
+.modo-palco .player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 0;
+}
 </style>
 </head>
 
@@ -188,7 +213,7 @@ header{
 <!-- ----------------------- TELA DE LOGIN ----------------------- -->
 <div id="loginScreen" style="display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); font-family:Arial; flex-direction:column;">
   <div style="background:white; padding:40px; border-radius:15px; width:220px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
-    <img src="https://i.imgur.com/kV9yJ0a.jpeg" width="100%" style="border-radius:10px; margin-bottom:20px;" alt="Imagem Login">
+    <img src="https://i.imgur.com/51UirRx.png" width="100%" style="border-radius:10px; margin-bottom:20px;" alt="Imagem Login">
     <h2 style="margin-bottom:20px;">🔐 Área de Login</h2>
     <input type="password" id="senhaInput" placeholder="Digite sua senha" style="padding:12px; width:100%; border-radius:8px; border:1px solid #ccc; outline:none;">
     <br><br>
@@ -248,6 +273,7 @@ Compasso: 4/4
 <div class="botoes" id="botoesDigitos" style="display:none; margin-top:5px;"></div>
 <div class="acoes">
 <button onclick="salvar()">Salvar</button>
+<button onclick="apagarMusica()">Apagar Salvo</button>
 <button onclick="buscar()">Buscar</button>
 <button onclick="apagar()">Limpar</button>
 <button onclick="salvarPDF()">Salvar em PDF</button>
@@ -308,7 +334,39 @@ function verificarSenha() {
     erro.style.display = "block";
   }
 }
+function apagarMusica(){
 
+    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
+
+    if(musicas.length === 0){
+        alert("❌ Nenhuma música salva!");
+        return;
+    }
+
+    let lista = "Músicas salvas:\n\n";
+
+    musicas.forEach((m, i) => {
+        lista += `${i+1} - ${m.nome}\n`;
+    });
+
+    let escolha = prompt(lista + "\nDigite o número da música que deseja apagar:");
+
+    let index = parseInt(escolha) - 1;
+
+    if(musicas[index]){
+
+        let confirmar = confirm(`Deseja realmente apagar "${musicas[index].nome}"?`);
+
+        if(confirmar){
+            musicas.splice(index, 1);
+            localStorage.setItem("listaMusicas", JSON.stringify(musicas));
+            alert("🗑 Música apagada com sucesso!");
+        }
+
+    } else {
+        alert("❌ Número inválido!");
+    }
+}
 function usarFree() {
   localStorage.setItem("usuarioLogado", "true");
   mostrarApp();
@@ -352,25 +410,20 @@ Object.keys(escalas).forEach(t=>{
 });
 seletor.value=tomAtual;
 seletor.onchange=()=>{tomAtual=seletor.value; gerarBotoes();};
-
 let modoZoom = false;
 
 function toggleZoom(){
-    const body = document.body;
     const editor = document.getElementById("editor");
     const btn = document.getElementById("btnZoom");
+
     modoZoom = !modoZoom;
+
     if(modoZoom){
-        body.classList.add("modo-visualizacao");
-        editor.classList.add("editor-zoom");
-        editor.classList.add("editor-bloqueado");
-        editor.contentEditable = "false";
-        btn.textContent = "↩ Voltar Edição";
+        editor.style.transform = "scale(1.5)";
+        editor.style.transformOrigin = "top center";
+        btn.textContent = "↩ Voltar";
     } else {
-        body.classList.remove("modo-visualizacao");
-        editor.classList.remove("editor-zoom");
-        editor.classList.remove("editor-bloqueado");
-        editor.contentEditable = "true";
+        editor.style.transform = "scale(1)";
         btn.textContent = "🔍";
     }
 }
@@ -500,15 +553,59 @@ function toggleFiguras(){
 }
 
 function salvar(){
-    const conteudo=document.getElementById("editor").innerHTML;
-    localStorage.setItem("musicaSalva",conteudo);
-    alert("✅ Música salva!");
+
+    const conteudo = document.getElementById("editor").innerHTML;
+
+    if(!conteudo.trim()){
+        alert("❌ Editor vazio!");
+        return;
+    }
+
+    let nome = prompt("Digite o nome da música:");
+    if(!nome) return;
+
+    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
+
+    if(musicas.length >= 20){
+        alert("⚠️ Limite de 20 músicas atingido!");
+        return;
+    }
+
+    musicas.push({
+        nome: nome,
+        conteudo: conteudo,
+        data: new Date().toLocaleDateString()
+    });
+
+    localStorage.setItem("listaMusicas", JSON.stringify(musicas));
+
+    alert("✅ Música salva com sucesso!");
 }
 
 function buscar(){
-    const conteudo=localStorage.getItem("musicaSalva");
-    if(conteudo) document.getElementById("editor").innerHTML=conteudo;
-    else alert("❌ Nenhuma música encontrada");
+
+    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
+
+    if(musicas.length === 0){
+        alert("❌ Nenhuma música salva!");
+        return;
+    }
+
+    let lista = "Músicas salvas:\n\n";
+
+    musicas.forEach((m, i) => {
+        lista += `${i+1} - ${m.nome} (${m.data})\n`;
+    });
+
+    let escolha = prompt(lista + "\nDigite o número da música:");
+
+    let index = parseInt(escolha) - 1;
+
+    if(musicas[index]){
+        document.getElementById("editor").innerHTML = musicas[index].conteudo;
+    } else {
+        alert("❌ Número inválido!");
+    }
 }
 
 function apagar(){
@@ -519,38 +616,45 @@ function apagar(){
 
 async function salvarPDF(){
 
-    const elemento = document.getElementById("editor");
+    const editor = document.getElementById("editor");
+
+    // 🔴 Guarda altura original
+    const alturaOriginal = editor.style.height;
+    const overflowOriginal = editor.style.overflow;
+
+    // 🟢 Remove limite temporariamente
+    editor.style.height = "auto";
+    editor.style.overflow = "visible";
 
     const opcoes = {
         margin: 10,
         filename: "musica.pdf",
-        image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
     };
 
-    // Gera PDF como blob
-    const pdfBlob = await html2pdf().set(opcoes).from(elemento).outputPdf("blob");
+    const pdfBlob = await html2pdf()
+        .set(opcoes)
+        .from(editor)
+        .outputPdf("blob");
+
+    // 🔵 Restaura editor
+    editor.style.height = alturaOriginal;
+    editor.style.overflow = overflowOriginal;
 
     const file = new File([pdfBlob], "musica.pdf", { type: "application/pdf" });
 
-    // Se o navegador permitir compartilhamento
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-
         await navigator.share({
             title: "Minha Música",
             text: "Segue minha música em PDF",
             files: [file]
         });
-
     } else {
-
-        // fallback: baixar no PC
         const link = document.createElement("a");
         link.href = URL.createObjectURL(pdfBlob);
         link.download = "musica.pdf";
         link.click();
-
     }
 }
 
