@@ -1,755 +1,497 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Editor de Cifras Pro</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
+<title>Studio Repertório PRO Vertical</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Bebas+Neue&family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
 <style>
-/* ----------------------- LOGIN ----------------------- */
-@keyframes brilhoBtn {
-  from { filter: drop-shadow(0 0 5px #ff3b3b); }
-  to { filter: drop-shadow(0 0 20px #ff3b3b); }
-}
 
-/* ----------------------- EDITOR ----------------------- */
 body{
-    font-family:Arial, sans-serif;
-    margin:0;
-    padding:10px;
-    background:#f4f4f4;
+margin:0;
+background:#0f0f0f;
+font-family:Montserrat;
+color:white;
+text-align:center;
 }
 
 header{
-    background:#222;
-    color:white;
-    padding:10px;
-    border-radius:8px;
+background:#000;
+padding:15px;
+position:sticky;
+top:0;
+z-index:10;
 }
 
-.botoes-topo button,
-.botoes button,
-.acoes button{
-    padding:8px 12px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
+select,button{
+padding:10px;
+margin:5px;
+border:none;
+border-radius:6px;
+font-size:14px;
 }
 
-.botoes-topo button{
-    background:#ddd;
-    margin:2px;
+button{
+background:#ff9800;
+color:white;
+cursor:pointer;
 }
 
-.botoes{
-    display:flex;
-    flex-wrap:wrap;
-    gap:5px;
-    margin:10px 0;
+button:hover{
+background:#e68900;
 }
 
-.botoes button{
-    background:#444;
-    color:white;
+/* FORMATO 9:16 REAL */
+#canvas{
+width:360px;
+height:640px;
+margin:20px auto;
+position:relative;
+overflow:hidden;
+border-radius:20px;
+box-shadow:0 0 40px black;
+background-size:cover;
+background-position:center;
 }
 
-.botoes button:hover{
-    background:#0080ff;
+.overlay{
+position:absolute;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+padding:20px;
+box-sizing:border-box;
 }
 
-#editor{
-    width:100%;
-    height:250px;
-    border-radius:8px;
-    padding:10px;
-    font-size:16px;
-    background:white;
-    overflow:auto;
+.editable{
+cursor:text;
+outline:none;
 }
 
-/* ---------------- PLAYER MODERNO RESPONSIVO ---------------- */
-
-.player{
-    margin-top:30px;
-    width:95%;
-    max-width:800px;
-    margin-left:auto;
-    margin-right:auto;
-    padding:25px;
-    border-radius:20px;
-    background: linear-gradient(135deg,#141e30,#243b55);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    color:white;
-    transition: 0.3s;
+.title{
+font-size:42px;
+margin-top:20px;
 }
 
-/* Inputs */
-.player input[type="file"],
-.player input[type="text"]{
-    width:100%;
-    padding:10px;
-    border-radius:8px;
-    border:none;
-    margin-bottom:10px;
-    font-size:15px;
+.song{
+margin:8px 0;
+font-size:16px;
 }
 
-/* Botões */
-.player button{
-    padding:10px 15px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-    transition:0.3s;
+.section{
+margin-top:18px;
+font-weight:bold;
 }
 
-.player button:hover{
-    transform:scale(1.05);
-    background:#00c3ff;
+.footer{
+position:absolute;
+bottom:20px;
+width:100%;
+left:0;
+font-size:20px;
 }
 
-/* Controles organizados */
-.player-controles{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:10px;
-    margin:15px 0;
+.light{
+position:absolute;
+width:200px;
+height:200px;
+background:radial-gradient(circle, rgba(255,200,0,0.7) 0%, rgba(255,200,0,0) 70%);
+top:-60px;
+left:50%;
+transform:translateX(-50%);
+filter:blur(15px);
 }
 
-/* Barra de progresso maior */
-#barraProgresso{
-    width:100%;
-    height:18px;
-    cursor:pointer;
+.savedItem{
+cursor:pointer;
+color:#ffcc66;
+margin:5px;
 }
 
-/* RESPONSIVO PARA PC */
-@media (min-width: 768px){
-    .player{
-        max-width:1000px;
-        padding:35px;
-    }
-
-    #barraProgresso{
-        height:22px;
-    }
-}
-
-.player-controles{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    align-items:center;
-    margin-bottom:10px;
-}
-
-.player button{
-    background:#444;
-    color:white;
-}
-
-.player button:hover{
-    background:#0080ff;
-}
-
-#barraProgresso{
-    width:100%;
-    height:15px;
-    cursor:pointer;
-}
-.modo-visualizacao {
-    background: #999 !important;
-    display: flex;
-    justify-content: center;
-    padding: 40px 0;
-}
-
-.editor-zoom {
-    width: 794px;
-    min-height: 1123px;
-    background: white;
-    padding: 40px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    border-radius: 0;
-}
-
-.editor-bloqueado {
-    pointer-events: none;
-}
-/* ===== MODO PALCO ===== */
-
-.modo-palco header,
-.modo-palco .botoes-topo,
-.modo-palco .botoes,
-.modo-palco .acoes {
-    display: none !important;
-}
-
-.modo-palco #editor {
-    background: black;
-    color: white;
-    font-size: 28px;
-    min-height: 100vh;
-    padding: 60px;
-}
-
-.modo-palco .player {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    border-radius: 0;
-}
 </style>
 </head>
-
 <body>
 
-<!-- ----------------------- TELA DE LOGIN ----------------------- -->
-<div id="loginScreen" style="display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); font-family:Arial; flex-direction:column;">
-  <div style="background:white; padding:40px; border-radius:15px; width:220px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
-    <img src="https://i.imgur.com/51UirRx.png" width="100%" style="border-radius:10px; margin-bottom:20px;" alt="Imagem Login">
-    <h2 style="margin-bottom:20px;">🔐 Área de Login</h2>
-    <input type="password" id="senhaInput" placeholder="Digite sua senha" style="padding:12px; width:100%; border-radius:8px; border:1px solid #ccc; outline:none;">
-    <br><br>
-    <button onclick="verificarSenha()" style="padding:12px; width:100%; border:none; border-radius:8px; background:#28a745; color:white; font-weight:bold; cursor:pointer;">Entrar</button>
-    <button onclick="usarFree()" 
-style="padding:12px; width:100%; border:none; border-radius:8px; 
-background:#007bff; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">
-Visitante
-</button>
-    <p id="mensagemErro" style="color:red; display:none; margin-top:10px;">Senha incorreta fale com seu master</p>
-    <hr style="margin:30px 0;">      
-    </div>
-    <br>
-    
-  </div>
-</div>
-
-<!-- ----------------------- CONTAINER DA APLICAÇÃO ----------------------- -->
-<div id="appContainer" style="display:none;">
-
 <header>
-<strong>Nova Música</strong><br>
-Tom:
-<select id="seletorTom"></select>
-|
-Compasso: 4/4
+<select id="templateSelect"></select>
+<button onclick="saveToDB()">Salvar</button>
+<button onclick="exportImage('png')">PNG</button>
+<button onclick="exportImage('jpeg')">JPG</button>
 </header>
 
-<div class="botoes-topo">
-<button onclick="inserirTexto('Intro.')">Intro</button>
-<button onclick="inserirTexto('Estrofe.')">Estrofe</button>
-<button onclick="inserirTexto('Pré-Refrão')">Pré-Refrão</button>
-<button onclick="inserirTexto('Refrão.')">Refrão</button>
-<button onclick="inserirTexto('Ponte.')">Ponte</button>
-<button onclick="ativarModoGrego()">MG</button>
-<button onclick="abrirPainelEstilo()">Tt</button>
-<button id="togglePipe" onclick="togglePipe()">|: ON</button>
-<button onclick="toggleFiguras()">Figuras</button>
-<button onclick="toggleZoom()" id="btnZoom">🔍</button>
-</div>
+<div id="canvas"></div>
 
-<div class="botoes" id="botoesNotas"></div>
-<div class="botoes" id="botoesFiguras" style="display:none;"></div>
+<h3>Artes Salvas</h3>
+<div id="savedList"></div>
 
-<div class="botoes">
-<button onclick="inserirTexto(' % |',true)">%</button>
-<button onclick="ativarSlash()">/</button>
-<button onclick="inserirTexto('|',true)">|</button>
-<button onclick="inserirTexto('°',true)">°</button>
-<button onclick="inserirTexto('#',true)">#</button>
-<button onclick="inserirTexto('{',true)">{</button>
-<button onclick="inserirTexto('}',true)">}</button>
-<button onclick="inserirManual()">Obs</button>
-</div>
-
-<div id="editor" contenteditable="true"></div>
-<div class="botoes" id="botoesDigitos" style="display:none; margin-top:5px;"></div>
-<div class="acoes">
-<button onclick="salvar()">Salvar</button>
-<button onclick="apagarMusica()">Apagar Salvo</button>
-<button onclick="buscar()">Buscar</button>
-<button onclick="apagar()">Limpar</button>
-<button onclick="salvarPDF()">Salvar em PDF</button>
-</button>
-</div>
-
-<!-- ----------------------- PLAYER UNIFICADO ----------------------- -->
-<div class="player">
-  <input type="file" id="audioFile" accept="audio/*">
-  <input type="text" id="youtubeURL" placeholder="Cole link do YouTube">
-  <button onclick="tocarYoutube()">▶️ Tocar YouTube</button>
-
-  <div class="player-controles">
-    <button onclick="voltar5()">⏪ 5s</button>
-    <button onclick="playPause()" id="btnPlay">▶</button>
-    <button onclick="avancar5()">5s ⏩</button>
-
-    <select id="velocidade" onchange="mudarVelocidade()">
-      <option value="0.5">0.5x</option>
-      <option value="0.75">0.75x</option>
-      <option value="1" selected>1x</option>
-      <option value="1.25">1.25x</option>
-      <option value="1.5">1.5x</option>
-    </select>
-
-    <button onclick="marcarInicioLoop()">A</button>
-    <button onclick="marcarFimLoop()">B</button>
-    <button onclick="desativarLoop()">Loop Off</button>
-
-    <span id="tempoAtual">0:00</span>
-  </div>
-
-  <input type="range" id="barraProgresso" value="0" min="0" max="100">
-  <div id="youtubePlayer" style="display:none;"></div>
-</div>
-
-<button id="btnInstall" style="display:none;">📲 Instalar App</button>
-</div>
-
-<script src="https://www.youtube.com/iframe_api"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
-// ----------------------- LOGIN -----------------------
-// ----------------------- LOGIN -----------------------
-const senhasPermitidas = ["Shalon","00a00","10a10","20a20","30a33","40a40","50a50"];
 
-function verificarSenha() {
-  const senha = document.getElementById("senhaInput").value;
-  const erro = document.getElementById("mensagemErro");
+const templates = [
 
-  if (senhasPermitidas.includes(senha)) {
-    // Usuário logado apenas na sessão atual
-    window.usuarioLogado = true; // variável temporária
-    erro.style.display = "none";
-    mostrarApp();
-    alert("✅ Acesso liberado!");
-} else {
-    erro.style.display = "block";
-  }
+/* ================== 1 - Madeira Worship ================== */
+{
+nome:"Madeira Worship",
+bg:"url('https://images.unsplash.com/photo-1519681393784-d120267933ba')",
+html:`
+<div class="overlay" style="font-family:Oswald;text-align:center;">
+<div class="light"></div>
+<div class="title editable" contenteditable style="color:#ffcc00;">REPERTÓRIO</div>
+<div class="song editable" contenteditable>★ Nada é impossível (A)</div>
+<div class="song editable" contenteditable>★ Correndo a carreira (A)</div>
+<div class="song editable" contenteditable>★ Bom demais pra não crer (C)</div>
+<div class="section editable" contenteditable style="color:#ff5722;">OFERTA</div>
+<div class="song editable" contenteditable>Tempo de abandonei (D)</div>
+<div class="section editable" contenteditable style="color:#00ff88;">ENTREGA</div>
+<div class="song editable" contenteditable>★ Santo pra sempre (C)</div>
+<div class="footer editable" contenteditable style="color:#00ff88;">VELOZMENTE (D)</div>
+</div>`
+},
+
+/* ================== 2 - Neon Jovem ================== */
+{
+nome:"Neon Jovem",
+bg:"linear-gradient(#000428,#004e92)",
+html:`
+<div class="overlay" style="font-family:'Bebas Neue';text-align:center;background:rgba(0,0,0,0.4);">
+<div class="title editable" contenteditable style="color:#00ffff;text-shadow:0 0 15px #00ffff;">NOITE JOVEM</div>
+<div class="song editable" contenteditable>Louvor 1</div>
+<div class="song editable" contenteditable>Louvor 2</div>
+<div class="song editable" contenteditable>Louvor 3</div>
+<div class="section editable" contenteditable style="color:#ff00ff;">MOMENTO</div>
+<div class="song editable" contenteditable>Mensagem</div>
+<div class="footer editable" contenteditable style="color:#00ffff;">ENCERRAMENTO</div>
+</div>`
+},
+
+/* ================== 3 - Luxo Dourado ================== */
+{
+nome:"Luxo Dourado",
+bg:"linear-gradient(#1a1a1a,#000)",
+html:`
+<div class="overlay" style="font-family:'Playfair Display';text-align:center;">
+<div class="title editable" contenteditable style="color:gold;">NOITE ESPECIAL</div>
+<div class="song editable" contenteditable>Música 1</div>
+<div class="song editable" contenteditable>Música 2</div>
+<div class="song editable" contenteditable>Música 3</div>
+<div class="section editable" contenteditable style="color:gold;">OFERTA</div>
+<div class="song editable" contenteditable>Momento Especial</div>
+<div class="footer editable" contenteditable style="color:gold;">FINAL</div>
+</div>`
+},
+
+/* ================== 4 - Minimal Moderno ================== */
+{
+nome:"Minimal Moderno",
+bg:"linear-gradient(#232526,#414345)",
+html:`
+<div class="overlay" style="font-family:Montserrat;text-align:center;">
+<div class="title editable" contenteditable>REPERTÓRIO</div>
+<div class="song editable" contenteditable>1ª Música</div>
+<div class="song editable" contenteditable>2ª Música</div>
+<div class="song editable" contenteditable>3ª Música</div>
+<div class="section editable" contenteditable>ENTREGA</div>
+<div class="song editable" contenteditable>Música Final</div>
+</div>`
+},
+
+/* ================== 5 - Palco Spotlight ================== */
+{
+nome:"Palco Spotlight",
+bg:"url('https://images.unsplash.com/photo-1506157786151-b8491531f063')",
+html:`
+<div class="overlay" style="font-family:Oswald;text-align:center;">
+<div class="light"></div>
+<div class="title editable" contenteditable style="color:#ff9800;">SHOW AO VIVO</div>
+<div class="song editable" contenteditable>Música 1</div>
+<div class="song editable" contenteditable>Música 2</div>
+<div class="song editable" contenteditable>Música 3</div>
+<div class="footer editable" contenteditable style="color:#ff9800;">FINAL</div>
+</div>`
+},
+
+/* ================== 6 - Neon Rosa ================== */
+{
+nome:"Neon Rosa",
+bg:"linear-gradient(#0f0c29,#302b63,#24243e)",
+html:`
+<div class="overlay" style="font-family:'Bebas Neue';text-align:center;">
+<div class="title editable" contenteditable style="color:#ff00ff;text-shadow:0 0 20px #ff00ff;">WORSHIP NIGHT</div>
+<div class="song editable" contenteditable>Louvor 1</div>
+<div class="song editable" contenteditable>Louvor 2</div>
+<div class="song editable" contenteditable>Louvor 3</div>
+<div class="footer editable" contenteditable style="color:#ff00ff;">FINAL</div>
+</div>`
+},
+
+/* ================== 7 - Papel Antigo ================== */
+{
+nome:"Papel Antigo",
+bg:"url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f')",
+html:`
+<div class="overlay" style="font-family:'Playfair Display';text-align:center;background:rgba(255,248,220,0.85);color:#4b2e1e;">
+<div class="title editable" contenteditable>REPERTÓRIO</div>
+<div class="song editable" contenteditable>Música 1</div>
+<div class="song editable" contenteditable>Música 2</div>
+<div class="song editable" contenteditable>Música 3</div>
+</div>`
+},
+
+/* ================== 8 - Roxo Worship ================== */
+{
+nome:"Roxo Worship",
+bg:"linear-gradient(#41295a,#2F0743)",
+html:`
+<div class="overlay" style="font-family:Oswald;text-align:center;">
+<div class="title editable" contenteditable style="color:#ffccff;">ADORAÇÃO</div>
+<div class="song editable" contenteditable>Louvor 1</div>
+<div class="song editable" contenteditable>Louvor 2</div>
+<div class="song editable" contenteditable>Louvor 3</div>
+<div class="footer editable" contenteditable style="color:#ffccff;">ENCERRAMENTO</div>
+</div>`
+},
+
+/* ================== 9 - Urbano Street ================== */
+{
+nome:"Urbano Street",
+bg:"url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee')",
+html:`
+<div class="overlay" style="font-family:Montserrat;text-align:center;background:rgba(0,0,0,0.7);">
+<div class="title editable" contenteditable style="color:#ffffff;">STREET WORSHIP</div>
+<div class="song editable" contenteditable>Track 1</div>
+<div class="song editable" contenteditable>Track 2</div>
+<div class="song editable" contenteditable>Track 3</div>
+</div>`
+},
+
+/* ================== 10 - Clean Branco ================== */
+{
+nome:"Clean Branco",
+bg:"#ffffff",
+html:`
+<div class="overlay" style="background:white;color:black;font-family:Montserrat;text-align:center;">
+<div class="title editable" contenteditable>REPERTÓRIO</div>
+<div class="song editable" contenteditable>Música 1</div>
+<div class="song editable" contenteditable>Música 2</div>
+<div class="song editable" contenteditable>Música 3</div>
+</div>`
+},
+
+/* ================== 11 - Gradiente Moderno ================== */
+{
+nome:"Gradiente Moderno",
+bg:"linear-gradient(45deg,#ff512f,#dd2476)",
+html:`
+<div class="overlay" style="font-family:'Bebas Neue';text-align:center;">
+<div class="title editable" contenteditable style="color:white;">EVENTO</div>
+<div class="song editable" contenteditable>Música A</div>
+<div class="song editable" contenteditable>Música B</div>
+<div class="song editable" contenteditable>Música C</div>
+</div>`
+},
+
+/* ================== 12 - Madeira Clara ================== */
+{
+nome:"Madeira Clara",
+bg:"url('https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d')",
+html:`
+<div class="overlay" style="font-family:Oswald;text-align:center;background:rgba(0,0,0,0.5);">
+<div class="title editable" contenteditable style="color:#ffe0b2;">LOUVOR</div>
+<div class="song editable" contenteditable>Música 1</div>
+<div class="song editable" contenteditable>Música 2</div>
+<div class="song editable" contenteditable>Música 3</div>
+</div>`
+},
+
+/* ================== 13 - Azul Spotlight ================== */
+{
+nome:"Azul Spotlight",
+bg:"linear-gradient(#000428,#004e92)",
+html:`
+<div class="overlay" style="font-family:Oswald;text-align:center;">
+<div class="light"></div>
+<div class="title editable" contenteditable style="color:#00ffff;">CONFERÊNCIA</div>
+<div class="song editable" contenteditable>Louvor 1</div>
+<div class="song editable" contenteditable>Louvor 2</div>
+<div class="song editable" contenteditable>Louvor 3</div>
+</div>`
+},
+
+/* ================== 14 - Vermelho Fogo ================== */
+{
+nome:"Vermelho Fogo",
+bg:"linear-gradient(#000000,#8B0000)",
+html:`
+<div class="overlay" style="font-family:'Bebas Neue';text-align:center;">
+<div class="title editable" contenteditable style="color:#ff4444;">FIRE NIGHT</div>
+<div class="song editable" contenteditable>Música 1</div>
+<div class="song editable" contenteditable>Música 2</div>
+<div class="song editable" contenteditable>Música 3</div>
+</div>`
+},
+
+/* ================== 15 - Verde Nature ================== */
+{
+nome:"Verde Nature",
+bg:"linear-gradient(#134E5E,#71B280)",
+html:`
+<div class="overlay" style="font-family:Montserrat;text-align:center;">
+<div class="title editable" contenteditable>NATURE WORSHIP</div>
+<div class="song editable" contenteditable>Louvor 1</div>
+<div class="song editable" contenteditable>Louvor 2</div>
+<div class="song editable" contenteditable>Louvor 3</div>
+</div>`
+},
+
+/* ================== 16 - Preto Ouro ================== */
+{
+nome:"Preto Ouro",
+bg:"linear-gradient(#000,#1a1a1a)",
+html:`
+<div class="overlay" style="font-family:'Playfair Display';text-align:center;">
+<div class="title editable" contenteditable style="color:gold;">NOITE DE HONRA</div>
+<div class="song editable" contenteditable>Música 1</div>
+<div class="song editable" contenteditable>Música 2</div>
+<div class="song editable" contenteditable>Música 3</div>
+</div>`
+},
+
+/* ================== 17 - Azul Claro ================== */
+{
+nome:"Azul Claro",
+bg:"linear-gradient(#2193b0,#6dd5ed)",
+html:`
+<div class="overlay" style="font-family:Montserrat;text-align:center;">
+<div class="title editable" contenteditable>LOUVOR</div>
+<div class="song editable" contenteditable>Música A</div>
+<div class="song editable" contenteditable>Música B</div>
+<div class="song editable" contenteditable>Música C</div>
+</div>`
+},
+
+/* ================== 18 - Rosa Pastel ================== */
+{
+nome:"Rosa Pastel",
+bg:"linear-gradient(#ff9a9e,#fad0c4)",
+html:`
+<div class="overlay" style="font-family:Montserrat;text-align:center;color:black;">
+<div class="title editable" contenteditable>REPERTÓRIO</div>
+<div class="song editable" contenteditable>Música 1</div>
+<div class="song editable" contenteditable>Música 2</div>
+<div class="song editable" contenteditable>Música 3</div>
+</div>`
+},
+
+/* ================== 19 - Cinza Minimal ================== */
+{
+nome:"Cinza Minimal",
+bg:"linear-gradient(#3e5151,#decba4)",
+html:`
+<div class="overlay" style="font-family:Montserrat;text-align:center;">
+<div class="title editable" contenteditable>SETLIST</div>
+<div class="song editable" contenteditable>Track 1</div>
+<div class="song editable" contenteditable>Track 2</div>
+<div class="song editable" contenteditable>Track 3</div>
+</div>`
+},
+
+/* ================== 20 - Purple Neon ================== */
+{
+nome:"Purple Neon",
+bg:"linear-gradient(#41295a,#2F0743)",
+html:`
+<div class="overlay" style="font-family:'Bebas Neue';text-align:center;">
+<div class="title editable" contenteditable style="color:#bb86fc;text-shadow:0 0 20px #bb86fc;">WORSHIP LIVE</div>
+<div class="song editable" contenteditable>Louvor 1</div>
+<div class="song editable" contenteditable>Louvor 2</div>
+<div class="song editable" contenteditable>Louvor 3</div>
+<div class="footer editable" contenteditable style="color:#bb86fc;">FINAL</div>
+</div>`
 }
-function apagarMusica(){
 
-    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
+]; // ← FECHOU O ARRAY AQUI
 
-    if(musicas.length === 0){
-        alert("❌ Nenhuma música salva!");
-        return;
-    }
+// ================= CONTROLE TEMPLATES =================
 
-    let lista = "Músicas salvas:\n\n";
+const select=document.getElementById("templateSelect");
+const canvas=document.getElementById("canvas");
 
-    musicas.forEach((m, i) => {
-        lista += `${i+1} - ${m.nome}\n`;
-    });
+templates.forEach((t,i)=>{
+const op=document.createElement("option");
+op.value=i;
+op.textContent=t.nome;
+select.appendChild(op);
+});
 
-    let escolha = prompt(lista + "\nDigite o número da música que deseja apagar:");
+select.addEventListener("change",()=>{
+canvas.style.background=templates[select.value].bg;
+canvas.innerHTML=templates[select.value].html;
+});
 
-    let index = parseInt(escolha) - 1;
+canvas.style.background=templates[0].bg;
+canvas.innerHTML=templates[0].html;
 
-    if(musicas[index]){
+// ================= INDEXED DB =================
 
-        let confirmar = confirm(`Deseja realmente apagar "${musicas[index].nome}"?`);
+let db;
+const request=indexedDB.open("StudioVerticalPro",1);
 
-        if(confirmar){
-            musicas.splice(index, 1);
-            localStorage.setItem("listaMusicas", JSON.stringify(musicas));
-            alert("🗑 Música apagada com sucesso!");
-        }
-
-    } else {
-        alert("❌ Número inválido!");
-    }
-}
-function usarFree() {
-  localStorage.setItem("usuarioLogado", "true");
-  mostrarApp();
-  alert("✅ Acesso Visitante liberado!");
-}
-
-function mostrarApp() {
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("appContainer").style.display = "block";
-}
-
-function logout() {
-  localStorage.removeItem("usuarioLogado");
-  location.reload();
-}
-
-// ----------------------- EDITOR -----------------------
-let tomAtual="C";
-let pipeAtivo=true;
-
-const escalas = {
-    C: ["C","Dm","Em","F","G","Am","B°"],
-    Db: ["Db","Ebm","Fm","Gb","Ab","Bbm","C°"],
-    D: ["D","Em","F#m","G","A","Bm","C#°"],
-    Eb: ["Eb","Fm","Gm","Ab","Bb","Cm","D°"],
-    E: ["E","F#m","G#m","A","B","C#m","D#°"],
-    F: ["F","Gm","Am","Bb","C","Dm","E°"],
-    Gb: ["Gb","Abm","Bbm","Cb","Db","Ebm","F°"],
-    G: ["G","Am","Bm","C","D","Em","F#°"],
-    Ab: ["Ab","Bbm","Cm","Db","Eb","Fm","G°"],
-    A: ["A","Bm","C#m","D","E","F#m","G#°"],
-    Bb: ["Bb","Cm","Dm","Eb","F","Gm","A°"],
-    B: ["B","C#m","D#m","E","F#","G#m","A#°"]
+request.onupgradeneeded=e=>{
+db=e.target.result;
+db.createObjectStore("artes",{keyPath:"id",autoIncrement:true});
 };
 
-const seletor=document.getElementById("seletorTom");
-Object.keys(escalas).forEach(t=>{
-    let o=document.createElement("option");
-    o.value=t;o.textContent=t;
-    seletor.appendChild(o);
+request.onsuccess=e=>{
+db=e.target.result;
+loadSaved();
+};
+
+function saveToDB(){
+if(!db) return alert("Banco ainda carregando...");
+const tx=db.transaction("artes","readwrite");
+const store=tx.objectStore("artes");
+store.add({
+conteudo:canvas.innerHTML,
+bg:canvas.style.background
 });
-seletor.value=tomAtual;
-seletor.onchange=()=>{tomAtual=seletor.value; gerarBotoes();};
-let modoZoom = false;
-
-function toggleZoom(){
-    const editor = document.getElementById("editor");
-    const btn = document.getElementById("btnZoom");
-
-    modoZoom = !modoZoom;
-
-    if(modoZoom){
-        editor.style.transform = "scale(1.5)";
-        editor.style.transformOrigin = "top center";
-        btn.textContent = "↩ Voltar";
-    } else {
-        editor.style.transform = "scale(1)";
-        btn.textContent = "🔍";
-    }
+tx.oncomplete=loadSaved;
 }
 
-function gerarBotoes(){
-    let c=document.getElementById("botoesNotas");
-    c.innerHTML="";
-    escalas[tomAtual].forEach(a=>{
-        let b=document.createElement("button");
-        b.textContent=a;
-        b.onclick=()=>inserirTexto(a);
-        c.appendChild(b);
-    });
+function loadSaved(){
+if(!db) return;
+const list=document.getElementById("savedList");
+list.innerHTML="";
+const tx=db.transaction("artes","readonly");
+const store=tx.objectStore("artes");
+store.openCursor().onsuccess=e=>{
+const cursor=e.target.result;
+if(cursor){
+const div=document.createElement("div");
+div.className="savedItem";
+div.textContent="Arte "+cursor.key;
+div.onclick=()=>{
+canvas.innerHTML=cursor.value.conteudo;
+canvas.style.background=cursor.value.bg;
+};
+list.appendChild(div);
+cursor.continue();
 }
-gerarBotoes();
-
-function togglePipe(){
-    pipeAtivo=!pipeAtivo;
-    document.getElementById("togglePipe").textContent=
-    pipeAtivo?"| : ON":"| : OFF";
-}
-
-function inserirTexto(t,forcarSemPipe=false){
-    const editor=document.getElementById("editor");
-    editor.focus();
-    let semPipe=["Intro.","Refrão.","Pré-Refrão","Ponte.","Estrofe."];
-    if(!forcarSemPipe && pipeAtivo && !semPipe.includes(t)){
-        t+=" | ";
-    }
-    document.execCommand("insertText",false,t);
+};
 }
 
-function ativarSlash(){
-    inserirTexto("/",true);
-    let c=document.getElementById("botoesDigitos");
-    c.style.display="flex";
-    c.innerHTML="";
-    ["3","5","7"].forEach(d=>{
-        let b=document.createElement("button");
-        b.textContent=d;
-        b.onclick=()=>{
-            inserirTexto(d,true);
-            c.style.display="none";
-        };
-        c.appendChild(b);
-    });
-}
+// ================= EXPORTAR =================
 
-function ativarModoGrego(){
-    let c=document.getElementById("botoesNotas");
-    c.innerHTML="";
-    ["I","II","III","IV","V","VI","VII"].forEach(n=>{
-        let b=document.createElement("button");
-        b.textContent=n;
-        b.onclick=()=>inserirTexto(n);
-        c.appendChild(b);
-    });
-}
-
-function abrirPainelEstilo(){
-    let opcao = prompt("1-Negrito\n2-Itálico\n3-Sublinhado\n4-Aumentar\n5-Diminuir\n6-Tamanho Personalizado");
-    if(!opcao) return;
-    switch(opcao){
-        case "1": document.execCommand("bold"); break;
-        case "2": document.execCommand("italic"); break;
-        case "3": document.execCommand("underline"); break;
-        case "4": document.execCommand("fontSize",false,"5"); break;
-        case "5": document.execCommand("fontSize",false,"2"); break;
-        case "6":
-            let tamanho=prompt("Digite o tamanho (ex: 18)");
-            if(tamanho){
-                document.execCommand("fontSize",false,"7");
-                let fonts=document.getElementsByTagName("font");
-                for(let i=0;i<fonts.length;i++){
-                    if(fonts[i].size=="7"){
-                        fonts[i].removeAttribute("size");
-                        fonts[i].style.fontSize=tamanho+"px";
-                    }
-                }
-            }
-            break;
-    }
-}
-
-function inserirManual(){
-    let t = prompt("Digite observação:");
-    if(t){
-        const editor = document.getElementById("editor");
-        editor.focus();
-        document.execCommand("styleWithCSS", false, true);
-        document.execCommand("foreColor", false, "red");
-        document.execCommand("insertText", false, t);
-        document.execCommand("foreColor", false, "black");
-    }
-}
-
-const figurasMusicais = [
-    {simbolo: "♩", label: "seminima"},
-    {simbolo: "♫", label: "Duas Colcheias"},
-    {simbolo: "♬", label: "Quatro Semicolcheias"},
-    {simbolo: "♪", label: "Cocheia"},
-    {simbolo: "𝄐", label: "Fermata"},
-    {simbolo: "𝄾", label: "Pausa Quarto"},
-    {simbolo: "🎹", label: "Teclado"},
-    {simbolo: "🎸", label: "Guitarra"},
-    {simbolo: "🥁", label: "Bateria"},
-    {simbolo: "🎤", label: "Voz"},
-    {simbolo: "🎷", label: "Saxofone"},
-    {simbolo: "🎶", label: "Intencidade"}
-];
-
-function toggleFiguras(){
-    const div=document.getElementById("botoesFiguras");
-    if(div.style.display==="none"){
-        div.style.display="flex";
-        div.innerHTML="";
-        figurasMusicais.forEach(f=>{
-            const btn=document.createElement("button");
-            btn.textContent=f.simbolo;
-            btn.title=f.label;
-            btn.onclick=()=>inserirTexto(f.simbolo);
-            div.appendChild(btn);
-        });
-    } else {
-        div.style.display="none";
-    }
-}
-
-function salvar(){
-
-    const conteudo = document.getElementById("editor").innerHTML;
-
-    if(!conteudo.trim()){
-        alert("❌ Editor vazio!");
-        return;
-    }
-
-    let nome = prompt("Digite o nome da música:");
-    if(!nome) return;
-
-    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
-
-    if(musicas.length >= 20){
-        alert("⚠️ Limite de 20 músicas atingido!");
-        return;
-    }
-
-    musicas.push({
-        nome: nome,
-        conteudo: conteudo,
-        data: new Date().toLocaleDateString()
-    });
-
-    localStorage.setItem("listaMusicas", JSON.stringify(musicas));
-
-    alert("✅ Música salva com sucesso!");
-}
-
-function buscar(){
-
-    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
-
-    if(musicas.length === 0){
-        alert("❌ Nenhuma música salva!");
-        return;
-    }
-
-    let lista = "Músicas salvas:\n\n";
-
-    musicas.forEach((m, i) => {
-        lista += `${i+1} - ${m.nome} (${m.data})\n`;
-    });
-
-    let escolha = prompt(lista + "\nDigite o número da música:");
-
-    let index = parseInt(escolha) - 1;
-
-    if(musicas[index]){
-        document.getElementById("editor").innerHTML = musicas[index].conteudo;
-    } else {
-        alert("❌ Número inválido!");
-    }
-}
-
-function apagar(){
-    if(confirm("Deseja realmente apagar o conteúdo?")){
-        document.getElementById("editor").innerHTML="";
-    }
-}
-
-async function salvarPDF(){
-
-    const editor = document.getElementById("editor");
-
-    // 🔴 Guarda altura original
-    const alturaOriginal = editor.style.height;
-    const overflowOriginal = editor.style.overflow;
-
-    // 🟢 Remove limite temporariamente
-    editor.style.height = "auto";
-    editor.style.overflow = "visible";
-
-    const opcoes = {
-        margin: 10,
-        filename: "musica.pdf",
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-    };
-
-    const pdfBlob = await html2pdf()
-        .set(opcoes)
-        .from(editor)
-        .outputPdf("blob");
-
-    // 🔵 Restaura editor
-    editor.style.height = alturaOriginal;
-    editor.style.overflow = overflowOriginal;
-
-    const file = new File([pdfBlob], "musica.pdf", { type: "application/pdf" });
-
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-            title: "Minha Música",
-            text: "Segue minha música em PDF",
-            files: [file]
-        });
-    } else {
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(pdfBlob);
-        link.download = "musica.pdf";
-        link.click();
-    }
-}
-
-// ----------------------- PLAYER UNIFICADO -----------------------
-let ytPlayer = null;
-let audioPlayer = new Audio();
-let currentSource = null;
-let loopStart = 0, loopEnd = null;
-let isPlaying = false;
-
-const fileInput = document.getElementById("audioFile");
-fileInput.addEventListener("change", function() {
-    const file = this.files[0];
-    if(!file) return;
-    currentSource = "local";
-    ytPlayer && ytPlayer.pauseVideo();
-    audioPlayer.src = URL.createObjectURL(file);
-    audioPlayer.load();
-    audioPlayer.play();
-    isPlaying = true;
-    document.getElementById("btnPlay").textContent = "⏸";
+function exportImage(type){
+html2canvas(canvas,{scale:3}).then(canvasImg=>{
+const link=document.createElement("a");
+link.download="cartaz."+type;
+link.href=canvasImg.toDataURL("image/"+type);
+link.click();
 });
-
-function onYouTubeIframeAPIReady() {
-    ytPlayer = new YT.Player('youtubePlayer', {
-        height:'0', width:'0', videoId:'',
-        playerVars:{ autoplay:0, controls:0, modestbranding:1 },
-        events:{ 'onStateChange': onPlayerStateChange }
-    });
 }
 
-function tocarYoutube() {
-    const url = document.getElementById("youtubeURL").value;
-    if(!url) return alert("Insira link do YouTube!");
-    const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
-    if(!match) return alert("URL inválida!");
-    const videoId = match[1];
-    currentSource = "youtube";
-    audioPlayer.pause();
-    ytPlayer.loadVideoById(videoId);
-    isPlaying = true;
-    document.getElementById("btnPlay").textContent = "⏸";
-}
-
-function onPlayerStateChange(event){
-    const btnPlay = document.getElementById("btnPlay");
-    if(event.data === YT.PlayerState.PLAYING) isPlaying = true;
-    else isPlaying = false;
-    btnPlay.textContent = isPlaying?"⏸":"▶";
-}
-
-function playPause(){
-    if(currentSource==="local"){
-        if(audioPlayer.paused){ audioPlayer.play(); isPlaying=true; }
-        else{ audioPlayer.pause(); isPlaying=false; }
-    } else if(currentSource==="youtube"){
-        if(isPlaying) ytPlayer.pauseVideo();
-        else ytPlayer.playVideo();
-    }
-    document.getElementById("btnPlay").textContent = isPlaying?"⏸":"▶";
-}
-function avancar5(){ if(currentSource==="local") audioPlayer.currentTime+=5; else if(currentSource==="youtube") ytPlayer.seekTo(ytPlayer.getCurrentTime()+5,true);}
-function voltar5(){ if(currentSource==="local") audioPlayer.currentTime=Math.max(0,audioPlayer.currentTime-5); else if(currentSource==="youtube") ytPlayer.seekTo(Math.max(0,ytPlayer.getCurrentTime()-5),true);}
-function mudarVelocidade(){ const rate=parseFloat(document.getElementById("velocidade").value); if(currentSource==="local") audioPlayer.playbackRate=rate; else if(currentSource==="youtube") ytPlayer.setPlaybackRate(rate);}
-function marcarInicioLoop(){ loopStart=currentSource==="local"?audioPlayer.currentTime:ytPlayer.getCurrentTime();}
-function marcarFimLoop(){ loopEnd=currentSource==="local"?audioPlayer.currentTime:ytPlayer.getCurrentTime();}
-function desativarLoop(){ loopStart=0; loopEnd=null;}
-
-const barra=document.getElementById("barraProgresso");
-const tempoAtual=document.getElementById("tempoAtual");
-
-setInterval(()=>{
-    let current=0,duration=0;
-    if(currentSource==="local"&&audioPlayer.src){
-        current=audioPlayer.currentTime;
-        duration=audioPlayer.duration||0;
-        if(loopEnd && current>=loopEnd) audioPlayer.currentTime=loopStart;
-    } else if(currentSource==="youtube"&&ytPlayer&&ytPlayer.getCurrentTime){
-        current=ytPlayer.getCurrentTime();
-        duration=ytPlayer.getDuration();
-        if(loopEnd && current>=loopEnd) ytPlayer.seekTo(loopStart,true);
-    }
-    if(duration){
-        barra.value=(current/duration)*100;
-        tempoAtual.textContent=formatTime(current);
-    }
-},200);
-
-barra.addEventListener("input",()=>{
-    const val=barra.value;
-    if(currentSource==="local") audioPlayer.currentTime=(val/100)*audioPlayer.duration;
-    else if(currentSource==="youtube") ytPlayer.seekTo((val/100)*ytPlayer.getDuration(),true);
-});
-
-function formatTime(t){ const min=Math.floor(t/60); const sec=Math.floor(t%60); return `${min}:${sec.toString().padStart(2,"0")}`; }
 </script>
 </body>
 </html>
