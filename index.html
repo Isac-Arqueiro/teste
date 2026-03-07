@@ -1,826 +1,280 @@
-
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Editor de Cifras Pro</title>
-<link rel="manifest" href="manifest.json">
+
+<link rel="manifest" href="manifest.json">    
 <meta name="theme-color" content="#000000">
 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Spending Time TV</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
 <style>
-/* ----------------------- LOGIN ----------------------- */
-@keyframes brilhoBtn {
-  from { filter: drop-shadow(0 0 5px #ff3b3b); }
-  to { filter: drop-shadow(0 0 20px #ff3b3b); }
-}
 
-/* ----------------------- EDITOR ----------------------- */
 body{
-    font-family:Arial, sans-serif;
-    margin:0;
-    padding:10px;
-    background:#f4f4f4;
+font-family: Arial;
+background:#000;
+color:white;
+margin:0;
+padding:30px;
+text-align:center;
 }
 
-header{
-    background:#222;
-    color:white;
-    padding:10px;
-    border-radius:8px;
+h1{
+font-size:40px;
+margin-bottom:30px;
 }
 
-.botoes-topo button,
-.botoes button,
-.acoes button{
-    padding:8px 12px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
+.button-container{
+
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:25px;
+max-width:1200px;
+margin:auto;
+
 }
 
-.botoes-topo button{
-    background:#ddd;
-    margin:2px;
+.channel-button{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+
+background:#111;
+padding:25px;
+border-radius:15px;
+
+text-decoration:none;
+color:white;
+
+font-size:20px;
+
+outline:none;
+
 }
 
-.botoes{
-    display:flex;
-    flex-wrap:wrap;
-    gap:5px;
-    margin:10px 0;
+.channel-button img{
+
+width:90px;
+height:90px;
+object-fit:contain;
+background:white;
+border-radius:50%;
+padding:5px;
+margin-bottom:10px;
+
 }
 
-.botoes button{
-    background:#444;
-    color:white;
+/* foco para controle remoto */
+
+.channel-button:focus{
+
+transform:scale(1.15);
+border:4px solid #00c3ff;
+background:#222;
+
 }
 
-.botoes button:hover{
-    background:#0080ff;
+/* player */
+
+#playerBox{
+
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+
+display:none;
+align-items:center;
+justify-content:center;
+
 }
 
-#editor{
-    width:100%;
-    height:250px;
-    border-radius:8px;
-    padding:10px;
-    font-size:16px;
-    background:white;
-    overflow:auto;
+video{
+
+width:100%;
+height:100%;
+
 }
 
-/* ---------------- PLAYER MODERNO RESPONSIVO ---------------- */
+#close{
 
-.player{
-    margin-top:30px;
-    width:95%;
-    max-width:800px;
-    margin-left:auto;
-    margin-right:auto;
-    padding:25px;
-    border-radius:20px;
-    background: linear-gradient(135deg,#141e30,#243b55);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    color:white;
-    transition: 0.3s;
+position:absolute;
+top:20px;
+right:20px;
+
+background:red;
+border:none;
+
+padding:10px 20px;
+font-size:20px;
+color:white;
+
 }
 
-/* Inputs */
-.player input[type="file"],
-.player input[type="text"]{
-    width:100%;
-    padding:10px;
-    border-radius:8px;
-    border:none;
-    margin-bottom:10px;
-    font-size:15px;
-}
-
-/* Botões */
-.player button{
-    padding:10px 15px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-    transition:0.3s;
-}
-
-.player button:hover{
-    transform:scale(1.05);
-    background:#00c3ff;
-}
-
-/* Controles organizados */
-.player-controles{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:10px;
-    margin:15px 0;
-}
-
-/* Barra de progresso maior */
-#barraProgresso{
-    width:100%;
-    height:18px;
-    cursor:pointer;
-}
-
-/* RESPONSIVO PARA PC */
-@media (min-width: 768px){
-    .player{
-        max-width:1000px;
-        padding:35px;
-    }
-
-    #barraProgresso{
-        height:22px;
-    }
-}
-
-.player-controles{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    align-items:center;
-    margin-bottom:10px;
-}
-
-.player button{
-    background:#444;
-    color:white;
-}
-
-.player button:hover{
-    background:#0080ff;
-}
-
-#barraProgresso{
-    width:100%;
-    height:15px;
-    cursor:pointer;
-}
-.modo-visualizacao {
-    background: #999 !important;
-    display: flex;
-    justify-content: center;
-    padding: 40px 0;
-}
-
-.editor-zoom {
-    width: 794px;
-    min-height: 1123px;
-    background: white;
-    padding: 40px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    border-radius: 0;
-}
-
-.editor-bloqueado {
-    pointer-events: none;
-}
-/* ===== MODO PALCO ===== */
-
-.modo-palco header,
-.modo-palco .botoes-topo,
-.modo-palco .botoes,
-.modo-palco .acoes {
-    display: none !important;
-}
-
-.modo-palco #editor {
-    background: black;
-    color: white;
-    font-size: 28px;
-    min-height: 100vh;
-    padding: 60px;
-}
-
-.modo-palco .player {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    border-radius: 0;
-}
 </style>
 </head>
 
 <body>
 
-<!-- ----------------------- TELA DE LOGIN ----------------------- -->
-<div id="loginScreen" style="display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); font-family:Arial; flex-direction:column;">
-  <div style="background:white; padding:40px; border-radius:15px; width:220px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
-    <img src="https://i.imgur.com/51UirRx.png" width="100%" style="border-radius:10px; margin-bottom:20px;" alt="Imagem Login">
-    <h2 style="margin-bottom:20px;">🔐 Área de Login</h2>
-    <input type="password" id="senhaInput" placeholder="Digite sua senha" style="padding:12px; width:100%; border-radius:8px; border:1px solid #ccc; outline:none;">
-    <br><br>
-    <button onclick="verificarSenha()" style="padding:12px; width:100%; border:none; border-radius:8px; background:#28a745; color:white; font-weight:bold; cursor:pointer;">Entrar</button>
-    <button onclick="usarFree()" 
-style="padding:12px; width:100%; border:none; border-radius:8px; 
-background:#007bff; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">
-Visitante
-</button>
-    <p id="mensagemErro" style="color:red; display:none; margin-top:10px;">Senha incorreta fale com seu master</p>
-    <hr style="margin:30px 0;">      
-    
-  </div>
+<h1>📺 Spending Time</h1>
+
+<div class="button-container">
+
+<a class="channel-button" data-url="http://hls1.sua.tv/live/globotvbahiafhdbr2/s.m3u8" tabindex="1">
+<img src="https://images.seeklogo.com/logo-png/18/1/tv-globo-logo-png_seeklogo-181162.png">
+Globo
+</a>
+
+<a class="channel-button" data-url="https://rnw-rn.otteravision.com/rnw/rn/rnw_rn.m3u8" tabindex="2">
+<img src="https://th.bing.com/th/id/OIP.4Z8Ru4iEFCeei6oUcD6fTQHaFj?w=226&h=180">
+Record
+</a>
+
+<a class="channel-button" data-url="https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8" tabindex="3">
+<img src="https://i.ytimg.com/vi/Ziq7XKAlr6E/maxresdefault.jpg">
+SBT News
+</a>
+
+<a class="channel-button" data-url="https://video08.logicahost.com.br/portaldatropical02/portaldatropical02/chunklist_w1589932685.m3u8" tabindex="4">
+<img src="https://upload.wikimedia.org/wikipedia/pt/b/bc/Logotipo_da_TV_Tropical_%28Natal%29.png">
+TV Tropical
+</a>
+
+<a class="channel-button" data-url="https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8" tabindex="5">
+<img src="https://icon2.cleanpng.com/lnd/20241222/jb/5f86fa00f0d96411dd912694a63f9b.webp">
+FIFA
+</a>
+</a>
+
+        <!-- Sportv -->
+        <a href="https://globoplay.globo.com/ao-vivo/7689934/" target="_blank" class="channel-button band">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO6SpbEgXW9JZwi6iZKKIEZ7hlORG3YPqr2g&s" alt="Band">
+            <span>Sportv</span>
+        </a>
+
+        <!-- ESPN -->
+        <a href="https://stmv1.srvif.com/jetsontv/jetsontv/playlist.m3u8" target="_blank" class="channel-button rede-tv">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/The_Jetsons_%28television_series_logo%29.png" alt="RedeTV">
+            <span>ESPN</span>
+        </a>
+
+         <!-- ESPN 2-->
+        <a href="https://stmv1.srvif.com/gospelcartoon/gospelcartoon/playlist.m3u8" target="_blank" class="channel-button rede-tv">
+            <img src="https://i.imgur.com/yxjPno5.png" alt="RedeTV">
+            <span>Gospel Cartoon</span>
+        </a>
+<!-- ESPN -->
+        <a href="https://amogonetworx-grjngo-1-eu.plex.wurl.tv/playlist.m3u8" target="_blank" class="channel-button rede-tv">
+            <img src="https://www.filmclub.es/wp-content/uploads/2012/12/Django-Unchained_old-header.jpg" alt="Django">
+            <span>Djando</span>
+        </a>
+<!-- ESPN -->
+        <a href="https://tv02.zas.media:1936/redesuper/redesuper/playlist.m3u8
+" target="_blank" class="channel-button rede-tv">
+            <img src="https://i.imgur.com/rNizzxd.png" alt="Django">
+            <span>Rede Super</span>
+        </a>
+
+        <!-- Sportv 2 -->
+        <a href="https://live-manifest.production-public.tubi.io/live/dd6d627f-f0f8-48bb-b627-7f7c4fceec37/playlist.m3u8" target="_blank" class="channel-button rede-tv">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/UFC_Logo.svg/1280px-UFC_Logo.svg.png" alt="RedeTV">
+            <span>UFC</span>
+        </a>
+ <!-- Sportv 2 -->
+        <a href="https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_3360.m3u8" target="_blank" class="channel-button rede-tv">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHGjy6RvoevIlbF2TMR2sgf0wg-m0xvvIRw&s" alt="RedeTV">
+            <span>Red bull</span>
+        </a>
+</a>
+ <!-- Sportv 2 -->
+        <a href="https://amg01391-amg01391c10-tcl-br-9630.playouts.now.amagi.tv/1080p-cc/index.m3u8" target="_blank" class="channel-button rede-tv">
+            <img src="https://jogada10.com.br/wp-content/uploads/2025/02/Logo-Caze-TV.jpg" alt="RedeTV">
+            <span>Cazé tv</span>
+        </a>
+</a>
+ <!-- Sportv 2 -->
+        <a href="https://video04.logicahost.com.br/isonata/isonata/chunklist_w7914586.m3u8" target="_blank" class="channel-button rede-tv">
+            <img src="https://d14vd6r4ppsx57.cloudfront.net/media/img/mobile/featured/bgTVSonataMobile_3.jpg" alt="RedeTV">
+            <span>Sonata</span>
+        </a>
 </div>
 
-<!-- ----------------------- CONTAINER DA APLICAÇÃO ----------------------- -->
-<div id="appContainer" style="display:none;">
+<div id="playerBox">
 
-<header>
-<strong>Nova Música</strong><br>
-Tom:
-<select id="seletorTom"></select>
-|
-Compasso: 4/4
-</header>
+<button id="close">X</button>
 
-<div class="botoes-topo">
-<button onclick="inserirTexto('Intro.')">Intro</button>
-<button onclick="inserirTexto('Estrofe.')">Estrofe</button>
-<button onclick="inserirTexto('Pré-Refrão')">Pré-Refrão</button>
-<button onclick="inserirTexto('Refrão.')">Refrão</button>
-<button onclick="inserirTexto('Ponte.')">Ponte</button>
-<button onclick="ativarModoGrego()">MG</button>
-<button onclick="abrirPainelEstilo()">Tt</button>
-<button id="togglePipe" onclick="togglePipe()">|: ON</button>
-<button onclick="toggleFiguras()">Figuras</button>
-<button onclick="toggleZoom()" id="btnZoom">🔍</button>
+<video id="video" controls autoplay></video>
+
 </div>
 
-<div class="botoes" id="botoesNotas"></div>
-<div class="botoes" id="botoesFiguras" style="display:none;"></div>
-
-<div class="botoes">
-<button onclick="inserirTexto(' % |',true)">%</button>
-<button onclick="ativarSlash()">/</button>
-<button onclick="inserirTexto('|',true)">|</button>
-<button onclick="inserirTexto('°',true)">°</button>
-<button onclick="inserirTexto('#',true)">#</button>
-<button onclick="inserirTexto('{',true)">{</button>
-<button onclick="inserirTexto('}',true)">}</button>
-<button onclick="inserirManual()">Obs</button>
-</div>
-
-<div id="editor" contenteditable="true"></div>
-<div class="botoes" id="botoesDigitos" style="display:none; margin-top:5px;"></div>
-<div class="acoes">
-<button onclick="salvar()">Salvar |</button>
-<button onclick="apagarMusica()">Apagar Salvo |</button>
-<button onclick="buscar()">Buscar |</button>
-<button onclick="apagar()">Limpar |</button>
-<button onclick="salvarPDF()">Salvar PDF |</button>
-<button onclick="salvarJPG()">Salvar JPG |</button>
-</div>
-
-<!-- ----------------------- PLAYER UNIFICADO ----------------------- -->
-<div class="player">
-  <input type="file" id="audioFile" accept="audio/*">
-  <input type="text" id="youtubeURL" placeholder="Cole link do YouTube">
-  <button onclick="tocarYoutube()">▶️ Tocar YouTube</button>
-
-  <div class="player-controles">
-    <button onclick="voltar5()">⏪ 5s</button>
-    <button onclick="playPause()" id="btnPlay">▶</button>
-    <button onclick="avancar5()">5s ⏩</button>
-
-    <select id="velocidade" onchange="mudarVelocidade()">
-      <option value="0.5">0.5x</option>
-      <option value="0.75">0.75x</option>
-      <option value="1" selected>1x</option>
-      <option value="1.25">1.25x</option>
-      <option value="1.5">1.5x</option>
-    </select>
-
-    <button onclick="marcarInicioLoop()">A</button>
-    <button onclick="marcarFimLoop()">B</button>
-    <button onclick="desativarLoop()">Loop Off</button>
-
-    <span id="tempoAtual">0:00</span>
-  </div>
-
-  <input type="range" id="barraProgresso" value="0" min="0" max="100">
-  <div id="youtubePlayer" style="display:none;"></div>
-</div>
-
-<button id="btnInstall" style="display:none;">📲 Instalar App</button>
-</div>
-
-<script src="https://www.youtube.com/iframe_api"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-// ----------------------- LOGIN -----------------------
-// ----------------------- LOGIN -----------------------
-const senhasPermitidas = ["Shalon","00a00","10a10","20a20","30a33","40a40","50a50"];
 
-function verificarSenha() {
-  const senha = document.getElementById("senhaInput").value;
-  const erro = document.getElementById("mensagemErro");
+/* =============================
+PLAYER
+============================= */
 
-  if (senhasPermitidas.includes(senha)) {
-    // Usuário logado apenas na sessão atual
-    window.usuarioLogado = true; // variável temporária
-    erro.style.display = "none";
-    mostrarApp();
-    alert("✅ Acesso liberado!");
-} else {
-    erro.style.display = "block";
-  }
-}
-async function salvarJPG(){
+const video = document.getElementById("video")
+const playerBox = document.getElementById("playerBox")
 
-    const editor = document.getElementById("editor");
+document.querySelectorAll(".channel-button").forEach(btn=>{
 
-    if(!editor.innerHTML.trim()){
-        alert("Editor vazio!");
-        return;
-    }
+btn.addEventListener("click",()=>{
 
-    // 🔴 Guarda altura e overflow originais
-    const alturaOriginal = editor.style.height;
-    const overflowOriginal = editor.style.overflow;
+const url = btn.dataset.url
 
-    // 🟢 Remove limite para pegar a música inteira
-    editor.style.height = "auto";
-    editor.style.overflow = "visible";
+playerBox.style.display="flex"
 
-    const canvas = await html2canvas(editor, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff"
-    });
+if(Hls.isSupported()){
 
-    // 🔵 Restaura o editor ao normal
-    editor.style.height = alturaOriginal;
-    editor.style.overflow = overflowOriginal;
+const hls = new Hls()
+hls.loadSource(url)
+hls.attachMedia(video)
 
-    const blob = await new Promise(resolve =>
-        canvas.toBlob(resolve, "image/jpeg", 0.95)
-    );
+}else{
 
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "musica.jpg";
-    link.click();
-}
-function apagarMusica(){
+video.src=url
 
-    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
-
-    if(musicas.length === 0){
-        alert("❌ Nenhuma música salva!");
-        return;
-    }
-
-    let lista = "Músicas salvas:\n\n";
-
-    musicas.forEach((m, i) => {
-        lista += `${i+1} - ${m.nome}\n`;
-    });
-
-    let escolha = prompt(lista + "\nDigite o número da música que deseja apagar:");
-
-    let index = parseInt(escolha) - 1;
-
-    if(musicas[index]){
-
-        let confirmar = confirm(`Deseja realmente apagar "${musicas[index].nome}"?`);
-
-        if(confirmar){
-            musicas.splice(index, 1);
-            localStorage.setItem("listaMusicas", JSON.stringify(musicas));
-            alert("🗑 Música apagada com sucesso!");
-        }
-
-    } else {
-        alert("❌ Número inválido!");
-    }
-}
-function usarFree() {
-  localStorage.setItem("usuarioLogado", "true");
-  mostrarApp();
-  alert("✅ Acesso Visitante liberado!");
 }
 
-function mostrarApp() {
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("appContainer").style.display = "block";
+})
+
+})
+
+/* fechar player */
+
+document.getElementById("close").onclick=()=>{
+
+playerBox.style.display="none"
+video.pause()
+
 }
 
-function logout() {
-  localStorage.removeItem("usuarioLogado");
-  location.reload();
+/* =============================
+CONTROLE REMOTO
+============================= */
+
+document.addEventListener("keydown",function(e){
+
+if(e.key==="Enter"){
+
+document.activeElement.click()
+
 }
 
-// ----------------------- EDITOR -----------------------
-let tomAtual="C";
-let tomAnterior = tomAtual;
-let pipeAtivo=true;
+})
 
-const escalas = {
-    C: ["C","Dm","Em","F","G","Am","B°"],
-    Db: ["Db","Ebm","Fm","Gb","Ab","Bbm","C°"],
-    D: ["D","Em","F#m","G","A","Bm","C#°"],
-    Eb: ["Eb","Fm","Gm","Ab","Bb","Cm","D°"],
-    E: ["E","F#m","G#m","A","B","C#m","D#°"],
-    F: ["F","Gm","Am","Bb","C","Dm","E°"],
-    Gb: ["Gb","Abm","Bbm","Cb","Db","Ebm","F°"],
-    G: ["G","Am","Bm","C","D","Em","F#°"],
-    Ab: ["Ab","Bbm","Cm","Db","Eb","Fm","G°"],
-    A: ["A","Bm","C#m","D","E","F#m","G#°"],
-    Bb: ["Bb","Cm","Dm","Eb","F","Gm","A°"],
-    B: ["B","C#m","D#m","E","F#","G#m","A#°"]
-};
+/* foco inicial */
 
-const seletor=document.getElementById("seletorTom");
-Object.keys(escalas).forEach(t=>{
-    let o=document.createElement("option");
-    o.value=t;o.textContent=t;
-    seletor.appendChild(o);
-});
-seletor.value=tomAtual;
-seletor.onchange = function(){
+document.querySelector(".channel-button").focus()
 
-    var novoTom = seletor.value;
-
-    transporMusica(tomAnterior, novoTom);
-
-    tomAnterior = novoTom;
-    tomAtual = novoTom;
-
-    gerarBotoes();
-};
-let modoZoom = false;
-
-let tamanhoFonte = 16; // tamanho inicial
-
-function toggleZoom(){
-    const editor = document.getElementById("editor");
-    const btn = document.getElementById("btnZoom");
-
-    if(tamanhoFonte === 16){
-        tamanhoFonte = 24; // aumenta
-        btn.textContent = "↩ Voltar";
-    } else {
-        tamanhoFonte = 16; // volta ao normal
-        btn.textContent = "🔍";
-    }
-
-    editor.style.fontSize = tamanhoFonte + "px";
-}
-
-function gerarBotoes(){
-    let c=document.getElementById("botoesNotas");
-    c.innerHTML="";
-    escalas[tomAtual].forEach(a=>{
-        let b=document.createElement("button");
-        b.textContent=a;
-        b.onclick=()=>inserirTexto(a);
-        c.appendChild(b);
-    });
-}
-gerarBotoes();
-
-function togglePipe(){
-    pipeAtivo=!pipeAtivo;
-    document.getElementById("togglePipe").textContent=
-    pipeAtivo?"| : ON":"| : OFF";
-}
-
-function inserirTexto(t,forcarSemPipe=false){
-    const editor=document.getElementById("editor");
-    editor.focus();
-    let semPipe=["Intro.","Refrão.","Pré-Refrão","Ponte.","Estrofe."];
-    if(!forcarSemPipe && pipeAtivo && !semPipe.includes(t)){
-        t+=" | ";
-    }
-    document.execCommand("insertText",false,t);
-}
-
-function ativarSlash(){
-    inserirTexto("/",true);
-    let c=document.getElementById("botoesDigitos");
-    c.style.display="flex";
-    c.innerHTML="";
-    ["3","5","7"].forEach(d=>{
-        let b=document.createElement("button");
-        b.textContent=d;
-        b.onclick=()=>{
-            inserirTexto(d,true);
-            c.style.display="none";
-        };
-        c.appendChild(b);
-    });
-}
-
-function ativarModoGrego(){
-    let c=document.getElementById("botoesNotas");
-    c.innerHTML="";
-    ["I","II","III","IV","V","VI","VII"].forEach(n=>{
-        let b=document.createElement("button");
-        b.textContent=n;
-        b.onclick=()=>inserirTexto(n);
-        c.appendChild(b);
-    });
-}
-
-function abrirPainelEstilo(){
-    let opcao = prompt("1-Negrito\n2-Itálico\n3-Sublinhado\n4-Aumentar\n5-Diminuir\n6-Tamanho Personalizado");
-    if(!opcao) return;
-    switch(opcao){
-        case "1": document.execCommand("bold"); break;
-        case "2": document.execCommand("italic"); break;
-        case "3": document.execCommand("underline"); break;
-        case "4": document.execCommand("fontSize",false,"5"); break;
-        case "5": document.execCommand("fontSize",false,"2"); break;
-        case "6":
-            let tamanho=prompt("Digite o tamanho (ex: 18)");
-            if(tamanho){
-                document.execCommand("fontSize",false,"7");
-                let fonts=document.getElementsByTagName("font");
-                for(let i=0;i<fonts.length;i++){
-                    if(fonts[i].size=="7"){
-                        fonts[i].removeAttribute("size");
-                        fonts[i].style.fontSize=tamanho+"px";
-                    }
-                }
-            }
-            break;
-    }
-}
-
-function inserirManual(){
-    let t = prompt("Digite observação:");
-    if(t){
-        const editor = document.getElementById("editor");
-        editor.focus();
-        document.execCommand("styleWithCSS", false, true);
-        document.execCommand("foreColor", false, "red");
-        document.execCommand("insertText", false, t);
-        document.execCommand("foreColor", false, "black");
-    }
-}
-
-const figurasMusicais = [
-    {simbolo: "♩", label: "seminima"},
-    {simbolo: "♫", label: "Duas Colcheias"},
-    {simbolo: "♬", label: "Quatro Semicolcheias"},
-    {simbolo: "♪", label: "Cocheia"},
-    {simbolo: "𝄐", label: "Fermata"},
-    {simbolo: "𝄾", label: "Pausa Quarto"},
-    {simbolo: "🎹", label: "Teclado"},
-    {simbolo: "🎸", label: "Guitarra"},
-    {simbolo: "🥁", label: "Bateria"},
-    {simbolo: "🎤", label: "Voz"},
-    {simbolo: "🎷", label: "Saxofone"},
-    {simbolo: "🎶", label: "Intencidade"}
-];
-
-function toggleFiguras(){
-    const div=document.getElementById("botoesFiguras");
-    if(div.style.display==="none"){
-        div.style.display="flex";
-        div.innerHTML="";
-        figurasMusicais.forEach(f=>{
-            const btn=document.createElement("button");
-            btn.textContent=f.simbolo;
-            btn.title=f.label;
-            btn.onclick=()=>inserirTexto(f.simbolo);
-            div.appendChild(btn);
-        });
-    } else {
-        div.style.display="none";
-    }
-}
-
-function salvar(){
-
-    const conteudo = document.getElementById("editor").innerHTML;
-
-    if(!conteudo.trim()){
-        alert("❌ Editor vazio!");
-        return;
-    }
-
-    let nome = prompt("Digite o nome da música:");
-    if(!nome) return;
-
-    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
-
-    if(musicas.length >= 20){
-        alert("⚠️ Limite de 20 músicas atingido!");
-        return;
-    }
-
-    musicas.push({
-        nome: nome,
-        conteudo: conteudo,
-        data: new Date().toLocaleDateString()
-    });
-
-    localStorage.setItem("listaMusicas", JSON.stringify(musicas));
-
-    alert("✅ Música salva com sucesso!");
-}
-
-function buscar(){
-
-    let musicas = JSON.parse(localStorage.getItem("listaMusicas")) || [];
-
-    if(musicas.length === 0){
-        alert("❌ Nenhuma música salva!");
-        return;
-    }
-
-    let lista = "Músicas salvas:\n\n";
-
-    musicas.forEach((m, i) => {
-        lista += `${i+1} - ${m.nome} (${m.data})\n`;
-    });
-
-    let escolha = prompt(lista + "\nDigite o número da música:");
-
-    let index = parseInt(escolha) - 1;
-
-    if(musicas[index]){
-        document.getElementById("editor").innerHTML = musicas[index].conteudo;
-    } else {
-        alert("❌ Número inválido!");
-    }
-}
-
-function apagar(){
-    if(confirm("Deseja realmente apagar o conteúdo?")){
-        document.getElementById("editor").innerHTML="";
-    }
-}
-
-async function salvarPDF(){
-
-    const editor = document.getElementById("editor");
-
-    if(!editor.innerHTML.trim()){
-        alert("Editor vazio!");
-        return;
-    }
-
-    // Criar container temporário A4
-    const container = document.createElement("div");
-
-    container.style.width = "794px"; // largura A4 em px
-    container.style.padding = "40px";
-    container.style.background = "white";
-    container.style.color = "black";
-    container.style.fontSize = "16px";
-    container.style.boxSizing = "border-box";
-    container.innerHTML = editor.innerHTML;
-
-    document.body.appendChild(container);
-
-    const opt = {
-        margin: 10,
-        filename: "musica.pdf",
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["css", "legacy"] }
-    };
-
-    await html2pdf().set(opt).from(container).save();
-
-    document.body.removeChild(container);
-}
-function transporMusica(tomOrigem, tomDestino){
-
-    var editor = document.getElementById("editor");
-    var texto = editor.innerHTML;
-
-    var escalaOrigem = escalas[tomOrigem];
-    var escalaDestino = escalas[tomDestino];
-
-    // Criar cópia temporária para evitar troca dupla
-    for(var i = 0; i < escalaOrigem.length; i++){
-
-        var acordeOrigem = escalaOrigem[i];
-        var marcador = "##" + i + "##";
-
-        var regex = new RegExp("\\b" + acordeOrigem + "\\b", "g");
-
-        texto = texto.replace(regex, marcador);
-    }
-
-    // Agora substitui marcadores pelo destino
-    for(var i = 0; i < escalaDestino.length; i++){
-
-        var marcador = "##" + i + "##";
-        var acordeDestino = escalaDestino[i];
-
-        var regex = new RegExp(marcador, "g");
-
-        texto = texto.replace(regex, acordeDestino);
-    }
-
-    editor.innerHTML = texto;
-}
-
-// ----------------------- PLAYER UNIFICADO -----------------------
-let ytPlayer = null;
-let audioPlayer = new Audio();
-let currentSource = null;
-let loopStart = 0, loopEnd = null;
-let isPlaying = false;
-
-const fileInput = document.getElementById("audioFile");
-fileInput.addEventListener("change", function() {
-    const file = this.files[0];
-    if(!file) return;
-    currentSource = "local";
-    ytPlayer && ytPlayer.pauseVideo();
-    audioPlayer.src = URL.createObjectURL(file);
-    audioPlayer.load();
-    audioPlayer.play();
-    isPlaying = true;
-    document.getElementById("btnPlay").textContent = "⏸";
-});
-
-function onYouTubeIframeAPIReady() {
-    ytPlayer = new YT.Player('youtubePlayer', {
-        height:'0', width:'0', videoId:'',
-        playerVars:{ autoplay:0, controls:0, modestbranding:1 },
-        events:{ 'onStateChange': onPlayerStateChange }
-    });
-}
-
-function tocarYoutube() {
-    const url = document.getElementById("youtubeURL").value;
-    if(!url) return alert("Insira link do YouTube!");
-    const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
-    if(!match) return alert("URL inválida!");
-    const videoId = match[1];
-    currentSource = "youtube";
-    audioPlayer.pause();
-    ytPlayer.loadVideoById(videoId);
-    isPlaying = true;
-    document.getElementById("btnPlay").textContent = "⏸";
-}
-
-function onPlayerStateChange(event){
-    const btnPlay = document.getElementById("btnPlay");
-    if(event.data === YT.PlayerState.PLAYING) isPlaying = true;
-    else isPlaying = false;
-    btnPlay.textContent = isPlaying?"⏸":"▶";
-}
-
-function playPause(){
-    if(currentSource==="local"){
-        if(audioPlayer.paused){ audioPlayer.play(); isPlaying=true; }
-        else{ audioPlayer.pause(); isPlaying=false; }
-    } else if(currentSource==="youtube"){
-        if(isPlaying) ytPlayer.pauseVideo();
-        else ytPlayer.playVideo();
-    }
-    document.getElementById("btnPlay").textContent = isPlaying?"⏸":"▶";
-}
-function avancar5(){ if(currentSource==="local") audioPlayer.currentTime+=5; else if(currentSource==="youtube") ytPlayer.seekTo(ytPlayer.getCurrentTime()+5,true);}
-function voltar5(){ if(currentSource==="local") audioPlayer.currentTime=Math.max(0,audioPlayer.currentTime-5); else if(currentSource==="youtube") ytPlayer.seekTo(Math.max(0,ytPlayer.getCurrentTime()-5),true);}
-function mudarVelocidade(){ const rate=parseFloat(document.getElementById("velocidade").value); if(currentSource==="local") audioPlayer.playbackRate=rate; else if(currentSource==="youtube") ytPlayer.setPlaybackRate(rate);}
-function marcarInicioLoop(){ loopStart=currentSource==="local"?audioPlayer.currentTime:ytPlayer.getCurrentTime();}
-function marcarFimLoop(){ loopEnd=currentSource==="local"?audioPlayer.currentTime:ytPlayer.getCurrentTime();}
-function desativarLoop(){ loopStart=0; loopEnd=null;}
-
-const barra=document.getElementById("barraProgresso");
-const tempoAtual=document.getElementById("tempoAtual");
-
-setInterval(()=>{
-    let current=0,duration=0;
-    if(currentSource==="local"&&audioPlayer.src){
-        current=audioPlayer.currentTime;
-        duration=audioPlayer.duration||0;
-        if(loopEnd && current>=loopEnd) audioPlayer.currentTime=loopStart;
-    } else if(currentSource==="youtube"&&ytPlayer&&ytPlayer.getCurrentTime){
-        current=ytPlayer.getCurrentTime();
-        duration=ytPlayer.getDuration();
-        if(loopEnd && current>=loopEnd) ytPlayer.seekTo(loopStart,true);
-    }
-    if(duration){
-        barra.value=(current/duration)*100;
-        tempoAtual.textContent=formatTime(current);
-    }
-},200);
-
-barra.addEventListener("input",()=>{
-    const val=barra.value;
-    if(currentSource==="local") audioPlayer.currentTime=(val/100)*audioPlayer.duration;
-    else if(currentSource==="youtube") ytPlayer.seekTo((val/100)*ytPlayer.getDuration(),true);
-});
-
-function formatTime(t){ const min=Math.floor(t/60); const sec=Math.floor(t%60); return `${min}:${sec.toString().padStart(2,"0")}`; }
 </script>
+
 </body>
 </html>
