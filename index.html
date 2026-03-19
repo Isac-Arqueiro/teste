@@ -1,284 +1,49 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
-
-<link rel="manifest" href="manifest.json">    
-<meta name="theme-color" content="#000000">
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Spending Time TV</title>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-<style>
-
-body{
-font-family: Arial;
-background:#000;
-color:white;
-margin:0;
-padding:30px;
-text-align:center;
-}
-
-h1{
-font-size:40px;
-margin-bottom:30px;
-}
-
-.button-container{
-
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:25px;
-max-width:1200px;
-margin:auto;
-
-}
-
-.channel-button{
-
-display:flex;
-flex-direction:column;
-align-items:center;
-
-background:#111;
-padding:25px;
-border-radius:15px;
-
-text-decoration:none;
-color:white;
-
-font-size:20px;
-
-outline:none;
-
-}
-
-.channel-button img{
-
-width:90px;
-height:90px;
-object-fit:contain;
-background:white;
-border-radius:50%;
-padding:5px;
-margin-bottom:10px;
-
-}
-
-/* foco para controle remoto */
-
-.channel-button:focus{
-
-transform:scale(1.15);
-border:4px solid #00c3ff;
-background:#222;
-
-}
-
-/* player */
-
-#playerBox{
-
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:black;
-
-display:none;
-align-items:center;
-justify-content:center;
-
-}
-
-video{
-
-width:100%;
-height:100%;
-
-}
-
-#close{
-
-position:absolute;
-top:20px;
-right:20px;
-
-background:red;
-border:none;
-
-padding:10px 20px;
-font-size:20px;
-color:white;
-
-}
-
-</style>
-</head>
-
+<html>
 <body>
 
-<h1>📺 Spending Time</h1>
+<h2>Painel Controle</h2>
 
-<div class="button-container">
+<input id="id" placeholder="box1"><br><br>
 
-<a class="channel-button" data-url="http://hls1.sua.tv/live/globotvbahiafhdbr2/s.m3u8" tabindex="1">
-<img src="https://images.seeklogo.com/logo-png/18/1/tv-globo-logo-png_seeklogo-181162.png">
-Globo
-</a>
+<button onclick="bloquear()">Bloquear</button>
+<button onclick="liberar()">Liberar</button><br><br>
 
-<a class="channel-button" data-url="https://rnw-rn.otteravision.com/rnw/rn/rnw_rn.m3u8" tabindex="2">
-<img src="https://th.bing.com/th/id/OIP.4Z8Ru4iEFCeei6oUcD6fTQHaFj?w=226&h=180">
-Record
-</a>
+<input id="tempo" placeholder="Tempo em segundos">
+<button onclick="tempo()">Tempo diário</button><br><br>
 
-<a class="channel-button" data-url="https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8" tabindex="3">
-<img src="https://i.ytimg.com/vi/Ziq7XKAlr6E/maxresdefault.jpg">
-SBT News
-</a>
-
-<a class="channel-button" data-url="https://video08.logicahost.com.br/portaldatropical02/portaldatropical02/chunklist_w1589932685.m3u8" tabindex="4">
-<img src="https://upload.wikimedia.org/wikipedia/pt/b/bc/Logotipo_da_TV_Tropical_%28Natal%29.png">
-TV Tropical
-</a>
-
-<a class="channel-button" data-url="https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8" tabindex="5">
-<img src="https://icon2.cleanpng.com/lnd/20241222/jb/5f86fa00f0d96411dd912694a63f9b.webp">
-FIFA
-</a>
-</a>
-
-        <!-- Sportv -->
-        <a href="https://globoplay.globo.com/ao-vivo/7689934/" target="_blank" class="channel-button band">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO6SpbEgXW9JZwi6iZKKIEZ7hlORG3YPqr2g&s" alt="Band">
-            <span>Sportv</span>
-        </a>
-
-        <!-- ESPN -->
-        <a href="https://stmv1.srvif.com/jetsontv/jetsontv/playlist.m3u8" target="_blank" class="channel-button rede-tv">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/The_Jetsons_%28television_series_logo%29.png" alt="RedeTV">
-            <span>ESPN</span>
-        </a>
-
-         <!-- ESPN 2-->
-        <a href="https://stmv1.srvif.com/gospelcartoon/gospelcartoon/playlist.m3u8" target="_blank" class="channel-button rede-tv">
-            <img src="https://i.imgur.com/yxjPno5.png" alt="RedeTV">
-            <span>Gospel Cartoon</span>
-        </a>
-<!-- ESPN -->
-        <a href="https://amogonetworx-grjngo-1-eu.plex.wurl.tv/playlist.m3u8" target="_blank" class="channel-button rede-tv">
-            <img src="https://www.filmclub.es/wp-content/uploads/2012/12/Django-Unchained_old-header.jpg" alt="Django">
-            <span>Djando</span>
-        </a>
-<!-- ESPN -->
-        <a href="https://tv02.zas.media:1936/redesuper/redesuper/playlist.m3u8
-" target="_blank" class="channel-button rede-tv">
-            <img src="https://i.imgur.com/rNizzxd.png" alt="Django">
-            <span>Rede Super</span>
-        </a>
-
-        <!-- Sportv 2 -->
-        <a href="https://live-manifest.production-public.tubi.io/live/dd6d627f-f0f8-48bb-b627-7f7c4fceec37/playlist.m3u8" target="_blank" class="channel-button rede-tv">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/UFC_Logo.svg/1280px-UFC_Logo.svg.png" alt="RedeTV">
-            <span>UFC</span>
-        </a>
- <!-- Sportv 2 -->
-        <a href="https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_3360.m3u8" target="_blank" class="channel-button rede-tv">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHGjy6RvoevIlbF2TMR2sgf0wg-m0xvvIRw&s" alt="RedeTV">
-            <span>Red bull</span>
-        </a>
-</a>
- <!-- Sportv 2 -->
-        <a href="https://amg01391-amg01391c10-tcl-br-9630.playouts.now.amagi.tv/1080p-cc/index.m3u8" target="_blank" class="channel-button rede-tv">
-            <img src="https://jogada10.com.br/wp-content/uploads/2025/02/Logo-Caze-TV.jpg" alt="RedeTV">
-            <span>Cazé tv</span>
-        </a>
-        
- <!-- Sportv 2 -->
-        <a href="https://video04.logicahost.com.br/isonata/isonata/chunklist_w7914586.m3u8" target="_blank" class="channel-button rede-tv">
-            <img src="https://d14vd6r4ppsx57.cloudfront.net/media/img/mobile/featured/bgTVSonataMobile_3.jpg" alt="RedeTV">
-            <span>Sonata</span>
-        </a>
-<!-- Sportv 2 -->
-        <a href="https://cdnst68.tokyvideo.com/videos/611/611783/mp4/990e5704a6c7654af0ba87fb8f8c703e3002fc3e29d48562301ab99a8d4cd014.mp4?secure=pyVYnmCBnp972Jpta7rbmA%3D%3D%2C1772993497" target="_blank" class="channel-button rede-tv">
-            <img src="https://img68.tokyvideo.com/videos/611/611783/previews/previews_0012_custom_1730719365.3287.jpg" alt="RedeTV">
-            <span>A Fábrica do Golpe de Estado</span>
-        </a>
-</div>
-
-<div id="playerBox">
-
-<button id="close">X</button>
-
-<video id="video" controls autoplay></video>
-
-</div>
+<input id="msg" placeholder="Mensagem">
+<button onclick="msg()">Enviar Aviso</button>
 
 <script>
-
-/* =============================
-PLAYER
-============================= */
-
-const video = document.getElementById("video")
-const playerBox = document.getElementById("playerBox")
-
-document.querySelectorAll(".channel-button").forEach(btn=>{
-
-btn.addEventListener("click",()=>{
-
-const url = btn.dataset.url
-
-playerBox.style.display="flex"
-
-if(Hls.isSupported()){
-
-const hls = new Hls()
-hls.loadSource(url)
-hls.attachMedia(video)
-
-}else{
-
-video.src=url
-
+function enviar(dados){
+  fetch("https://api.jsonbin.io/v3/b/YOUR_ID", {
+    method:"PUT",
+    headers:{
+      "Content-Type":"application/json",
+      "X-Master-Key":"SUA_CHAVE"
+    },
+    body: JSON.stringify(dados)
+  });
 }
 
-})
-
-})
-
-/* fechar player */
-
-document.getElementById("close").onclick=()=>{
-
-playerBox.style.display="none"
-video.pause()
-
+function bloquear(){
+  enviar({ box1:{cmd:"bloquear"} });
 }
 
-/* =============================
-CONTROLE REMOTO
-============================= */
-
-document.addEventListener("keydown",function(e){
-
-if(e.key==="Enter"){
-
-document.activeElement.click()
-
+function liberar(){
+  enviar({ box1:{cmd:"liberar"} });
 }
 
-})
+function tempo(){
+  let t = document.getElementById("tempo").value;
+  enviar({ box1:{cmd:"tempo", tempo:parseInt(t)} });
+}
 
-/* foco inicial */
-
-document.querySelector(".channel-button").focus()
-
+function msg(){
+  let m = document.getElementById("msg").value;
+  enviar({ box1:{cmd:"msg", msg:m} });
+}
 </script>
 
 </body>
