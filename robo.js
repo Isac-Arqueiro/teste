@@ -1,34 +1,39 @@
 const fs = require("fs");
 
-function gerarPreco(min, max){
-  return (Math.random() * (max - min) + min).toFixed(2);
+function gerarLink(produto){
+  return `https://www.google.com/search?q=${produto}+promoção+natal+rn+preço`;
 }
 
-async function atualizar() {
-
-  const dados = [
-    {
-      produto: "manteiga",
-      preco: "R$ " + gerarPreco(4,8),
-      loja: "Supermercado RN",
-      link: "https://www.google.com/search?q=manteiga+promoção+natal+rn"
-    },
-    {
-      produto: "arroz",
-      preco: "R$ " + gerarPreco(18,30),
-      loja: "Atacadão",
-      link: "https://www.google.com/search?q=arroz+promoção+natal+rn"
-    },
-    {
-      produto: "carne",
-      preco: "R$ " + gerarPreco(20,50),
-      loja: "Assaí",
-      link: "https://www.google.com/search?q=carne+promoção+natal+rn"
-    }
-  ];
-
-  fs.writeFileSync("dados.json", JSON.stringify(dados, null, 2));
-  console.log("Atualizado!");
+function gerarPreco(){
+  return (Math.random() * 10 + 5).toFixed(2);
 }
 
-atualizar();
+const produtos = [
+  "manteiga",
+  "arroz",
+  "feijão",
+  "carne",
+  "leite",
+  "frango",
+  "café",
+  "açúcar"
+];
+
+let dados = [];
+
+produtos.forEach(produto => {
+
+  for(let i = 0; i < 3; i++){ // gera vários resultados
+    dados.push({
+      produto: produto,
+      preco: "R$ " + gerarPreco(),
+      loja: "Oferta encontrada",
+      link: gerarLink(produto)
+    });
+  }
+
+});
+
+fs.writeFileSync("dados.json", JSON.stringify(dados, null, 2));
+
+console.log("Promoções atualizadas!");
