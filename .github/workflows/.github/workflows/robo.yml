@@ -11,6 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Instalar dependências
+        run: npm install
+
       - name: Rodar robo
         run: node robo.js
 
@@ -19,5 +22,5 @@ jobs:
           git config user.name "bot"
           git config user.email "bot@email.com"
           git add .
-          git commit -m "Atualizando"
+          git commit -m "Atualizando promoções reais"
           git push
