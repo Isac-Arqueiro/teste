@@ -1,49 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Promo RN</title>
+
+<style>
+body { font-family: Arial; background:#111; color:#fff; text-align:center; }
+input { padding:10px; width:70%; border-radius:10px; }
+button { padding:10px; background:#00ff88; border:none; border-radius:10px; }
+.card { background:#1e1e1e; margin:10px; padding:10px; border-radius:10px; }
+</style>
+</head>
+
 <body>
 
-<h2>Painel Controle</h2>
+<h2>🔥 Promoções Natal RN</h2>
 
-<input id="id" placeholder="box1"><br><br>
+<input id="busca" placeholder="Digite: manteiga, arroz...">
+<button onclick="filtrar()">Buscar</button>
 
-<button onclick="bloquear()">Bloquear</button>
-<button onclick="liberar()">Liberar</button><br><br>
-
-<input id="tempo" placeholder="Tempo em segundos">
-<button onclick="tempo()">Tempo diário</button><br><br>
-
-<input id="msg" placeholder="Mensagem">
-<button onclick="msg()">Enviar Aviso</button>
+<div id="lista"></div>
 
 <script>
-function enviar(dados){
-  fetch("https://api.jsonbin.io/v3/b/YOUR_ID", {
-    method:"PUT",
-    headers:{
-      "Content-Type":"application/json",
-      "X-Master-Key":"SUA_CHAVE"
-    },
-    body: JSON.stringify(dados)
+let dados = [];
+
+async function carregar() {
+  let res = await fetch("dados.json");
+  dados = await res.json();
+  mostrar(dados);
+}
+
+function mostrar(lista){
+  let html = "";
+  lista.forEach(p => {
+    html += `
+      <div class="card">
+        <b>${p.produto}</b><br>
+        💰 ${p.preco}<br>
+        🏬 ${p.loja}<br>
+        <a href="${p.link}" target="_blank">Ver oferta</a>
+      </div>
+    `;
   });
+  document.getElementById("lista").innerHTML = html;
 }
 
-function bloquear(){
-  enviar({ box1:{cmd:"bloquear"} });
+function filtrar(){
+  let termo = document.getElementById("busca").value.toLowerCase();
+  let filtrado = dados.filter(p =>
+    p.produto.toLowerCase().includes(termo)
+  );
+  mostrar(filtrado);
 }
 
-function liberar(){
-  enviar({ box1:{cmd:"liberar"} });
-}
-
-function tempo(){
-  let t = document.getElementById("tempo").value;
-  enviar({ box1:{cmd:"tempo", tempo:parseInt(t)} });
-}
-
-function msg(){
-  let m = document.getElementById("msg").value;
-  enviar({ box1:{cmd:"msg", msg:m} });
-}
+carregar();
 </script>
 
 </body>
