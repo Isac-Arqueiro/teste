@@ -1,39 +1,52 @@
 const fs = require("fs");
+const fetch = require("node-fetch");
+const cheerio = require("cheerio");
 
-function gerarLink(produto){
-  return `https://www.google.com/search?q=${produto}+promoção+natal+rn+preço`;
+async function buscarProduto(produto){
+
+  const url = `https://www.google.com/search?q=${produto}+promoção+natal+rn&hl=pt-BR`;
+
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent": "Mozilla/5.0"
+    }
+  });
+
+  const html = await res.text();
+  const $ = cheerio.load(html);
+
+  let resultados = [];
+
+  $("a").each((i, el) => {
+    const texto = $(el).text();
+
+    if(texto.toLowerCase().includes(produto.toLowerCase()) && texto.length > 30){
+      resultados.push({
+        produto: produto,
+        preco: "Ver oferta",
+        loja: "Internet",
+        link: $(el).attr("href")
+      });
+    }
+  });
+
+  return resultados.slice(0, 5);
 }
 
-function gerarPreco(){
-  return (Math.random() * 10 + 5).toFixed(2);
-}
+async function atualizar(){
 
-const produtos = [
-  "manteiga",
-  "arroz",
-  "feijão",
-  "carne",
-  "leite",
-  "frango",
-  "café",
-  "açúcar"
-];
+  const produtos = ["manteiga", "arroz", "carne", "leite"];
 
-let dados = [];
+  let dados = [];
 
-produtos.forEach(produto => {
-
-  for(let i = 0; i < 3; i++){ // gera vários resultados
-    dados.push({
-      produto: produto,
-      preco: "R$ " + gerarPreco(),
-      loja: "Oferta encontrada",
-      link: gerarLink(produto)
-    });
+  for(let p of produtos){
+    let res = await buscarProduto(p);
+    dados = dados.concat(res);
   }
 
-});
+  fs.writeFileSync("dados.json", JSON.stringify(dados, null, 2));
 
-fs.writeFileSync("dados.json", JSON.stringify(dados, null, 2));
+  console.log("Promoções reais atualizadas!");
+}
 
-console.log("Promoções atualizadas!");
+atualizar();
