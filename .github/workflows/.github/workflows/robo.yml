@@ -1,0 +1,23 @@
+name: Atualizar Promocoes
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Rodar robo
+        run: node robo.js
+
+      - name: Salvar
+        run: |
+          git config user.name "bot"
+          git config user.email "bot@email.com"
+          git add .
+          git commit -m "Atualizando"
+          git push
