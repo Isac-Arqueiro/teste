@@ -1,52 +1,36 @@
 const fs = require("fs");
-const fetch = require("node-fetch");
-const cheerio = require("cheerio");
 
-async function buscarProduto(produto){
+const produtos = [
+  "manteiga",
+  "arroz",
+  "feijão",
+  "carne",
+  "leite",
+  "frango",
+  "café"
+];
 
-  const url = `https://www.google.com/search?q=${produto}+promoção+natal+rn&hl=pt-BR`;
-
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "Mozilla/5.0"
-    }
-  });
-
-  const html = await res.text();
-  const $ = cheerio.load(html);
-
+function gerarResultados(produto){
   let resultados = [];
 
-  $("a").each((i, el) => {
-    const texto = $(el).text();
-
-    if(texto.toLowerCase().includes(produto.toLowerCase()) && texto.length > 30){
-      resultados.push({
-        produto: produto,
-        preco: "Ver oferta",
-        loja: "Internet",
-        link: $(el).attr("href")
-      });
-    }
-  });
-
-  return resultados.slice(0, 5);
-}
-
-async function atualizar(){
-
-  const produtos = ["manteiga", "arroz", "carne", "leite"];
-
-  let dados = [];
-
-  for(let p of produtos){
-    let res = await buscarProduto(p);
-    dados = dados.concat(res);
+  for(let i = 0; i < 5; i++){
+    resultados.push({
+      produto: produto,
+      preco: "Ver oferta",
+      loja: "Buscar online",
+      link: `https://www.google.com/search?q=${produto}+promoção+natal+rn`
+    });
   }
 
-  fs.writeFileSync("dados.json", JSON.stringify(dados, null, 2));
-
-  console.log("Promoções reais atualizadas!");
+  return resultados;
 }
 
-atualizar();
+let dados = [];
+
+produtos.forEach(p => {
+  dados = dados.concat(gerarResultados(p));
+});
+
+fs.writeFileSync("dados.json", JSON.stringify(dados, null, 2));
+
+console.log("Atualizado com múltiplas promoções!");
