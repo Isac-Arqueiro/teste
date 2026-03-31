@@ -1,60 +1,278 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Promo RN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Busca de Promoções</title>
+
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#000000">
 
 <style>
-body { font-family: Arial; background:#111; color:#fff; text-align:center; }
-input { padding:10px; width:70%; border-radius:10px; }
-button { padding:10px; background:#00ff88; border:none; border-radius:10px; }
-.card { background:#1e1e1e; margin:10px; padding:10px; border-radius:10px; }
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+h1 {
+  margin: 20px 10px;
+}
+
+/* GRID RESPONSIVO */
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+  padding: 15px;
+}
+
+/* CARDS */
+.mercado {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.mercado:active {
+  transform: scale(0.97);
+}
+
+.mercado img {
+  width: 80px;
+}
+
+/* CATEGORIAS */
+.categorias {
+  display: none;
+  padding-bottom: 15px;
+}
+
+.categorias a {
+  display: block;
+  margin: 8px auto;
+  padding: 12px;
+  width: 90%;
+  max-width: 320px;
+  background: linear-gradient(145deg, #ffffff, #e6e6e6);
+  border-radius: 10px;
+  text-decoration: none;
+  color: black;
+  border: 1px solid #ccc;
+  font-size: 16px;
+
+  /* efeito 3D */
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.2),
+              -2px -2px 6px rgba(255,255,255,0.7);
+
+  transition: all 0.2s ease;
+}
+
+.categorias a:active {
+  box-shadow: inset 3px 3px 6px rgba(0,0,0,0.2),
+              inset -2px -2px 5px rgba(255,255,255,0.7);
+  transform: scale(0.97);
+}
+
+.categorias a:active {
+  background: #eee;
+}
+
+/* BOTÃO INSTALL */
+#btnInstall {
+  position: fixed;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 20px;
+  background: black;
+  color: white;
+  display: none;
+}
 </style>
 </head>
 
 <body>
 
-<h2>🔥 Promoções Natal RN</h2>
+<h1>🔍 Buscar Promoções</h1>
 
-<input id="busca" placeholder="Digite: manteiga, arroz...">
-<button onclick="filtrar()">Buscar</button>
+<div class="container">
 
-<div id="lista"></div>
+  <!-- NORDESTÃO -->
+  <div class="mercado" onclick="toggleCategorias('nordestao')">
+    <img src="https://play-lh.googleusercontent.com/QFcbFn0DW7TXWg6FIwYDmmNseQ6aHIUgaJhK6Lg_vK-2EbUxqTPEdITSa85zm2vg7kI">
+    <p>Nordestão</p>
+<!-- CATEGORIAS NORDESTÃO -->
+<div id="nordestao" class="categorias">
+
+<a href="https://www.lojaonline.nordestao.com.br/" target="_blank">  Ofertas🛒 Nordestão</a>
+
+</div>
+  </div>
+
+  <!-- BOMDIA -->
+  <div class="mercado" onclick="toggleCategorias('bomdia')">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSciX1Lg1P8q_pek2G4naoB0hFEXuKaoYqBMQ&s">
+    <p>Bomdia</p>
+<!-- BOMDIA -->
+<div id="bomdia" class="categorias">
+<a href="https://www.bomdiasupermercado.com.br/#/Ofertas" target="_blank">Ofertas 🛒Bom dia</a>
+</div>
+  </div>
+
+   <!-- Super show -->
+  <div class="mercado" onclick="toggleCategorias('Super show')">
+    <img src="https://th.bing.com/th/id/OIP.63H1DpHzxtrVGNFGzapWegAAAA?w=205&h=103&c=7&r=0&o=7&pid=1.7&rm=3">
+    <p>Super show</p>
+<!-- Super show -->
+<div id="Super show" class="categorias">
+<a href="https://redesupershow.com.br/encarte/" target="_blank"> Ofertas 🛒 Super Show</a>
+</div>
+  </div>
+
+  <!-- Assaí -->
+  <div class="mercado" onclick="toggleCategorias('Assaí')">
+    <img src="https://images.seeklogo.com/logo-png/25/2/assai-atacadista-logo-png_seeklogo-255596.png">
+    <p>Assaí</p>
+<!-- Assaí -->
+<div id="Assaí" class="categorias">
+<a href="https://www.assai.com.br/ofertas/rio-grande-do-norte/assai-natal" target="_blank">Ofertas 🛒 Assaí</a>
+</div>
+  </div>
+
+  <!-- ATACADÃO -->
+  <div class="mercado" onclick="toggleCategorias('atacadao')">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFuhiISP1Db8A7nyun18110ezxIvca2__6uQ&s">
+    <p>Atacadão</p>
+<!-- ATACADÃO -->
+<div id="atacadao" class="categorias">
+
+<a href="https://www.atacadao.com.br/catalogo" target="_blank"> Ofertas🛒 Atacadão </a>
+</div>
+  </div>
+
+   <!-- Super 4 RN -->
+  <div class="mercado" onclick="toggleCategorias('Super 4 RN')">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTf3zM0WKuHF7pc0b3ICteD-57jOnS52zRQMw&s">
+    <p>Super 4 RN</p>
+<!-- Super 4 RN -->
+<div id="Super 4 RN" class="categorias">
+
+<a href="https://www.instagram.com/super4alecrim/p/DWfHnwSjhuP/" target="_blank"> Ofertas 🛒 Super 4</a>
+</div>
+  </div>
+
+   <!-- Polpa do Bigode -->
+  <div class="mercado" onclick="toggleCategorias('Polpa do Bigode')">
+    <img src="https://i.imgur.com/heUiRkb.jpeg">
+    <p>Polpa do Bigode</p>
+<!-- Super 4 RN -->
+<div id="Polpa do Bigode" class="categorias">
+
+<a href="https://meusaplicativoscom-pixel.github.io/PolpaDoBigode/" target="_blank"> Ofertas 🛒 Polpa do Bigode</a>
+</div>
+  </div>
+
+</div>
+
+<button id="btnInstall">📲 Instalar App</button>
 
 <script>
-let dados = [];
+function toggleCategorias(id) {
+  let div = document.getElementById(id);
 
-async function carregar() {
-  let res = await fetch("dados.json");
-  dados = await res.json();
-  mostrar(dados);
-}
-
-function mostrar(lista){
-  let html = "";
-  lista.forEach(p => {
-    html += `
-      <div class="card">
-        <b>${p.produto}</b><br>
-        💰 ${p.preco}<br>
-        🏬 ${p.loja}<br>
-        <a href="${p.link}" target="_blank">Ver oferta</a>
-      </div>
-    `;
+  document.querySelectorAll(".categorias").forEach(el => {
+    if (el.id !== id) el.style.display = "none";
   });
-  document.getElementById("lista").innerHTML = html;
+
+  div.style.display = div.style.display === "block" ? "none" : "block";
 }
 
-function filtrar(){
-  let termo = document.getElementById("busca").value.toLowerCase();
-  let filtrado = dados.filter(p =>
-    p.produto.toLowerCase().includes(termo)
-  );
-  mostrar(filtrado);
-}
+// PWA
+let deferredPrompt;
+const btnInstall = document.getElementById("btnInstall");
 
-carregar();
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  btnInstall.style.display = "block";
+});
+
+btnInstall.addEventListener("click", async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    btnInstall.style.display = "none";
+  }
+});
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
 </script>
+<!-- Botão discreto -->
+<button id="shareBtn" title="Compartilhar"></button>
 
+<style>
+  #shareBtn {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: #25D366; /* verde */
+    color: white;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: 0.3s;
+    font-size: 18px;
+  }
+
+  #shareBtn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  #shareBtn::before {
+    content: "⤴";
+  }
+</style>
+
+<script>
+  const btn = document.getElementById("shareBtn");
+
+  btn.addEventListener("click", async () => {
+    const url = "https://meusaplicativoscom-pixel.github.io/buscarpromo-o/";
+    const title = "Confira esse site!";
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: title,
+          url: url
+        });
+      } catch (err) {
+        console.log("Erro ao compartilhar:", err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        alert("Link copiado!");
+      } catch {
+        prompt("Copie o link:", url);
+      }
+    }
+  });
+</script>
 </body>
 </html>
