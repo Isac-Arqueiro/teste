@@ -1,278 +1,309 @@
-
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Busca de Promoções</title>
-
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#000000">
-
+<title>Loja de Polpas</title>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f5f5f5;
+body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+
+/* TELA DE BOAS-VINDAS */
+#welcome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+  background: #fff;
+  padding: 20px;
   text-align: center;
 }
 
-h1 {
-  margin: 20px 10px;
-}
-
-/* GRID RESPONSIVO */
-.container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 15px;
-  padding: 15px;
-}
-
-/* CARDS */
-.mercado {
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
-  cursor: pointer;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-}
-
-.mercado:active {
-  transform: scale(0.97);
-}
-
-.mercado img {
-  width: 80px;
-}
-
-/* CATEGORIAS */
-.categorias {
-  display: none;
-  padding-bottom: 15px;
-}
-
-.categorias a {
-  display: block;
-  margin: 8px auto;
-  padding: 12px;
-  width: 90%;
-  max-width: 320px;
-  background: linear-gradient(145deg, #ffffff, #e6e6e6);
+#welcome img {
+  max-width: 90%;
+  max-height: 50%;
   border-radius: 10px;
-  text-decoration: none;
-  color: black;
-  border: 1px solid #ccc;
-  font-size: 16px;
-
-  /* efeito 3D */
-  box-shadow: 4px 4px 8px rgba(0,0,0,0.2),
-              -2px -2px 6px rgba(255,255,255,0.7);
-
-  transition: all 0.2s ease;
+  object-fit: contain;
+  margin-bottom: 20px;
 }
 
-.categorias a:active {
-  box-shadow: inset 3px 3px 6px rgba(0,0,0,0.2),
-              inset -2px -2px 5px rgba(255,255,255,0.7);
-  transform: scale(0.97);
-}
-
-.categorias a:active {
-  background: #eee;
-}
-
-/* BOTÃO INSTALL */
-#btnInstall {
-  position: fixed;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 12px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 20px;
-  background: black;
+/* BOTÕES INICIAIS */
+.button-large {
+  background: #ff6600;
   color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 18px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  margin: 10px 0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.button-large:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* FORMULÁRIO NOVO CLIENTE */
+#formNovoCliente input {
+  display: block;
+  width: 200px;
+  padding: 10px;
+  margin: 5px auto;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+#formNovoCliente button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+#formNovoCliente button:hover { transform: translateY(-2px); }
+
+/* BOTÃO COMPARTILHAR */
+#shareBtn {
+  position: absolute;
+  bottom: 40px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: #28a745;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+/* LOJA */
+.container { display: none; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; padding: 10px; }
+
+.card { background: white; border-radius: 10px; padding: 10px; text-align: center; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+
+.card img { width: 100%; height: 120px; object-fit: contain; border-radius: 8px; }
+
+.titulo { font-size: 14px; font-weight: bold; }
+
+.preco { color: green; font-size: 14px; }
+
+.qtd-container { display: flex; justify-content: center; gap: 5px; margin-top: 5px; }
+
+.qtd-btn { background: orange; border: none; color: white; width: 25px; height: 25px; border-radius: 5px; cursor: pointer; }
+
+/* CARRINHO */
+.carrinho {
   display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 10px;
+  box-shadow: 0 -3px 10px rgba(0,0,0,0.2);
+}
+
+.btn-finalizar {
+  background: green;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
 }
 </style>
 </head>
-
 <body>
 
-<h1>🔍 Buscar Promoções</h1>
-
-<div class="container">
-
-  <!-- NORDESTÃO -->
-  <div class="mercado" onclick="toggleCategorias('nordestao')">
-    <img src="https://play-lh.googleusercontent.com/QFcbFn0DW7TXWg6FIwYDmmNseQ6aHIUgaJhK6Lg_vK-2EbUxqTPEdITSa85zm2vg7kI">
-    <p>Nordestão</p>
-<!-- CATEGORIAS NORDESTÃO -->
-<div id="nordestao" class="categorias">
-
-<a href="https://www.lojaonline.nordestao.com.br/" target="_blank">  Ofertas🛒 Nordestão</a>
-
-</div>
+<!-- TELA DE BOAS-VINDAS -->
+<div id="welcome">
+  <img src="https://i.imgur.com/heUiRkb.jpeg" alt="Bem-vindo">
+  
+  <div id="clienteBtns">
+    <button class="button-large" id="novoClienteBtn">Novo Cliente</button>
+    <button class="button-large" id="souClienteBtn">Já Sou Cliente</button>
   </div>
 
-  <!-- BOMDIA -->
-  <div class="mercado" onclick="toggleCategorias('bomdia')">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSciX1Lg1P8q_pek2G4naoB0hFEXuKaoYqBMQ&s">
-    <p>Bomdia</p>
-<!-- BOMDIA -->
-<div id="bomdia" class="categorias">
-<a href="https://www.bomdiasupermercado.com.br/#/Ofertas" target="_blank">Ofertas 🛒Bom dia</a>
-</div>
+  <div id="formNovoCliente" style="display:none; margin-top:20px;">
+    <input type="text" id="nomeCliente" placeholder="Seu Nome">
+    <input type="text" id="bairroCliente" placeholder="Seu Bairro">
+    <input type="text" id="ruaCliente" placeholder="Nome da Rua">
+    <input type="text" id="numeroCliente" placeholder="Número da Casa">
+    <button id="confirmarCliente">Confirmar</button>
   </div>
 
-   <!-- Super show -->
-  <div class="mercado" onclick="toggleCategorias('Super show')">
-    <img src="https://th.bing.com/th/id/OIP.63H1DpHzxtrVGNFGzapWegAAAA?w=205&h=103&c=7&r=0&o=7&pid=1.7&rm=3">
-    <p>Super show</p>
-<!-- Super show -->
-<div id="Super show" class="categorias">
-<a href="https://redesupershow.com.br/encarte/" target="_blank"> Ofertas 🛒 Super Show</a>
-</div>
-  </div>
-
-  <!-- Assaí -->
-  <div class="mercado" onclick="toggleCategorias('Assaí')">
-    <img src="https://images.seeklogo.com/logo-png/25/2/assai-atacadista-logo-png_seeklogo-255596.png">
-    <p>Assaí</p>
-<!-- Assaí -->
-<div id="Assaí" class="categorias">
-<a href="https://www.assai.com.br/ofertas/rio-grande-do-norte/assai-natal" target="_blank">Ofertas 🛒 Assaí</a>
-</div>
-  </div>
-
-  <!-- ATACADÃO -->
-  <div class="mercado" onclick="toggleCategorias('atacadao')">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFuhiISP1Db8A7nyun18110ezxIvca2__6uQ&s">
-    <p>Atacadão</p>
-<!-- ATACADÃO -->
-<div id="atacadao" class="categorias">
-
-<a href="https://www.atacadao.com.br/catalogo" target="_blank"> Ofertas🛒 Atacadão </a>
-</div>
-  </div>
-
-   <!-- Super 4 RN -->
-  <div class="mercado" onclick="toggleCategorias('Super 4 RN')">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTf3zM0WKuHF7pc0b3ICteD-57jOnS52zRQMw&s">
-    <p>Super 4 RN</p>
-<!-- Super 4 RN -->
-<div id="Super 4 RN" class="categorias">
-
-<a href="https://www.instagram.com/super4alecrim/p/DWfHnwSjhuP/" target="_blank"> Ofertas 🛒 Super 4</a>
-</div>
-  </div>
-
-   <!-- Polpa do Bigode -->
-  <div class="mercado" onclick="toggleCategorias('Polpa do Bigode')">
-    <img src="https://i.imgur.com/heUiRkb.jpeg">
-    <p>Polpa do Bigode</p>
-<!-- Super 4 RN -->
-<div id="Polpa do Bigode" class="categorias">
-
-<a href="https://meusaplicativoscom-pixel.github.io/PolpaDoBigode/" target="_blank"> Ofertas 🛒 Polpa do Bigode</a>
-</div>
-  </div>
-
+  <button id="enterBtn" class="button-large" style="display:none; margin-top:20px;">Ver Produtos</button>
+  
+  <button id="shareBtn" title="Compartilhar">➤</button>
 </div>
 
-<button id="btnInstall">📲 Instalar App</button>
+<!-- LOJA -->
+<div class="container" id="produtos"></div>
+
+<!-- CARRINHO -->
+<div class="carrinho" id="carrinho">
+  <div id="lista"></div>
+  <div>Total: R$ <span id="total">0.00</span></div>
+  <button class="btn-finalizar" id="finalizarBtn">Comprar pelo WhatsApp</button>
+</div>
 
 <script>
-function toggleCategorias(id) {
-  let div = document.getElementById(id);
+// PRODUTOS
+let produtos = [
+  { id: "Acerola", nome: "Polpa de Acerola", preco: 12.00, img: "https://i.imgur.com/8eSR94R.jpeg" },
+  { id: "caja", nome: "Polpa de Cajá", preco: 12.00, img: "https://i.imgur.com/9rA9eEV.png" },
+  { id: "Caju", nome: "Polpa de Cajú", preco: 12.00, img: "https://i.imgur.com/mHq2Ruu.jpeg" },
+{ id: "Abacaxi", nome: "Polpa de Abacaxí", preco: 12.00, img: "https://i.imgur.com/O8cLI2u.jpeg" },
+{ id: "Manga", nome: "Polpa de Manga", preco: 12.00, img: "https://i.imgur.com/sJSapCy.jpeg" },
+{ id: "Goiaba", nome: "Polpa de Goiaba", preco: 12.00, img: "https://i.imgur.com/1CYEV1I.jpeg" },
+{ id: "Tamarindo", nome: "Polpa de Tamarindo", preco: 12.00, img: "https://i.imgur.com/1CYEV1I.jpeg" },
+{ id: "Uva", nome: "Polpa de Uva", preco: 15.00, img: "https://i.imgur.com/Rcik0MC.jpeg" },
+{ id: "Graviola", nome: "Polpa de Graviola", preco: 15.00, img: "https://i.imgur.com/KM13xoU.jpeg" },
+{ id: "Mangaba", nome: "Polpa de Mangaba", preco: 15.00, img: "https://i.imgur.com/UJ5symm.jpeg" },
+{ id: "Morango", nome: "Polpa de Morango", preco: 20.00, img: "https://i.imgur.com/YOpeGt9.jpeg" },
+  { id: "Maracuja", nome: "Polpa de Maracujá", preco: 22.00, img: "https://i.imgur.com/kKxCPWl.jpeg" }
+];
 
-  document.querySelectorAll(".categorias").forEach(el => {
-    if (el.id !== id) el.style.display = "none";
+let carrinho = {};
+let cliente = { nome: "", bairro: "", rua: "", numero: "" };
+
+// ESCOLHA DO CLIENTE
+document.getElementById("novoClienteBtn").addEventListener("click", () => {
+  document.getElementById("formNovoCliente").style.display = "block";
+  document.getElementById("clienteBtns").style.display = "none";
+});
+
+document.getElementById("souClienteBtn").addEventListener("click", () => {
+  document.getElementById("enterBtn").style.display = "block";
+  document.getElementById("clienteBtns").style.display = "none";
+});
+
+// CONFIRMAR NOVO CLIENTE
+document.getElementById("confirmarCliente").addEventListener("click", () => {
+  const nome = document.getElementById("nomeCliente").value.trim();
+  const bairro = document.getElementById("bairroCliente").value.trim();
+  const rua = document.getElementById("ruaCliente").value.trim();
+  const numero = document.getElementById("numeroCliente").value.trim();
+
+  if (!nome || !bairro || !rua || !numero) {
+    alert("Preencha todos os campos!");
+    return;
+  }
+
+  cliente.nome = nome;
+  cliente.bairro = bairro;
+  cliente.rua = rua;
+  cliente.numero = numero;
+
+  document.getElementById("formNovoCliente").style.display = "none";
+  document.getElementById("enterBtn").style.display = "block";
+});
+
+// BOTÃO “VER PRODUTOS”
+document.getElementById("enterBtn").addEventListener("click", () => {
+  document.getElementById("welcome").style.display = "none";
+  renderProdutos();
+});
+
+// BOTÃO COMPARTILHAR
+document.getElementById("shareBtn").addEventListener("click", async () => {
+  const url = "https://meusaplicativoscom-pixel.github.io/MemoryPro/";
+  const title = "Confira esse site!";
+  if (navigator.share) {
+    try { await navigator.share({ title, url }); } catch (err) { console.log(err); }
+  } else {
+    try { await navigator.clipboard.writeText(url); alert("Link copiado!"); }
+    catch { prompt("Copie o link:", url); }
+  }
+});
+
+// RENDERIZA PRODUTOS
+function renderProdutos() {
+  let container = document.getElementById("produtos");
+  container.innerHTML = "";
+  container.style.display = "grid";
+  produtos.forEach(p => {
+    carrinho[p.id] = { ...p, qtd: 0 };
+    container.innerHTML += `
+      <div class="card">
+        <img src="${p.img}">
+        <div class="titulo">${p.nome}</div>
+        <div class="preco">R$ ${p.preco.toFixed(2)}</div>
+        <div class="qtd-container">
+          <button class="qtd-btn" onclick="alterarQtd('${p.id}', -1)">-</button>
+          <div id="qtd-${p.id}">0</div>
+          <button class="qtd-btn" onclick="alterarQtd('${p.id}', 1)">+</button>
+        </div>
+      </div>
+    `;
   });
-
-  div.style.display = div.style.display === "block" ? "none" : "block";
+  document.getElementById("carrinho").style.display = "block";
 }
 
-// PWA
-let deferredPrompt;
-const btnInstall = document.getElementById("btnInstall");
-
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  btnInstall.style.display = "block";
-});
-
-btnInstall.addEventListener("click", async () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    btnInstall.style.display = "none";
-  }
-});
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
+// ALTERAR QUANTIDADE
+function alterarQtd(id, delta) {
+  let p = carrinho[id];
+  p.qtd += delta;
+  if (p.qtd < 0) p.qtd = 0;
+  document.getElementById("qtd-" + id).innerText = p.qtd;
+  atualizarCarrinho();
 }
-</script>
-<!-- Botão discreto -->
-<button id="shareBtn" title="Compartilhar"></button>
 
-<style>
-  #shareBtn {
-    position: fixed;
-    bottom: 15px;
-    right: 15px;
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 50%;
-    background: #25D366; /* verde */
-    color: white;
-    cursor: pointer;
-    opacity: 0.6;
-    transition: 0.3s;
-    font-size: 18px;
-  }
-
-  #shareBtn:hover {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-
-  #shareBtn::before {
-    content: "⤴";
-  }
-</style>
-
-<script>
-  const btn = document.getElementById("shareBtn");
-
-  btn.addEventListener("click", async () => {
-    const url = "https://meusaplicativoscom-pixel.github.io/buscarpromo-o/";
-    const title = "Confira esse site!";
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: title,
-          url: url
-        });
-      } catch (err) {
-        console.log("Erro ao compartilhar:", err);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(url);
-        alert("Link copiado!");
-      } catch {
-        prompt("Copie o link:", url);
-      }
+// ATUALIZA CARRINHO
+function atualizarCarrinho() {
+  let lista = document.getElementById("lista");
+  lista.innerHTML = "";
+  let total = 0;
+  for (let id in carrinho) {
+    let p = carrinho[id];
+    if (p.qtd > 0) {
+      let subtotal = p.qtd * p.preco;
+      total += subtotal;
+      lista.innerHTML += `<div>${p.nome} x${p.qtd} = R$ ${subtotal.toFixed(2)}</div>`;
     }
-  });
+  }
+  document.getElementById("total").innerText = total.toFixed(2);
+}
+
+// FINALIZAR COMPRA
+document.getElementById("finalizarBtn").addEventListener("click", () => {
+  let mensagem = "Olá, quero comprar:%0A";
+  let total = 0;
+  for (let id in carrinho) {
+    let p = carrinho[id];
+    if (p.qtd > 0) {
+      let subtotal = p.qtd * p.preco;
+      total += subtotal;
+      mensagem += `- ${p.nome} x${p.qtd} = R$ ${subtotal.toFixed(2)}%0A`;
+    }
+  }
+  if (total === 0) { alert("Carrinho vazio!"); return; }
+  mensagem += `%0ATotal: R$ ${total.toFixed(2)}`;
+
+  if (cliente.nome && cliente.bairro) {
+    mensagem += `%0ANome: ${cliente.nome}`;
+    mensagem += `%0ABairro: ${cliente.bairro}`;
+    mensagem += `%0ARua: ${cliente.rua}`;
+    mensagem += `%0ANúmero: ${cliente.numero}`;
+  }
+
+  let telefone = "5584986222876";
+  let url = `https://api.whatsapp.com/send?phone=${telefone}&text=${mensagem}`;
+  window.open(url, "_blank");
+});
 </script>
 </body>
 </html>
