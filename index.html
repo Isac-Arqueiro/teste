@@ -88,19 +88,48 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f
 }
 
 /* LOJA */
-.container { display: none; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; padding: 10px; }
+.container {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  padding-bottom: 180px; /* espaço para o carrinho fixo */
+}
 
-.card { background: white; border-radius: 10px; padding: 10px; text-align: center; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
 
-.card img { width: 100%; height: 120px; object-fit: contain; border-radius: 8px; }
+.card img {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 8px;
+}
 
 .titulo { font-size: 14px; font-weight: bold; }
-
 .preco { color: green; font-size: 14px; }
 
-.qtd-container { display: flex; justify-content: center; gap: 5px; margin-top: 5px; }
+.qtd-container {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 5px;
+}
 
-.qtd-btn { background: orange; border: none; color: white; width: 25px; height: 25px; border-radius: 5px; cursor: pointer; }
+.qtd-btn {
+  background: orange;
+  border: none;
+  color: white;
+  width: 25px;
+  height: 25px;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
 /* CARRINHO */
 .carrinho {
@@ -112,6 +141,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f
   background: white;
   padding: 10px;
   box-shadow: 0 -3px 10px rgba(0,0,0,0.2);
+  z-index: 10; /* garante que fique sobre os produtos */
 }
 
 .btn-finalizar {
@@ -166,14 +196,14 @@ let produtos = [
   { id: "Acerola", nome: "Polpa de Acerola", preco: 12.00, img: "https://i.imgur.com/8eSR94R.jpeg" },
   { id: "caja", nome: "Polpa de Cajá", preco: 12.00, img: "https://i.imgur.com/9rA9eEV.png" },
   { id: "Caju", nome: "Polpa de Cajú", preco: 12.00, img: "https://i.imgur.com/mHq2Ruu.jpeg" },
-{ id: "Abacaxi", nome: "Polpa de Abacaxí", preco: 12.00, img: "https://i.imgur.com/O8cLI2u.jpeg" },
-{ id: "Manga", nome: "Polpa de Manga", preco: 12.00, img: "https://i.imgur.com/sJSapCy.jpeg" },
-{ id: "Goiaba", nome: "Polpa de Goiaba", preco: 12.00, img: "https://i.imgur.com/1CYEV1I.jpeg" },
-{ id: "Tamarindo", nome: "Polpa de Tamarindo", preco: 12.00, img: "https://i.imgur.com/1CYEV1I.jpeg" },
-{ id: "Uva", nome: "Polpa de Uva", preco: 15.00, img: "https://i.imgur.com/Rcik0MC.jpeg" },
-{ id: "Graviola", nome: "Polpa de Graviola", preco: 15.00, img: "https://i.imgur.com/KM13xoU.jpeg" },
-{ id: "Mangaba", nome: "Polpa de Mangaba", preco: 15.00, img: "https://i.imgur.com/UJ5symm.jpeg" },
-{ id: "Morango", nome: "Polpa de Morango", preco: 20.00, img: "https://i.imgur.com/YOpeGt9.jpeg" },
+  { id: "Abacaxi", nome: "Polpa de Abacaxí", preco: 12.00, img: "https://i.imgur.com/O8cLI2u.jpeg" },
+  { id: "Manga", nome: "Polpa de Manga", preco: 12.00, img: "https://i.imgur.com/sJSapCy.jpeg" },
+  { id: "Goiaba", nome: "Polpa de Goiaba", preco: 12.00, img: "https://i.imgur.com/1CYEV1I.jpeg" },
+  { id: "Tamarindo", nome: "Polpa de Tamarindo", preco: 12.00, img: "https://i.imgur.com/1CYEV1I.jpeg" },
+  { id: "Uva", nome: "Polpa de Uva", preco: 15.00, img: "https://i.imgur.com/Rcik0MC.jpeg" },
+  { id: "Graviola", nome: "Polpa de Graviola", preco: 15.00, img: "https://i.imgur.com/KM13xoU.jpeg" },
+  { id: "Mangaba", nome: "Polpa de Mangaba", preco: 15.00, img: "https://i.imgur.com/UJ5symm.jpeg" },
+  { id: "Morango", nome: "Polpa de Morango", preco: 20.00, img: "https://i.imgur.com/YOpeGt9.jpeg" },
   { id: "Maracuja", nome: "Polpa de Maracujá", preco: 22.00, img: "https://i.imgur.com/kKxCPWl.jpeg" }
 ];
 
