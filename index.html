@@ -3,103 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Site</title>
+
+    <title>Inicializador</title>
 
     <style>
         * {
             box-sizing: border-box;
         }
 
+        html,
         body {
             margin: 0;
+            min-height: 100%;
+        }
+
+        body {
             min-height: 100vh;
+
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #0d1117;
-            color: white;
+
             font-family: Arial, sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    #243b55,
+                    #0b0f14 60%
+                );
+
+            color: white;
         }
 
-        .box {
+        .container {
             width: 90%;
-            max-width: 450px;
+            max-width: 480px;
+
             padding: 40px;
+
             text-align: center;
-            background: #161b22;
+
+            background: rgba(22, 27, 34, .95);
+
             border: 1px solid #30363d;
+
             border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,.5);
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, .55);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+
+            margin: 0 auto 25px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 20px;
+
+            background: #238636;
+
+            font-size: 38px;
         }
 
         h1 {
-            margin-top: 0;
+            margin: 0 0 10px;
+            font-size: 28px;
         }
 
         p {
+            margin: 0 0 25px;
+
             color: #8b949e;
+
+            line-height: 1.6;
         }
 
-        button {
+        .botao {
             width: 100%;
+
             padding: 16px;
-            margin-top: 20px;
+
             border: 0;
             border-radius: 10px;
+
             background: #238636;
+
             color: white;
-            font-size: 18px;
+
+            font-size: 17px;
             font-weight: bold;
+
             cursor: pointer;
+
+            transition: .2s;
         }
 
-        button:hover {
+        .botao:hover {
             background: #2ea043;
+            transform: translateY(-1px);
         }
 
-        #mensagem {
+        .botao:active {
+            transform: translateY(0);
+        }
+
+        #arquivo {
+            display: none;
+        }
+
+        #status {
+            min-height: 24px;
+
             margin-top: 20px;
+
             color: #58a6ff;
+
+            font-size: 14px;
+        }
+
+        .aviso {
+            margin-top: 25px;
+
+            padding: 12px;
+
+            border-radius: 8px;
+
+            background: #21262d;
+
+            color: #8b949e;
+
+            font-size: 12px;
+
+            line-height: 1.5;
         }
     </style>
 </head>
 
 <body>
 
-<div class="box">
+<div class="container">
+
+    <div class="logo">
+        ▶
+    </div>
 
     <h1>Meu Site</h1>
 
     <p>
-        Clique abaixo para abrir o site offline.
+        Selecione o arquivo HTML do seu site para iniciar.
     </p>
 
-    <button id="abrir">
-        ABRIR SITE
+    <input
+        id="arquivo"
+        type="file"
+        accept=".html,.htm"
+    >
+
+    <button
+        id="botao"
+        class="botao"
+        type="button"
+    >
+        ABRIR MEU SITE
     </button>
 
-    <div id="mensagem"></div>
+    <div id="status"></div>
+
+    <div class="aviso">
+        O seu site principal permanece no computador.
+        Apenas este inicializador fica hospedado.
+    </div>
 
 </div>
 
 <script>
+"use strict";
 
-const botao = document.getElementById("abrir");
-const mensagem = document.getElementById("mensagem");
+const botao = document.getElementById("botao");
+const arquivo = document.getElementById("arquivo");
+const status = document.getElementById("status");
 
 botao.addEventListener("click", function () {
 
-    mensagem.textContent = "Abrindo site...";
+    arquivo.value = "";
 
-    /*
-     * O index.html deve estar na mesma pasta
-     * deste inicializador.
-     */
-
-    window.location.href = "./index.html";
+    arquivo.click();
 
 });
 
+
+arquivo.addEventListener("change", function () {
+
+    if (!arquivo.files || arquivo.files.length === 0) {
+        status.textContent = "Nenhum arquivo selecionado.";
+        return;
+    }
+
+    const file = arquivo.files[0];
+
+    const nome = file.name.toLowerCase();
+
+    if (
+        !nome.endsWith(".html") &&
+        !nome.endsWith(".htm")
+    ) {
+
+        status.textContent =
+            "Selecione um arquivo HTML.";
+
+        return;
+    }
+
+    status.textContent =
+        "Abrindo " + file.name + "...";
+
+    /*
+     * Cria uma URL temporária para o HTML
+     * escolhido pelo usuário.
+     */
+
+    const url = URL.createObjectURL(file);
+
+    /*
+     * Abre o HTML selecionado em uma nova aba.
+     */
+
+    const novaAba = window.open(
+        url,
+        "_blank"
+    );
+
+    if (!novaAba) {
+
+        status.textContent =
+            "O navegador bloqueou a nova aba. Permita pop-ups.";
+
+        URL.revokeObjectURL(url);
+
+        return;
+    }
+
+    status.textContent =
+        "Site aberto.";
+
+});
 </script>
 
 </body>
