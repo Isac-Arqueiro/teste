@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicializador</title>
+
+    <title>Inicializador do Site</title>
 
     <style>
         * {
             box-sizing: border-box;
         }
 
-        html, body {
+        html,
+        body {
             margin: 0;
             width: 100%;
             min-height: 100%;
@@ -18,6 +20,7 @@
 
         body {
             min-height: 100vh;
+
             display: flex;
             align-items: center;
             justify-content: center;
@@ -25,30 +28,36 @@
             font-family: Arial, sans-serif;
 
             background:
-                radial-gradient(circle at top, #243b55, #0b0f14 60%);
+                radial-gradient(
+                    circle at top,
+                    #243b55,
+                    #0b0f14 65%
+                );
 
-            color: white;
+            color: #fff;
         }
 
         .container {
             width: 90%;
-            max-width: 480px;
+            max-width: 520px;
 
             padding: 40px;
 
             text-align: center;
 
-            background: rgba(22, 27, 34, .96);
+            background: #161b22;
 
             border: 1px solid #30363d;
+
             border-radius: 20px;
 
-            box-shadow: 0 25px 70px rgba(0,0,0,.55);
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, .55);
         }
 
         .logo {
-            width: 80px;
-            height: 80px;
+            width: 82px;
+            height: 82px;
 
             margin: 0 auto 25px;
 
@@ -60,19 +69,24 @@
 
             background: #238636;
 
-            font-size: 38px;
+            font-size: 36px;
         }
 
         h1 {
             margin: 0 0 10px;
+
+            font-size: 28px;
         }
 
         p {
+            margin-bottom: 28px;
+
             color: #8b949e;
+
             line-height: 1.6;
         }
 
-        #arquivo {
+        #pasta {
             display: none;
         }
 
@@ -80,9 +94,9 @@
             width: 100%;
 
             padding: 16px;
-            margin-top: 15px;
 
-            border: 0;
+            border: none;
+
             border-radius: 10px;
 
             background: #238636;
@@ -90,20 +104,54 @@
             color: white;
 
             font-size: 17px;
+
             font-weight: bold;
 
             cursor: pointer;
+
+            transition: .2s;
         }
 
         button:hover {
             background: #2ea043;
+
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background: #30363d;
+
+            color: #8b949e;
+
+            cursor: wait;
+
+            transform: none;
         }
 
         #status {
             min-height: 24px;
+
             margin-top: 20px;
 
             color: #58a6ff;
+
+            font-size: 14px;
+        }
+
+        .info {
+            margin-top: 25px;
+
+            padding: 14px;
+
+            border-radius: 10px;
+
+            background: #21262d;
+
+            color: #8b949e;
+
+            font-size: 12px;
+
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -112,104 +160,265 @@
 
 <div class="container">
 
-    <div class="logo">▶</div>
+    <div class="logo">
+        ▶
+    </div>
 
-    <h1>Meu Site</h1>
+    <h1>Meu Site Offline</h1>
 
     <p>
-        Selecione o arquivo HTML do seu site.
+        Selecione a pasta onde está o seu site.
     </p>
 
+    <!--
+        Permite selecionar uma pasta inteira.
+    -->
     <input
-        id="arquivo"
+        id="pasta"
         type="file"
-        accept=".html,.htm"
+        webkitdirectory
+        directory
+        multiple
     >
 
-    <button id="botao">
+    <button id="abrir">
         ABRIR MEU SITE
     </button>
 
     <div id="status"></div>
 
+    <div class="info">
+        Selecione a pasta que contém o
+        <strong>index.html</strong> e todos os
+        arquivos do seu projeto.
+    </div>
+
 </div>
 
+
 <script>
+
 "use strict";
 
-const botao = document.getElementById("botao");
-const arquivo = document.getElementById("arquivo");
-const status = document.getElementById("status");
+
+const inputPasta =
+    document.getElementById("pasta");
+
+const botao =
+    document.getElementById("abrir");
+
+const status =
+    document.getElementById("status");
 
 
+/*
+ * Abre o seletor de pasta.
+ */
 botao.addEventListener("click", function () {
+
+    inputPasta.value = "";
 
     status.textContent = "";
 
-    arquivo.value = "";
-
-    /*
-     * O seletor de arquivos é aberto diretamente
-     * pela ação do usuário.
-     */
-
-    arquivo.click();
+    inputPasta.click();
 
 });
 
 
-arquivo.addEventListener("change", function () {
+/*
+ * Quando o usuário escolhe a pasta.
+ */
+inputPasta.addEventListener("change", async function () {
 
-    if (!arquivo.files.length) {
-        return;
-    }
+    const arquivos = Array.from(inputPasta.files);
 
-    const file = arquivo.files[0];
-
-    if (!/\.(html?|HTML?)$/.test(file.name)) {
+    if (!arquivos.length) {
 
         status.textContent =
-            "Selecione um arquivo HTML válido.";
+            "Nenhuma pasta foi selecionada.";
 
         return;
     }
+
+
+    /*
+     * Procura o index.html.
+     */
+    const index = arquivos.find(function (arquivo) {
+
+        return arquivo.name.toLowerCase() === "index.html";
+
+    });
+
+
+    if (!index) {
+
+        status.textContent =
+            "Não encontrei index.html nessa pasta.";
+
+        return;
+    }
+
+
+    botao.disabled = true;
 
     status.textContent =
-        "Carregando " + file.name + "...";
+        "Carregando seu site...";
+
 
     /*
-     * Lê o HTML escolhido.
+     * Cria um mapa dos arquivos.
      */
+    const mapa = new Map();
 
-    const leitor = new FileReader();
 
-    leitor.onload = function () {
-
-        const html = leitor.result;
+    for (const arquivo of arquivos) {
 
         /*
-         * Substitui o conteúdo do inicializador
-         * pelo conteúdo do seu site.
+         * webkitRelativePath contém o caminho
+         * relativo dentro da pasta escolhida.
          */
 
-        document.open();
+        mapa.set(
+            arquivo.webkitRelativePath,
+            arquivo
+        );
 
-        document.write(html);
+    }
 
-        document.close();
 
-    };
+    /*
+     * Lê o index.html.
+     */
+    const html =
+        await index.text();
 
-    leitor.onerror = function () {
 
-        status.textContent =
-            "Não foi possível ler o arquivo.";
+    /*
+     * Cria uma página independente em memória.
+     */
+    const documento =
+        new DOMParser().parseFromString(
+            html,
+            "text/html"
+        );
 
-    };
 
-    leitor.readAsText(file);
+    /*
+     * Converte recursos locais:
+     *
+     * CSS
+     * JavaScript
+     * imagens
+     * fontes
+     *
+     * para Blob URLs.
+     */
+
+    const recursos =
+        documento.querySelectorAll(
+            "img[src], script[src], link[href], source[src]"
+        );
+
+
+    for (const elemento of recursos) {
+
+        let atributo;
+
+        if (
+            elemento.tagName === "SCRIPT" ||
+            elemento.tagName === "IMG" ||
+            elemento.tagName === "SOURCE"
+        ) {
+
+            atributo = "src";
+
+        } else {
+
+            atributo = "href";
+
+        }
+
+
+        const caminho =
+            elemento.getAttribute(atributo);
+
+
+        if (!caminho) {
+            continue;
+        }
+
+
+        /*
+         * Ignora URLs externas.
+         */
+        if (
+            caminho.startsWith("http://") ||
+            caminho.startsWith("https://") ||
+            caminho.startsWith("data:") ||
+            caminho.startsWith("blob:")
+        ) {
+
+            continue;
+        }
+
+
+        /*
+         * Descobre o caminho relativo.
+         */
+        const caminhoLimpo =
+            caminho.split("?")[0]
+                  .split("#")[0]
+                  .replace(/^\.\/+/, "");
+
+
+        const arquivoEncontrado =
+            arquivos.find(function (arquivo) {
+
+                const relativo =
+                    arquivo.webkitRelativePath;
+
+                return relativo.endsWith(
+                    "/" + caminhoLimpo
+                );
+
+            });
+
+
+        if (!arquivoEncontrado) {
+            continue;
+        }
+
+
+        const blobUrl =
+            URL.createObjectURL(
+                arquivoEncontrado
+            );
+
+
+        elemento.setAttribute(
+            atributo,
+            blobUrl
+        );
+
+    }
+
+
+    /*
+     * Substitui o inicializador pelo site.
+     */
+    document.open();
+
+    document.write(
+        "<!DOCTYPE html>" +
+        documento.documentElement.outerHTML
+    );
+
+    document.close();
 
 });
+
+
 </script>
 
 </body>
