@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Inicializador</title>
 
     <style>
@@ -11,15 +10,14 @@
             box-sizing: border-box;
         }
 
-        html,
-        body {
+        html, body {
             margin: 0;
+            width: 100%;
             min-height: 100%;
         }
 
         body {
             min-height: 100vh;
-
             display: flex;
             align-items: center;
             justify-content: center;
@@ -27,11 +25,7 @@
             font-family: Arial, sans-serif;
 
             background:
-                radial-gradient(
-                    circle at top,
-                    #243b55,
-                    #0b0f14 60%
-                );
+                radial-gradient(circle at top, #243b55, #0b0f14 60%);
 
             color: white;
         }
@@ -44,14 +38,12 @@
 
             text-align: center;
 
-            background: rgba(22, 27, 34, .95);
+            background: rgba(22, 27, 34, .96);
 
             border: 1px solid #30363d;
-
             border-radius: 20px;
 
-            box-shadow:
-                0 25px 70px rgba(0, 0, 0, .55);
+            box-shadow: 0 25px 70px rgba(0,0,0,.55);
         }
 
         .logo {
@@ -73,21 +65,22 @@
 
         h1 {
             margin: 0 0 10px;
-            font-size: 28px;
         }
 
         p {
-            margin: 0 0 25px;
-
             color: #8b949e;
-
             line-height: 1.6;
         }
 
-        .botao {
+        #arquivo {
+            display: none;
+        }
+
+        button {
             width: 100%;
 
             padding: 16px;
+            margin-top: 15px;
 
             border: 0;
             border-radius: 10px;
@@ -100,47 +93,17 @@
             font-weight: bold;
 
             cursor: pointer;
-
-            transition: .2s;
         }
 
-        .botao:hover {
+        button:hover {
             background: #2ea043;
-            transform: translateY(-1px);
-        }
-
-        .botao:active {
-            transform: translateY(0);
-        }
-
-        #arquivo {
-            display: none;
         }
 
         #status {
             min-height: 24px;
-
             margin-top: 20px;
 
             color: #58a6ff;
-
-            font-size: 14px;
-        }
-
-        .aviso {
-            margin-top: 25px;
-
-            padding: 12px;
-
-            border-radius: 8px;
-
-            background: #21262d;
-
-            color: #8b949e;
-
-            font-size: 12px;
-
-            line-height: 1.5;
         }
     </style>
 </head>
@@ -149,14 +112,12 @@
 
 <div class="container">
 
-    <div class="logo">
-        ▶
-    </div>
+    <div class="logo">▶</div>
 
     <h1>Meu Site</h1>
 
     <p>
-        Selecione o arquivo HTML do seu site para iniciar.
+        Selecione o arquivo HTML do seu site.
     </p>
 
     <input
@@ -165,20 +126,11 @@
         accept=".html,.htm"
     >
 
-    <button
-        id="botao"
-        class="botao"
-        type="button"
-    >
+    <button id="botao">
         ABRIR MEU SITE
     </button>
 
     <div id="status"></div>
-
-    <div class="aviso">
-        O seu site principal permanece no computador.
-        Apenas este inicializador fica hospedado.
-    </div>
 
 </div>
 
@@ -189,9 +141,17 @@ const botao = document.getElementById("botao");
 const arquivo = document.getElementById("arquivo");
 const status = document.getElementById("status");
 
+
 botao.addEventListener("click", function () {
 
+    status.textContent = "";
+
     arquivo.value = "";
+
+    /*
+     * O seletor de arquivos é aberto diretamente
+     * pela ação do usuário.
+     */
 
     arquivo.click();
 
@@ -200,57 +160,54 @@ botao.addEventListener("click", function () {
 
 arquivo.addEventListener("change", function () {
 
-    if (!arquivo.files || arquivo.files.length === 0) {
-        status.textContent = "Nenhum arquivo selecionado.";
+    if (!arquivo.files.length) {
         return;
     }
 
     const file = arquivo.files[0];
 
-    const nome = file.name.toLowerCase();
-
-    if (
-        !nome.endsWith(".html") &&
-        !nome.endsWith(".htm")
-    ) {
+    if (!/\.(html?|HTML?)$/.test(file.name)) {
 
         status.textContent =
-            "Selecione um arquivo HTML.";
+            "Selecione um arquivo HTML válido.";
 
         return;
     }
 
     status.textContent =
-        "Abrindo " + file.name + "...";
+        "Carregando " + file.name + "...";
 
     /*
-     * Cria uma URL temporária para o HTML
-     * escolhido pelo usuário.
+     * Lê o HTML escolhido.
      */
 
-    const url = URL.createObjectURL(file);
+    const leitor = new FileReader();
 
-    /*
-     * Abre o HTML selecionado em uma nova aba.
-     */
+    leitor.onload = function () {
 
-    const novaAba = window.open(
-        url,
-        "_blank"
-    );
+        const html = leitor.result;
 
-    if (!novaAba) {
+        /*
+         * Substitui o conteúdo do inicializador
+         * pelo conteúdo do seu site.
+         */
+
+        document.open();
+
+        document.write(html);
+
+        document.close();
+
+    };
+
+    leitor.onerror = function () {
 
         status.textContent =
-            "O navegador bloqueou a nova aba. Permita pop-ups.";
+            "Não foi possível ler o arquivo.";
 
-        URL.revokeObjectURL(url);
+    };
 
-        return;
-    }
-
-    status.textContent =
-        "Site aberto.";
+    leitor.readAsText(file);
 
 });
 </script>
