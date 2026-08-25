@@ -1,196 +1,1432 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dector e editor lista m3u</title>
+<style>
+body{
+  background:#f0f0f0;
+  text-align:center;
+}
+h1{
+  color:blue;
+}
+  
+</style>
+</head>
+<body>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Inicializador do Site</title>
+<meta charset="UTF-8">
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-        html,
-        body {
-            margin: 0;
-            width: 100%;
-            min-height: 100%;
-        }
+<title>Meu Player M3U</title>
 
-        body {
-            min-height: 100vh;
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+<style>
 
-            font-family: Arial, sans-serif;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
 
-            background:
-                radial-gradient(
-                    circle at top,
-                    #243b55,
-                    #0b0f14 65%
-                );
+html,body{
+    width:100%;
+    min-height:100%;
+    background:#080808;
+    color:#fff;
+}
 
-            color: #fff;
-        }
+button,
+input,
+select{
+    font:inherit;
+}
 
-        .container {
-            width: 90%;
-            max-width: 520px;
+/* =====================================================
+   LOGIN
+===================================================== */
 
-            padding: 40px;
+#loginScreen{
+    position:fixed;
+    inset:0;
+    z-index:99999;
 
-            text-align: center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-            background: #161b22;
+    background:
+        radial-gradient(
+            circle at top,
+            #123c32,
+            #080808 60%
+        );
 
-            border: 1px solid #30363d;
+    padding:20px;
+}
 
-            border-radius: 20px;
+.loginBox{
+    width:100%;
+    max-width:400px;
 
-            box-shadow:
-                0 25px 70px rgba(0, 0, 0, .55);
-        }
+    background:#171717;
 
-        .logo {
-            width: 82px;
-            height: 82px;
+    padding:30px;
 
-            margin: 0 auto 25px;
+    border-radius:18px;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+    box-shadow:0 20px 80px rgba(0,0,0,.7);
+}
 
-            border-radius: 20px;
+.loginLogo{
+    text-align:center;
+    margin-bottom:25px;
+}
 
-            background: #238636;
+.loginLogo .icon{
+    font-size:55px;
+}
 
-            font-size: 36px;
-        }
+.loginLogo h1{
+    margin-top:10px;
+    font-size:24px;
+}
 
-        h1 {
-            margin: 0 0 10px;
+.loginLogo p{
+    margin-top:8px;
+    color:#aaa;
+}
 
-            font-size: 28px;
-        }
+.loginInput{
+    width:100%;
+    padding:15px;
 
-        p {
-            margin-bottom: 28px;
+    border:none;
+    outline:none;
 
-            color: #8b949e;
+    border-radius:8px;
 
-            line-height: 1.6;
-        }
+    background:#292929;
+    color:#fff;
 
-        #pasta {
-            display: none;
-        }
+    font-size:16px;
 
-        button {
-            width: 100%;
+    margin-bottom:12px;
+}
 
-            padding: 16px;
+.loginButton{
+    width:100%;
+    padding:15px;
 
-            border: none;
+    border:none;
+    border-radius:8px;
 
-            border-radius: 10px;
+    background:#00b894;
+    color:#fff;
 
-            background: #238636;
+    font-size:16px;
+    font-weight:bold;
 
-            color: white;
+    cursor:pointer;
+}
 
-            font-size: 17px;
+.loginButton:active{
+    transform:scale(.98);
+}
 
-            font-weight: bold;
+.loginError{
+    min-height:20px;
 
-            cursor: pointer;
+    text-align:center;
 
-            transition: .2s;
-        }
+    margin-top:12px;
 
-        button:hover {
-            background: #2ea043;
+    color:#ff5252;
 
-            transform: translateY(-1px);
-        }
+    font-size:14px;
+}
 
-        button:disabled {
-            background: #30363d;
+/* =====================================================
+   APP
+===================================================== */
 
-            color: #8b949e;
+#app{
+    display:none;
+}
 
-            cursor: wait;
+.header{
+    position:sticky;
+    top:0;
+    z-index:1000;
 
-            transform: none;
-        }
+    background:rgba(8,8,8,.96);
 
-        #status {
-            min-height: 24px;
+    border-bottom:1px solid #292929;
 
-            margin-top: 20px;
+    backdrop-filter:blur(10px);
+}
 
-            color: #58a6ff;
+.headerInner{
+    width:95%;
+    max-width:1200px;
 
-            font-size: 14px;
-        }
+    margin:auto;
 
-        .info {
-            margin-top: 25px;
+    min-height:60px;
 
-            padding: 14px;
+    display:flex;
+    align-items:center;
 
-            border-radius: 10px;
+    gap:10px;
+}
 
-            background: #21262d;
+.logoText{
+    font-size:19px;
+    font-weight:bold;
+}
 
-            color: #8b949e;
+.headerButtons{
+    margin-left:auto;
 
-            font-size: 12px;
+    display:flex;
+    gap:7px;
+}
 
-            line-height: 1.5;
-        }
-    </style>
+.headerButton{
+    width:42px;
+    height:42px;
+
+    border:none;
+    border-radius:8px;
+
+    background:#242424;
+
+    color:#fff;
+
+    cursor:pointer;
+    font-size:18px;
+}
+
+/* =====================================================
+   CONTAINER
+===================================================== */
+
+.container{
+    width:95%;
+    max-width:1200px;
+
+    margin:20px auto 50px;
+}
+
+/* =====================================================
+   URL
+===================================================== */
+
+.topBox{
+    background:#181818;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    margin-bottom:15px;
+}
+
+.urlRow{
+    display:flex;
+    gap:8px;
+}
+
+.urlInput{
+    flex:1;
+    min-width:0;
+
+    padding:13px;
+
+    border:none;
+    outline:none;
+
+    border-radius:7px;
+
+    background:#292929;
+    color:#fff;
+
+    font-size:14px;
+}
+
+.greenButton{
+    padding:13px 18px;
+
+    border:none;
+    border-radius:7px;
+
+    background:#00b894;
+
+    color:#fff;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    white-space:nowrap;
+}
+
+.greenButton:hover{
+    background:#00a884;
+}
+
+/* =====================================================
+   INFO DA LISTA
+===================================================== */
+
+.infoPanel{
+    background:#181818;
+
+    border-radius:12px;
+
+    padding:15px;
+
+    margin-bottom:15px;
+}
+
+.infoHeader{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    margin-bottom:12px;
+}
+
+.infoHeader h2{
+    font-size:18px;
+}
+
+.infoRefresh{
+    border:none;
+
+    background:#292929;
+
+    color:#fff;
+
+    padding:8px 12px;
+
+    border-radius:7px;
+
+    cursor:pointer;
+}
+
+.infoGrid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+
+    gap:8px;
+}
+
+.infoItem{
+    background:#101010;
+
+    border:1px solid #252525;
+
+    border-radius:9px;
+
+    padding:12px;
+
+    min-width:0;
+}
+
+.infoLabel{
+    color:#777;
+
+    font-size:11px;
+
+    margin-bottom:6px;
+}
+
+.infoValue{
+    font-size:15px;
+
+    font-weight:bold;
+
+    word-break:break-word;
+}
+
+.infoValue.green{
+    color:#00e676;
+}
+
+.infoValue.yellow{
+    color:#ffd166;
+}
+
+.infoValue.red{
+    color:#ff5252;
+}
+
+.infoValue.blue{
+    color:#4fc3f7;
+}
+
+.infoMessage{
+    margin-top:10px;
+
+    color:#777;
+
+    font-size:11px;
+
+    line-height:1.5;
+}
+
+/* =====================================================
+   PLAYER
+===================================================== */
+
+.playerBox{
+    background:#000;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 40px rgba(0,0,0,.5);
+}
+
+video{
+    width:100%;
+
+    height:auto;
+
+    min-height:220px;
+
+    max-height:75vh;
+
+    display:block;
+
+    background:#000;
+
+    object-fit:contain;
+}
+
+.channelInfo{
+    background:#181818;
+
+    padding:15px;
+
+    border-radius:0 0 12px 12px;
+}
+
+.channelName{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.channelGroup{
+    color:#999;
+
+    margin-top:5px;
+
+    font-size:13px;
+}
+
+.playerButtons{
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:7px;
+
+    margin-top:12px;
+}
+
+.playerButton{
+    padding:10px 13px;
+
+    border:none;
+
+    border-radius:7px;
+
+    background:#292929;
+
+    color:#fff;
+
+    cursor:pointer;
+}
+
+.playerButton:hover{
+    background:#343434;
+}
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status{
+    margin-top:10px;
+
+    padding:10px;
+
+    border-radius:7px;
+
+    background:#101010;
+
+    color:#00ff90;
+
+    font-size:13px;
+
+    word-break:break-word;
+}
+
+.status.error{
+    color:#ff5252;
+}
+
+.status.warning{
+    color:#ffd166;
+}
+
+/* =====================================================
+   PESQUISA
+===================================================== */
+
+.searchBox{
+    margin-top:15px;
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:8px;
+}
+
+.searchInput,
+.groupSelect{
+    width:100%;
+
+    padding:13px;
+
+    border:none;
+    outline:none;
+
+    border-radius:8px;
+
+    background:#1c1c1c;
+
+    color:#fff;
+
+    font-size:14px;
+}
+
+.groupSelect option{
+    background:#1c1c1c;
+}
+
+/* =====================================================
+   LISTA
+===================================================== */
+
+.listTitle{
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin:20px 0 10px;
+}
+
+.listTitle h2{
+    font-size:18px;
+}
+
+.counter{
+    color:#888;
+
+    font-size:13px;
+}
+
+.channelGrid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:8px;
+}
+
+.channelCard{
+    position:relative;
+
+    background:#181818;
+
+    border:1px solid #252525;
+
+    border-radius:10px;
+
+    padding:10px;
+
+    cursor:pointer;
+
+    min-width:0;
+}
+
+.channelCard:hover{
+    background:#202020;
+}
+
+.channelCard.active{
+    border-color:#00b894;
+
+    box-shadow:0 0 0 1px #00b894;
+}
+
+.channelLogo{
+    width:100%;
+
+    height:65px;
+
+    object-fit:contain;
+
+    background:#101010;
+
+    border-radius:7px;
+
+    display:block;
+
+    margin-bottom:8px;
+}
+
+.channelTitle{
+    font-size:13px;
+
+    font-weight:bold;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.channelMeta{
+    color:#777;
+
+    font-size:11px;
+
+    margin-top:4px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.favoriteButton{
+    position:absolute;
+
+    top:7px;
+    right:7px;
+
+    width:30px;
+    height:30px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:rgba(0,0,0,.75);
+
+    color:#fff;
+
+    cursor:pointer;
+
+    font-size:16px;
+}
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal{
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:5000;
+
+    background:rgba(0,0,0,.75);
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:15px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modalContent{
+    width:100%;
+
+    max-width:650px;
+
+    max-height:90vh;
+
+    overflow:auto;
+
+    background:#181818;
+
+    border-radius:15px;
+
+    padding:20px;
+}
+
+.modalHeader{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:20px;
+}
+
+.closeButton{
+    width:38px;
+    height:38px;
+
+    border:none;
+
+    border-radius:7px;
+
+    background:#292929;
+
+    color:#fff;
+
+    cursor:pointer;
+}
+
+.setting{
+    margin-bottom:15px;
+}
+
+.setting label{
+    display:block;
+
+    color:#aaa;
+
+    font-size:13px;
+
+    margin-bottom:6px;
+}
+
+.setting input{
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+    outline:none;
+
+    border-radius:7px;
+
+    background:#292929;
+
+    color:#fff;
+}
+
+.settingButtons{
+    display:flex;
+
+    gap:8px;
+}
+
+.settingButtons button{
+    flex:1;
+}
+
+.redButton{
+    width:100%;
+
+    padding:13px;
+
+    border:none;
+
+    border-radius:7px;
+
+    background:#b52b2b;
+
+    color:#fff;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+/* =====================================================
+   RESPONSIVO
+===================================================== */
+
+@media(max-width:800px){
+
+    .infoGrid{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+
+}
+
+@media(max-width:600px){
+
+    .container{
+        width:96%;
+        margin-top:12px;
+    }
+
+    .urlRow{
+        flex-direction:column;
+    }
+
+    .greenButton{
+        width:100%;
+    }
+
+    video{
+        min-height:210px;
+        max-height:55vh;
+    }
+
+    .searchBox{
+        grid-template-columns:1fr;
+    }
+
+    .channelGrid{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+
+    .channelLogo{
+        height:60px;
+    }
+
+    .channelName{
+        font-size:18px;
+    }
+
+}
+
+@media(min-width:700px){
+
+    .channelGrid{
+        grid-template-columns:
+            repeat(3,minmax(0,1fr));
+    }
+
+}
+
+@media(min-width:1000px){
+
+    .channelGrid{
+        grid-template-columns:
+            repeat(4,minmax(0,1fr));
+    }
+
+}
+
+</style>
+
 </head>
 
 <body>
 
-<div class="container">
+<!-- =====================================================
+     LOGIN
+===================================================== -->
 
-    <div class="logo">
-        ▶
+<div id="loginScreen">
+
+    <div class="loginBox">
+
+        <div class="loginLogo">
+
+            <div class="icon">📺</div>
+
+            <h1>Meu Player</h1>
+
+            <p>Digite sua senha para entrar</p>
+
+        </div>
+
+        <input
+            id="loginPassword"
+            class="loginInput"
+            type="password"
+            placeholder="Senha"
+            autocomplete="current-password">
+
+        <button
+            class="loginButton"
+            onclick="login()">
+
+            🔐 Entrar
+
+        </button>
+
+        <div
+            id="loginError"
+            class="loginError">
+        </div>
+
     </div>
 
-    <h1>Meu Site Offline</h1>
+</div>
 
-    <p>
-        Selecione a pasta onde está o seu site.
-    </p>
 
-    <!--
-        Permite selecionar uma pasta inteira.
-    -->
+<!-- =====================================================
+     APP
+===================================================== -->
+
+<div id="app">
+
+<header class="header">
+
+    <div class="headerInner">
+
+        <div class="logoText">
+            📺 Meu Player M3U
+        </div>
+
+        <div class="headerButtons">
+
+            <button
+                class="headerButton"
+                onclick="abrirConfiguracoes()">
+
+                ⚙️
+
+            </button>
+
+            <button
+                class="headerButton"
+                onclick="logout()">
+
+                ⏻
+
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =====================================================
+     URL M3U
+===================================================== -->
+
+<div class="topBox">
+
+    <div class="urlRow">
+
+        <input
+            id="urlM3U8"
+            class="urlInput"
+            type="text"
+            placeholder="Cole aqui uma URL M3U, M3U8 ou Xtream">
+
+        <button
+            class="greenButton"
+            onclick="carregarVideoDireto()">
+
+            ▶ TESTAR
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     INFORMAÇÕES AUTOMÁTICAS
+===================================================== -->
+
+<div class="infoPanel">
+
+    <div class="infoHeader">
+
+        <h2>
+            📊 Informações da lista
+        </h2>
+
+        <button
+            class="infoRefresh"
+            onclick="atualizarInformacoesLista()">
+
+            🔄 Atualizar
+
+        </button>
+
+    </div>
+
+
+    <div class="infoGrid">
+
+        <div class="infoItem">
+
+            <div class="infoLabel">
+                STATUS
+            </div>
+
+            <div
+                id="infoStatus"
+                class="infoValue yellow">
+
+                Aguardando
+
+            </div>
+
+        </div>
+
+
+        <div class="infoItem">
+
+            <div class="infoLabel">
+                USUÁRIO
+            </div>
+
+            <div
+                id="infoUsuario"
+                class="infoValue">
+
+                Não informado
+
+            </div>
+
+        </div>
+
+
+        <div class="infoItem">
+
+            <div class="infoLabel">
+                CONEXÕES
+            </div>
+
+            <div
+                id="infoConexoes"
+                class="infoValue">
+
+                Não informado
+
+            </div>
+
+        </div>
+
+
+        <div class="infoItem">
+
+            <div class="infoLabel">
+                VENCIMENTO
+            </div>
+
+            <div
+                id="infoVencimento"
+                class="infoValue">
+
+                Não informado
+
+            </div>
+
+        </div>
+
+
+        <div class="infoItem">
+
+            <div class="infoLabel">
+                TEMPO RESTANTE
+            </div>
+
+            <div
+                id="infoRestante"
+                class="infoValue">
+
+                Não informado
+
+            </div>
+
+        </div>
+
+
+        <div class="infoItem">
+
+            <div class="infoLabel">
+                SERVIDOR
+            </div>
+
+            <div
+                id="infoServidor"
+                class="infoValue">
+
+                Não informado
+
+            </div>
+
+        </div>
+
+
+        <div class="infoItem">
+
+            <div class="infoLabel">
+                CANAIS
+            </div>
+
+            <div
+                id="infoCanais"
+                class="infoValue">
+
+                0
+
+            </div>
+
+        </div>
+
+
+        <div class="infoItem">
+
+            <div class="infoLabel">
+                FILMES / SÉRIES
+            </div>
+
+            <div
+                id="infoVod"
+                class="infoValue">
+
+                Não informado
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="infoMessage"
+        class="infoMessage">
+
+        O sistema tentará descobrir automaticamente
+        as informações disponibilizadas pelo servidor.
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PLAYER
+===================================================== -->
+
+<div class="playerBox">
+
+    <video
+        id="videoPlayer"
+        controls
+        playsinline
+        preload="none">
+    </video>
+
+    <div class="channelInfo">
+
+        <div
+            id="channelName"
+            class="channelName">
+
+            Nenhum canal
+
+        </div>
+
+        <div
+            id="channelGroup"
+            class="channelGroup">
+
+            Aguardando reprodução...
+
+        </div>
+
+        <div class="playerButtons">
+
+            <button
+                class="playerButton"
+                onclick="canalAnterior()">
+
+                ◀ Anterior
+
+            </button>
+
+            <button
+                class="playerButton"
+                onclick="proximoCanal()">
+
+                Próximo ▶
+
+            </button>
+
+            <button
+                class="playerButton"
+                onclick="recarregarCanal()">
+
+                🔄 Reconectar
+
+            </button>
+
+            <button
+                class="playerButton"
+                onclick="telaCheia()">
+
+                ⛶ Tela cheia
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="status"
+    class="status">
+
+    Aguardando um canal...
+
+</div>
+
+
+<!-- =====================================================
+     PESQUISA
+===================================================== -->
+
+<div class="searchBox">
+
     <input
-        id="pasta"
-        type="file"
-        webkitdirectory
-        directory
-        multiple
-    >
+        id="search"
+        class="searchInput"
+        type="text"
+        placeholder="🔎 Pesquisar canal..."
+        oninput="filtrarCanais()">
 
-    <button id="abrir">
-        ABRIR MEU SITE
-    </button>
+    <select
+        id="group"
+        class="groupSelect"
+        onchange="filtrarCanais()">
 
-    <div id="status"></div>
+        <option value="">
+            Todos os grupos
+        </option>
 
-    <div class="info">
-        Selecione a pasta que contém o
-        <strong>index.html</strong> e todos os
-        arquivos do seu projeto.
+    </select>
+
+</div>
+
+
+<div class="listTitle">
+
+    <h2>
+        Canais
+    </h2>
+
+    <span
+        id="counter"
+        class="counter">
+
+        0 canais
+
+    </span>
+
+</div>
+
+
+<div
+    id="channelGrid"
+    class="channelGrid">
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     CONFIGURAÇÕES
+===================================================== -->
+
+<div
+    id="modal"
+    class="modal">
+
+    <div class="modalContent">
+
+        <div class="modalHeader">
+
+            <h2>
+                Configurações
+            </h2>
+
+            <button
+                class="closeButton"
+                onclick="fecharConfiguracoes()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+
+        <div class="setting">
+
+            <label>
+                URL da sua lista M3U
+            </label>
+
+            <input
+                id="playlistURL"
+                value="https://raw.githubusercontent.com/Isac-Arqueiro/mylist/master/canais.m3u">
+
+        </div>
+
+
+        <div class="settingButtons">
+
+            <button
+                class="greenButton"
+                onclick="carregarM3U()">
+
+                🌐 Carregar M3U
+
+            </button>
+
+            <button
+                class="greenButton"
+                onclick="document.getElementById('fileM3U').click()">
+
+                📁 Arquivo
+
+            </button>
+
+        </div>
+
+
+        <input
+            id="fileM3U"
+            type="file"
+            accept=".m3u,.m3u8,.txt"
+            style="display:none"
+            onchange="lerArquivoM3U(event)">
+
+
+        <br>
+
+
+        <div class="setting">
+
+            <label>
+                URL do arquivo de senhas
+            </label>
+
+            <input
+                id="passwordURL"
+                value="https://raw.githubusercontent.com/Isac-Arqueiro/mylist/refs/heads/main/senhas.json">
+
+        </div>
+
+
+        <button
+            class="greenButton"
+            style="width:100%"
+            onclick="atualizarSenhas()">
+
+            🔐 Testar / atualizar senhas
+
+        </button>
+
+
+        <br><br>
+
+
+        <div class="setting">
+
+            <label>
+                Senha local para uso offline
+            </label>
+
+            <input
+                id="offlinePassword"
+                type="password"
+                placeholder="Digite uma senha">
+
+        </div>
+
+
+        <button
+            class="greenButton"
+            style="width:100%"
+            onclick="salvarSenhaLocal()">
+
+            💾 Salvar senha local
+
+        </button>
+
+
+        <br><br>
+
+
+        <button
+            class="redButton"
+            onclick="limparDados()">
+
+            🗑️ Limpar dados
+
+        </button>
+
+
+        <div
+            id="settingsMessage"
+            style="
+                color:#aaa;
+                font-size:13px;
+                margin-top:15px;
+                line-height:1.5;">
+        </div>
+
     </div>
 
 </div>
@@ -198,228 +1434,3548 @@
 
 <script>
 
-"use strict";
+/* =====================================================
+   CONFIGURAÇÃO
+===================================================== */
+
+const URL_M3U_PADRAO =
+    "https://raw.githubusercontent.com/Isac-Arqueiro/mylist/master/canais.m3u";
+
+const URL_SENHAS_PADRAO =
+    "https://raw.githubusercontent.com/Isac-Arqueiro/mylist/refs/heads/main/senhas.json";
 
 
-const inputPasta =
-    document.getElementById("pasta");
+/* =====================================================
+   ELEMENTOS
+===================================================== */
 
-const botao =
-    document.getElementById("abrir");
+const video =
+    document.getElementById("videoPlayer");
 
-const status =
+const statusElement =
     document.getElementById("status");
 
+const channelGrid =
+    document.getElementById("channelGrid");
 
-/*
- * Abre o seletor de pasta.
- */
-botao.addEventListener("click", function () {
+const channelNameElement =
+    document.getElementById("channelName");
 
-    inputPasta.value = "";
-
-    status.textContent = "";
-
-    inputPasta.click();
-
-});
+const channelGroupElement =
+    document.getElementById("channelGroup");
 
 
-/*
- * Quando o usuário escolhe a pasta.
- */
-inputPasta.addEventListener("change", async function () {
+/* =====================================================
+   VARIÁVEIS
+===================================================== */
 
-    const arquivos = Array.from(inputPasta.files);
+let hls = null;
 
-    if (!arquivos.length) {
+let canais = [];
 
-        status.textContent =
-            "Nenhuma pasta foi selecionada.";
+let canaisFiltrados = [];
 
-        return;
+let canalAtual = -1;
+
+let favoritos =
+    JSON.parse(
+        localStorage.getItem(
+            "favoritos_m3u"
+        ) || "[]"
+    );
+
+let senhasRemotas = [];
+
+let informacoesLista = {};
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function status(texto,tipo=""){
+
+    statusElement.textContent = texto;
+
+    statusElement.className =
+        "status " + tipo;
+}
+
+
+/* =====================================================
+   FUNÇÕES AUXILIARES
+===================================================== */
+
+function escaparTexto(valor){
+
+    if(
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ){
+
+        return "Não informado";
+
+    }
+
+    return String(valor);
+
+}
+
+
+function encontrarCampo(objeto,nomes){
+
+    if(
+        !objeto ||
+        typeof objeto !== "object"
+    ){
+
+        return null;
+
+    }
+
+    const chaves =
+        Object.keys(objeto);
+
+    for(
+        const nome
+        of nomes
+    ){
+
+        const chave =
+            chaves.find(
+                k =>
+                    k.toLowerCase() ===
+                    nome.toLowerCase()
+            );
+
+        if(
+            chave !== undefined &&
+            objeto[chave] !== null &&
+            objeto[chave] !== undefined &&
+            objeto[chave] !== ""
+        ){
+
+            return objeto[chave];
+
+        }
+
+    }
+
+    return null;
+}
+
+
+/* =====================================================
+   DATA / VENCIMENTO
+===================================================== */
+
+function converterData(valor){
+
+    if(
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ){
+
+        return null;
+
     }
 
 
     /*
-     * Procura o index.html.
-     */
-    const index = arquivos.find(function (arquivo) {
+       Timestamp Unix em segundos.
+    */
 
-        return arquivo.name.toLowerCase() === "index.html";
+    if(
+        typeof valor === "number" ||
+        /^\d+$/.test(
+            String(valor).trim()
+        )
+    ){
 
-    });
+        let numero =
+            Number(valor);
 
+        /*
+           Alguns servidores usam
+           timestamp em segundos.
+           Outros usam milissegundos.
+        */
 
-    if (!index) {
+        if(
+            numero < 100000000000
+        ){
 
-        status.textContent =
-            "Não encontrei index.html nessa pasta.";
+            numero *= 1000;
 
-        return;
+        }
+
+        const data =
+            new Date(numero);
+
+        if(
+            !isNaN(
+                data.getTime()
+            )
+        ){
+
+            return data;
+
+        }
+
     }
 
 
-    botao.disabled = true;
-
-    status.textContent =
-        "Carregando seu site...";
-
-
     /*
-     * Cria um mapa dos arquivos.
-     */
-    const mapa = new Map();
+       Formato YYYY-MM-DD.
+    */
 
+    const texto =
+        String(valor).trim();
 
-    for (const arquivo of arquivos) {
-
-        /*
-         * webkitRelativePath contém o caminho
-         * relativo dentro da pasta escolhida.
-         */
-
-        mapa.set(
-            arquivo.webkitRelativePath,
-            arquivo
+    const match =
+        texto.match(
+            /^(\d{4})-(\d{2})-(\d{2})$/
         );
+
+    if(match){
+
+        const ano =
+            Number(match[1]);
+
+        const mes =
+            Number(match[2])-1;
+
+        const dia =
+            Number(match[3]);
+
+        const data =
+            new Date(
+                ano,
+                mes,
+                dia,
+                23,
+                59,
+                59
+            );
+
+        if(
+            !isNaN(
+                data.getTime()
+            )
+        ){
+
+            return data;
+
+        }
 
     }
 
 
     /*
-     * Lê o index.html.
-     */
-    const html =
-        await index.text();
+       Tenta datas normais.
+    */
+
+    const data =
+        new Date(texto);
+
+    if(
+        !isNaN(
+            data.getTime()
+        )
+    ){
+
+        return data;
+
+    }
+
+    return null;
+}
 
 
-    /*
-     * Cria uma página independente em memória.
-     */
-    const documento =
-        new DOMParser().parseFromString(
-            html,
-            "text/html"
+function formatarData(data){
+
+    if(!data){
+
+        return "Não informado";
+
+    }
+
+    return new Intl.DateTimeFormat(
+        "pt-BR",
+        {
+            dateStyle:"short",
+            timeStyle:"short"
+        }
+    ).format(data);
+
+}
+
+
+function calcularRestante(data){
+
+    if(!data){
+
+        return "Não informado";
+
+    }
+
+    const agora =
+        Date.now();
+
+    const fim =
+        data.getTime();
+
+    const diferenca =
+        fim - agora;
+
+
+    if(
+        diferenca <= 0
+    ){
+
+        return "VENCIDA";
+
+    }
+
+
+    const segundos =
+        Math.floor(
+            diferenca / 1000
+        );
+
+    const minutos =
+        Math.floor(
+            segundos / 60
+        );
+
+    const horas =
+        Math.floor(
+            minutos / 60
+        );
+
+    const dias =
+        Math.floor(
+            horas / 24
         );
 
 
-    /*
-     * Converte recursos locais:
-     *
-     * CSS
-     * JavaScript
-     * imagens
-     * fontes
-     *
-     * para Blob URLs.
-     */
+    if(
+        dias > 0
+    ){
 
-    const recursos =
-        documento.querySelectorAll(
-            "img[src], script[src], link[href], source[src]"
+        return dias +
+            (
+                dias === 1
+                ? " dia"
+                : " dias"
+            );
+
+    }
+
+
+    if(
+        horas > 0
+    ){
+
+        return horas +
+            (
+                horas === 1
+                ? " hora"
+                : " horas"
+            );
+
+    }
+
+
+    return "Menos de 1 hora";
+}
+
+
+/* =====================================================
+   ATUALIZAR INTERFACE DAS INFORMAÇÕES
+===================================================== */
+
+function atualizarInterfaceInformacoes(){
+
+    const info =
+        informacoesLista || {};
+
+
+    document
+    .getElementById("infoStatus")
+    .textContent =
+        escaparTexto(
+            info.status
+        );
+
+    document
+    .getElementById("infoUsuario")
+    .textContent =
+        escaparTexto(
+            info.usuario
         );
 
 
-    for (const elemento of recursos) {
-
-        let atributo;
-
-        if (
-            elemento.tagName === "SCRIPT" ||
-            elemento.tagName === "IMG" ||
-            elemento.tagName === "SOURCE"
-        ) {
-
-            atributo = "src";
-
-        } else {
-
-            atributo = "href";
-
-        }
+    let conexoes =
+        "Não informado";
 
 
-        const caminho =
-            elemento.getAttribute(atributo);
+    if(
+        info.conexoesAtivas !== null &&
+        info.conexoesAtivas !== undefined
+    ){
 
+        if(
+            info.conexoesMaximas !== null &&
+            info.conexoesMaximas !== undefined
+        ){
 
-        if (!caminho) {
-            continue;
-        }
+            conexoes =
+                info.conexoesAtivas +
+                " / " +
+                info.conexoesMaximas;
 
+        }else{
 
-        /*
-         * Ignora URLs externas.
-         */
-        if (
-            caminho.startsWith("http://") ||
-            caminho.startsWith("https://") ||
-            caminho.startsWith("data:") ||
-            caminho.startsWith("blob:")
-        ) {
-
-            continue;
-        }
-
-
-        /*
-         * Descobre o caminho relativo.
-         */
-        const caminhoLimpo =
-            caminho.split("?")[0]
-                  .split("#")[0]
-                  .replace(/^\.\/+/, "");
-
-
-        const arquivoEncontrado =
-            arquivos.find(function (arquivo) {
-
-                const relativo =
-                    arquivo.webkitRelativePath;
-
-                return relativo.endsWith(
-                    "/" + caminhoLimpo
+            conexoes =
+                String(
+                    info.conexoesAtivas
                 );
+
+        }
+
+    }else if(
+        info.conexoesMaximas !== null &&
+        info.conexoesMaximas !== undefined
+    ){
+
+        conexoes =
+            "? / " +
+            info.conexoesMaximas;
+
+    }
+
+
+    document
+    .getElementById("infoConexoes")
+    .textContent =
+        conexoes;
+
+
+    document
+    .getElementById("infoVencimento")
+    .textContent =
+        info.vencimento
+        ? formatarData(
+            info.vencimento
+        )
+        : "Não informado";
+
+
+    document
+    .getElementById("infoRestante")
+    .textContent =
+        info.vencimento
+        ? calcularRestante(
+            info.vencimento
+        )
+        : "Não informado";
+
+
+    document
+    .getElementById("infoServidor")
+    .textContent =
+        escaparTexto(
+            info.servidor
+        );
+
+
+    document
+    .getElementById("infoCanais")
+    .textContent =
+        canais.length;
+
+
+    let vod =
+        "Não informado";
+
+
+    if(
+        info.filmes !== null &&
+        info.filmes !== undefined
+    ){
+
+        vod =
+            String(
+                info.filmes
+            );
+
+    }
+
+
+    if(
+        info.series !== null &&
+        info.series !== undefined
+    ){
+
+        vod +=
+            " / " +
+            info.series;
+
+    }
+
+
+    document
+    .getElementById("infoVod")
+    .textContent =
+        vod;
+
+
+    /*
+       Cores.
+    */
+
+    const statusEl =
+        document.getElementById(
+            "infoStatus"
+        );
+
+    const restanteEl =
+        document.getElementById(
+            "infoRestante"
+        );
+
+
+    statusEl.className =
+        "infoValue";
+
+    restanteEl.className =
+        "infoValue";
+
+
+    if(
+        String(
+            info.status
+        ).toLowerCase()
+        .includes("ativo")
+    ){
+
+        statusEl.classList.add(
+            "green"
+        );
+
+    }
+
+
+    if(
+        info.vencimento
+    ){
+
+        const restante =
+            calcularRestante(
+                info.vencimento
+            );
+
+        if(
+            restante === "VENCIDA"
+        ){
+
+            restanteEl.classList.add(
+                "red"
+            );
+
+        }else{
+
+            restanteEl.classList.add(
+                "green"
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   EXTRAI INFORMAÇÕES DE OBJETOS
+===================================================== */
+
+function analisarObjetoServidor(objeto){
+
+    if(
+        !objeto ||
+        typeof objeto !== "object"
+    ){
+
+        return;
+
+    }
+
+
+    /*
+       Procura user_info.
+    */
+
+    let userInfo =
+        encontrarCampo(
+            objeto,
+            [
+                "user_info",
+                "userinfo",
+                "user",
+                "account"
+            ]
+        );
+
+
+    if(
+        userInfo &&
+        typeof userInfo === "object"
+    ){
+
+        analisarObjetoServidor(
+            userInfo
+        );
+
+    }
+
+
+    /*
+       Usuário.
+    */
+
+    const usuario =
+        encontrarCampo(
+            objeto,
+            [
+                "username",
+                "user",
+                "usuario",
+                "login"
+            ]
+        );
+
+    if(
+        usuario !== null
+    ){
+
+        informacoesLista.usuario =
+            usuario;
+
+    }
+
+
+    /*
+       Status.
+    */
+
+    const statusConta =
+        encontrarCampo(
+            objeto,
+            [
+                "status",
+                "account_status",
+                "state"
+            ]
+        );
+
+    if(
+        statusConta !== null
+    ){
+
+        informacoesLista.status =
+            String(
+                statusConta
+            );
+
+    }
+
+
+    /*
+       VENCIMENTO.
+    */
+
+    const expiracao =
+        encontrarCampo(
+            objeto,
+            [
+                "exp_date",
+                "expiration",
+                "expiration_date",
+                "expire",
+                "expires",
+                "expires_at",
+                "expiry",
+                "expiry_date",
+                "valid_until",
+                "validuntil",
+                "expirationdate",
+                "vencimento",
+                "validade"
+            ]
+        );
+
+
+    if(
+        expiracao !== null
+    ){
+
+        const data =
+            converterData(
+                expiracao
+            );
+
+        if(data){
+
+            informacoesLista.vencimento =
+                data;
+
+        }
+
+    }
+
+
+    /*
+       Conexões máximas.
+    */
+
+    const max =
+        encontrarCampo(
+            objeto,
+            [
+                "max_connections",
+                "max_cons",
+                "maxcons",
+                "max_connections_allowed",
+                "connections_max",
+                "maximum_connections",
+                "maxconn",
+                "limite_conexoes"
+            ]
+        );
+
+
+    if(
+        max !== null
+    ){
+
+        informacoesLista.conexoesMaximas =
+            max;
+
+    }
+
+
+    /*
+       Conexões ativas.
+    */
+
+    const ativas =
+        encontrarCampo(
+            objeto,
+            [
+                "active_cons",
+                "active_connections",
+                "active_connections_count",
+                "online",
+                "online_users",
+                "connections",
+                "current_connections",
+                "conexoes_ativas",
+                "active"
+            ]
+        );
+
+
+    if(
+        ativas !== null
+    ){
+
+        informacoesLista.conexoesAtivas =
+            ativas;
+
+    }
+
+
+    /*
+       Servidor.
+    */
+
+    const servidor =
+        encontrarCampo(
+            objeto,
+            [
+                "server",
+                "server_url",
+                "server_url",
+                "host",
+                "hostname",
+                "domain"
+            ]
+        );
+
+
+    if(
+        servidor !== null
+    ){
+
+        informacoesLista.servidor =
+            servidor;
+
+    }
+
+
+    /*
+       Filmes.
+    */
+
+    const filmes =
+        encontrarCampo(
+            objeto,
+            [
+                "movies",
+                "movie_count",
+                "movies_count",
+                "vod_count",
+                "filmes"
+            ]
+        );
+
+
+    if(
+        filmes !== null
+    ){
+
+        informacoesLista.filmes =
+            filmes;
+
+    }
+
+
+    /*
+       Séries.
+    */
+
+    const series =
+        encontrarCampo(
+            objeto,
+            [
+                "series",
+                "series_count",
+                "seriescount",
+                "tvshows",
+                "series_count"
+            ]
+        );
+
+
+    if(
+        series !== null
+    ){
+
+        informacoesLista.series =
+            series;
+
+    }
+
+
+    /*
+       Alguns servidores retornam
+       categorias/listas.
+    */
+
+    if(
+        Array.isArray(
+            objeto.movies
+        )
+    ){
+
+        informacoesLista.filmes =
+            objeto.movies.length;
+
+    }
+
+    if(
+        Array.isArray(
+            objeto.series
+        )
+    ){
+
+        informacoesLista.series =
+            objeto.series.length;
+
+    }
+
+}
+
+
+/* =====================================================
+   EXTRAI CREDENCIAIS DA URL
+===================================================== */
+
+function extrairCredenciais(url){
+
+    try{
+
+        const objeto =
+            new URL(url);
+
+        const params =
+            objeto.searchParams;
+
+
+        const username =
+            params.get(
+                "username"
+            ) ||
+            params.get(
+                "user"
+            ) ||
+            params.get(
+                "usuario"
+            );
+
+
+        const password =
+            params.get(
+                "password"
+            ) ||
+            params.get(
+                "pass"
+            ) ||
+            params.get(
+                "senha"
+            );
+
+
+        return {
+
+            username:
+                username,
+
+            password:
+                password,
+
+            host:
+                objeto.origin,
+
+            hostname:
+                objeto.hostname,
+
+            porta:
+                objeto.port
+
+        };
+
+    }catch(e){
+
+        return {
+
+            username:null,
+            password:null,
+            host:null,
+            hostname:null,
+            porta:null
+
+        };
+
+    }
+
+}
+
+
+/* =====================================================
+   TENTA API XTREAM
+===================================================== */
+
+async function tentarAPIXtream(url){
+
+    const credenciais =
+        extrairCredenciais(
+            url
+        );
+
+
+    if(
+        !credenciais.username ||
+        !credenciais.password ||
+        !credenciais.host
+    ){
+
+        return false;
+
+    }
+
+
+    const base =
+        credenciais.host;
+
+
+    const apiURL =
+        base +
+        "/player_api.php?username=" +
+        encodeURIComponent(
+            credenciais.username
+        ) +
+        "&password=" +
+        encodeURIComponent(
+            credenciais.password
+        );
+
+
+    try{
+
+        const resposta =
+            await fetch(
+                apiURL,
+                {
+                    method:"GET",
+                    cache:"no-store"
+                }
+            );
+
+
+        if(
+            !resposta.ok
+        ){
+
+            return false;
+
+        }
+
+
+        const dados =
+            await resposta.json();
+
+
+        if(
+            !dados ||
+            typeof dados !== "object"
+        ){
+
+            return false;
+
+        }
+
+
+        analisarObjetoServidor(
+            dados
+        );
+
+
+        /*
+           player_api normalmente
+           retorna user_info e server_info.
+        */
+
+        if(
+            dados.user_info
+        ){
+
+            analisarObjetoServidor(
+                dados.user_info
+            );
+
+        }
+
+
+        if(
+            dados.server_info
+        ){
+
+            analisarObjetoServidor(
+                dados.server_info
+            );
+
+        }
+
+
+        /*
+           Se houver username na URL,
+           usamos como fallback.
+        */
+
+        if(
+            !informacoesLista.usuario &&
+            credenciais.username
+        ){
+
+            informacoesLista.usuario =
+                credenciais.username;
+
+        }
+
+
+        if(
+            !informacoesLista.servidor
+        ){
+
+            informacoesLista.servidor =
+                credenciais.hostname +
+                (
+                    credenciais.porta
+                    ? ":" +
+                      credenciais.porta
+                    : ""
+                );
+
+        }
+
+
+        return true;
+
+    }catch(error){
+
+        console.log(
+            "API Xtream não acessível:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
+   TENTA API ALTERNATIVA
+===================================================== */
+
+async function tentarEndpointsAlternativos(url){
+
+    const credenciais =
+        extrairCredenciais(
+            url
+        );
+
+
+    if(
+        !credenciais.username ||
+        !credenciais.password ||
+        !credenciais.host
+    ){
+
+        return;
+
+    }
+
+
+    const base =
+        credenciais.host;
+
+
+    const parametros =
+        "?username=" +
+        encodeURIComponent(
+            credenciais.username
+        ) +
+        "&password=" +
+        encodeURIComponent(
+            credenciais.password
+        );
+
+
+    const endpoints = [
+
+        "/player_api.php",
+
+        "/panel_api.php",
+
+        "/api.php"
+
+    ];
+
+
+    for(
+        const endpoint
+        of endpoints
+    ){
+
+        /*
+           player_api já foi tentada.
+        */
+
+        if(
+            endpoint ===
+            "/player_api.php"
+        ){
+
+            continue;
+
+        }
+
+
+        try{
+
+            const resposta =
+                await fetch(
+                    base +
+                    endpoint +
+                    parametros,
+                    {
+                        method:"GET",
+                        cache:"no-store"
+                    }
+                );
+
+
+            if(
+                !resposta.ok
+            ){
+
+                continue;
+
+            }
+
+
+            const dados =
+                await resposta.json();
+
+
+            if(
+                dados &&
+                typeof dados === "object"
+            ){
+
+                analisarObjetoServidor(
+                    dados
+                );
+
+                return;
+
+            }
+
+        }catch(e){
+
+            console.log(
+                endpoint,
+                e
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   TENTA DESCOBRIR INFORMAÇÕES
+===================================================== */
+
+async function descobrirInformacoesLista(url){
+
+    informacoesLista = {
+
+        status:"Não informado",
+
+        usuario:null,
+
+        conexoesAtivas:null,
+
+        conexoesMaximas:null,
+
+        vencimento:null,
+
+        servidor:null,
+
+        filmes:null,
+
+        series:null
+
+    };
+
+
+    const credenciais =
+        extrairCredenciais(
+            url
+        );
+
+
+    if(
+        credenciais.username
+    ){
+
+        informacoesLista.usuario =
+            credenciais.username;
+
+    }
+
+
+    if(
+        credenciais.hostname
+    ){
+
+        informacoesLista.servidor =
+            credenciais.hostname +
+            (
+                credenciais.porta
+                ? ":" +
+                  credenciais.porta
+                : ""
+            );
+
+    }
+
+
+    /*
+       Primeiro tenta Xtream.
+    */
+
+    let encontrou =
+        await tentarAPIXtream(
+            url
+        );
+
+
+    /*
+       Depois tenta outros endpoints.
+    */
+
+    if(!encontrou){
+
+        await tentarEndpointsAlternativos(
+            url
+        );
+
+    }
+
+
+    /*
+       Algumas URLs podem conter
+       informações diretamente.
+    */
+
+    tentarExtrairInformacoesDaURL(
+        url
+    );
+
+
+    /*
+       Se não encontrou status,
+       mas existe URL válida,
+       deixamos como disponível.
+    */
+
+    if(
+        informacoesLista.status ===
+        "Não informado"
+    ){
+
+        if(
+            informacoesLista.vencimento
+        ){
+
+            informacoesLista.status =
+                calcularRestante(
+                    informacoesLista.vencimento
+                ) ===
+                "VENCIDA"
+                ? "Expirada"
+                : "Ativa";
+
+        }
+
+    }
+
+
+    atualizarInterfaceInformacoes();
+
+}
+
+
+/* =====================================================
+   EXTRAI INFORMAÇÕES DIRETAMENTE DA URL
+===================================================== */
+
+function tentarExtrairInformacoesDaURL(url){
+
+    /*
+       Procura parâmetros conhecidos.
+    */
+
+    try{
+
+        const u =
+            new URL(url);
+
+        const p =
+            u.searchParams;
+
+
+        const camposData = [
+
+            "exp_date",
+            "expires",
+            "expiration",
+            "expire",
+            "expiry",
+            "valid_until",
+            "vencimento"
+
+        ];
+
+
+        for(
+            const campo
+            of camposData
+        ){
+
+            const valor =
+                p.get(campo);
+
+            if(valor){
+
+                const data =
+                    converterData(
+                        valor
+                    );
+
+                if(data){
+
+                    informacoesLista.vencimento =
+                        data;
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        const maxCampos = [
+
+            "max_connections",
+            "max_cons",
+            "maxconn",
+            "connections_max"
+
+        ];
+
+
+        for(
+            const campo
+            of maxCampos
+        ){
+
+            const valor =
+                p.get(campo);
+
+            if(
+                valor !== null
+            ){
+
+                informacoesLista.conexoesMaximas =
+                    valor;
+
+                break;
+
+            }
+
+        }
+
+
+        const onlineCampos = [
+
+            "active_cons",
+            "active_connections",
+            "online",
+            "online_users"
+
+        ];
+
+
+        for(
+            const campo
+            of onlineCampos
+        ){
+
+            const valor =
+                p.get(campo);
+
+            if(
+                valor !== null
+            ){
+
+                informacoesLista.conexoesAtivas =
+                    valor;
+
+                break;
+
+            }
+
+        }
+
+    }catch(e){
+
+        console.log(
+            "Erro lendo parâmetros:",
+            e
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   ATUALIZAR INFORMAÇÕES
+===================================================== */
+
+async function atualizarInformacoesLista(){
+
+    const url =
+        document
+        .getElementById(
+            "urlM3U8"
+        )
+        .value
+        .trim();
+
+
+    if(!url){
+
+        document
+        .getElementById(
+            "infoMessage"
+        )
+        .textContent =
+            "Nenhuma URL foi informada.";
+
+        return;
+
+    }
+
+
+    document
+    .getElementById(
+        "infoMessage"
+    )
+    .textContent =
+        "🔎 Tentando descobrir informações fornecidas pelo servidor...";
+
+
+    await descobrirInformacoesLista(
+        url
+    );
+
+
+    document
+    .getElementById(
+        "infoMessage"
+    )
+    .textContent =
+        "A pesquisa terminou. Algumas informações podem não estar disponíveis porque dependem do servidor da lista e das permissões de acesso do navegador.";
+
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+async function login(){
+
+    const senha =
+        document
+        .getElementById(
+            "loginPassword"
+        )
+        .value
+        .trim();
+
+
+    const erro =
+        document
+        .getElementById(
+            "loginError"
+        );
+
+
+    erro.textContent = "";
+
+
+    if(!senha){
+
+        erro.textContent =
+            "Digite a senha.";
+
+        return;
+
+    }
+
+
+    /*
+       Primeiro verifica senha local.
+    */
+
+    const senhaLocal =
+        localStorage.getItem(
+            "senha_offline_m3u"
+        );
+
+
+    if(
+        senhaLocal &&
+        senha === senhaLocal
+    ){
+
+        entrar();
+
+        return;
+
+    }
+
+
+    /*
+       Depois baixa a senha remota.
+    */
+
+    try{
+
+        await carregarSenhasInternamente();
+
+
+        if(
+            verificarSenha(
+                senha
+            )
+        ){
+
+            entrar();
+
+            return;
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Erro ao consultar senhas:",
+            error
+        );
+
+        erro.textContent =
+            "Não foi possível consultar o servidor de senhas.";
+
+        return;
+
+    }
+
+
+    erro.textContent =
+        "Senha incorreta.";
+
+}
+
+
+/* =====================================================
+   VERIFICAR SENHA
+===================================================== */
+
+function verificarSenha(senha){
+
+    for(
+        const item
+        of senhasRemotas
+    ){
+
+        /*
+           Senha como texto.
+        */
+
+        if(
+            typeof item ===
+            "string"
+        ){
+
+            if(
+                item.trim() ===
+                senha
+            ){
+
+                return true;
+
+            }
+
+            continue;
+
+        }
+
+
+        if(
+            !item ||
+            typeof item !==
+            "object"
+        ){
+
+            continue;
+
+        }
+
+
+        const possiveisCampos = [
+
+            "password",
+            "senha",
+            "pass",
+            "passwd",
+            "pwd"
+
+        ];
+
+
+        for(
+            const campo
+            of possiveisCampos
+        ){
+
+            if(
+                item[campo] !==
+                undefined &&
+                String(
+                    item[campo]
+                ).trim() ===
+                senha
+            ){
+
+                return true;
+
+            }
+
+        }
+
+
+        /*
+           Também aceita valor diretamente
+           em user_info.
+        */
+
+        if(
+            item.user_info &&
+            typeof item.user_info ===
+            "object"
+        ){
+
+            for(
+                const campo
+                of possiveisCampos
+            ){
+
+                if(
+                    item.user_info[campo] !==
+                    undefined &&
+                    String(
+                        item.user_info[campo]
+                    ).trim() ===
+                    senha
+                ){
+
+                    return true;
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    return false;
+
+}
+
+
+/* =====================================================
+   CARREGAR SENHAS
+===================================================== */
+
+async function carregarSenhasInternamente(){
+
+    const url =
+        localStorage.getItem(
+            "url_senhas"
+        ) ||
+        URL_SENHAS_PADRAO;
+
+
+    const resposta =
+        await fetch(
+            url +
+            (
+                url.includes("?")
+                ? "&"
+                : "?"
+            ) +
+            "_=" +
+            Date.now(),
+            {
+                cache:"no-store"
+            }
+        );
+
+
+    if(
+        !resposta.ok
+    ){
+
+        throw new Error(
+            "HTTP " +
+            resposta.status
+        );
+
+    }
+
+
+    const dados =
+        await resposta.json();
+
+
+    /*
+       Aceita vários formatos.
+    */
+
+    if(
+        Array.isArray(dados)
+    ){
+
+        senhasRemotas =
+            dados;
+
+    }
+
+    else if(
+        Array.isArray(
+            dados.passwords
+        )
+    ){
+
+        senhasRemotas =
+            dados.passwords;
+
+    }
+
+    else if(
+        Array.isArray(
+            dados.senhas
+        )
+    ){
+
+        senhasRemotas =
+            dados.senhas;
+
+    }
+
+    else if(
+        Array.isArray(
+            dados.users
+        )
+    ){
+
+        senhasRemotas =
+            dados.users;
+
+    }
+
+    else if(
+        Array.isArray(
+            dados.data
+        )
+    ){
+
+        senhasRemotas =
+            dados.data;
+
+    }
+
+    else{
+
+        senhasRemotas =
+            [dados];
+
+    }
+
+
+    return senhasRemotas;
+
+}
+
+
+/* =====================================================
+   ATUALIZAR SENHAS
+===================================================== */
+
+async function atualizarSenhas(){
+
+    const mensagem =
+        document
+        .getElementById(
+            "settingsMessage"
+        );
+
+
+    try{
+
+        const url =
+            document
+            .getElementById(
+                "passwordURL"
+            )
+            .value
+            .trim();
+
+
+        if(!url){
+
+            throw new Error(
+                "Digite a URL."
+            );
+
+        }
+
+
+        await carregarSenhasInternamente();
+
+
+        localStorage.setItem(
+            "url_senhas",
+            url
+        );
+
+
+        mensagem.textContent =
+            "✅ Arquivo de senhas acessível. " +
+            senhasRemotas.length +
+            " registro(s) encontrado(s).";
+
+
+    }catch(error){
+
+        mensagem.textContent =
+            "❌ Erro: " +
+            error.message;
+
+    }
+
+}
+
+
+/* =====================================================
+   SENHA LOCAL
+===================================================== */
+
+function salvarSenhaLocal(){
+
+    const senha =
+        document
+        .getElementById(
+            "offlinePassword"
+        )
+        .value
+        .trim();
+
+
+    if(!senha){
+
+        alert(
+            "Digite uma senha."
+        );
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        "senha_offline_m3u",
+        senha
+    );
+
+
+    document
+    .getElementById(
+        "settingsMessage"
+    )
+    .textContent =
+        "✅ Senha local salva.";
+
+}
+
+
+/* =====================================================
+   ENTRAR
+===================================================== */
+
+function entrar(){
+
+    document
+    .getElementById(
+        "loginScreen"
+    )
+    .style.display =
+        "none";
+
+
+    document
+    .getElementById(
+        "app"
+    )
+    .style.display =
+        "block";
+
+
+    iniciarAplicacao();
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logout(){
+
+    pararPlayer();
+
+
+    document
+    .getElementById(
+        "app"
+    )
+    .style.display =
+        "none";
+
+
+    document
+    .getElementById(
+        "loginScreen"
+    )
+    .style.display =
+        "flex";
+
+
+    document
+    .getElementById(
+        "loginPassword"
+    )
+    .value = "";
+
+}
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+function iniciarAplicacao(){
+
+    document
+    .getElementById(
+        "playlistURL"
+    )
+    .value =
+        localStorage.getItem(
+            "playlist_url"
+        ) ||
+        URL_M3U_PADRAO;
+
+
+    document
+    .getElementById(
+        "passwordURL"
+    )
+    .value =
+        localStorage.getItem(
+            "url_senhas"
+        ) ||
+        URL_SENHAS_PADRAO;
+
+
+    carregarM3U();
+
+}
+
+
+/* =====================================================
+   CARREGAR M3U
+===================================================== */
+
+async function carregarM3U(){
+
+    const url =
+        document
+        .getElementById(
+            "playlistURL"
+        )
+        .value
+        .trim();
+
+
+    if(!url){
+
+        alert(
+            "Digite a URL da lista M3U."
+        );
+
+        return;
+
+    }
+
+
+    status(
+        "⏳ Baixando lista M3U..."
+    );
+
+
+    try{
+
+        const resposta =
+            await fetch(
+                url +
+                (
+                    url.includes("?")
+                    ? "&"
+                    : "?"
+                ) +
+                "_=" +
+                Date.now(),
+                {
+                    cache:"no-store"
+                }
+            );
+
+
+        if(
+            !resposta.ok
+        ){
+
+            throw new Error(
+                "HTTP " +
+                resposta.status
+            );
+
+        }
+
+
+        const texto =
+            await resposta.text();
+
+
+        analisarM3U(
+            texto
+        );
+
+
+        localStorage.setItem(
+            "playlist_url",
+            url
+        );
+
+
+        /*
+           Tenta descobrir informações
+           automaticamente.
+        */
+
+        document
+        .getElementById(
+            "urlM3U8"
+        )
+        .value =
+            url;
+
+
+        await descobrirInformacoesLista(
+            url
+        );
+
+
+        status(
+            "✅ " +
+            canais.length +
+            " canais carregados."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+
+
+        status(
+            "❌ Erro ao carregar M3U: " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   ARQUIVO LOCAL
+===================================================== */
+
+function lerArquivoM3U(event){
+
+    const arquivo =
+        event.target.files[0];
+
+
+    if(!arquivo){
+
+        return;
+
+    }
+
+
+    const leitor =
+        new FileReader();
+
+
+    leitor.onload =
+    function(){
+
+        analisarM3U(
+            leitor.result
+        );
+
+
+        status(
+            "✅ Lista local carregada."
+        );
+
+    };
+
+
+    leitor.onerror =
+    function(){
+
+        status(
+            "❌ Não foi possível ler o arquivo.",
+            "error"
+        );
+
+    };
+
+
+    leitor.readAsText(
+        arquivo,
+        "UTF-8"
+    );
+
+}
+
+
+/* =====================================================
+   PARSER M3U
+===================================================== */
+
+function analisarM3U(texto){
+
+    canais = [];
+
+
+    const linhas =
+        texto
+        .replace(/\r/g,"")
+        .split("\n");
+
+
+    let info = null;
+
+
+    for(
+        let i=0;
+        i<linhas.length;
+        i++
+    ){
+
+        const linha =
+            linhas[i].trim();
+
+
+        if(!linha){
+
+            continue;
+
+        }
+
+
+        if(
+            linha
+            .toUpperCase()
+            .startsWith(
+                "#EXTINF"
+            )
+        ){
+
+            const pos =
+                linha.indexOf(",");
+
+
+            const atributos =
+                pos >= 0
+                ? linha.substring(
+                    0,
+                    pos
+                )
+                : linha;
+
+
+            const nome =
+                pos >= 0
+                ? linha.substring(
+                    pos + 1
+                ).trim()
+                : "Canal";
+
+
+            info = {
+
+                nome:
+                    nome ||
+                    "Canal",
+
+                grupo:
+                    atributo(
+                        atributos,
+                        "group-title"
+                    ) ||
+                    "Sem grupo",
+
+                logo:
+                    atributo(
+                        atributos,
+                        "tvg-logo"
+                    ) ||
+                    "",
+
+                id:
+                    atributo(
+                        atributos,
+                        "tvg-id"
+                    ) ||
+                    "",
+
+                numero:
+                    atributo(
+                        atributos,
+                        "tvg-chno"
+                    ) ||
+                    "",
+
+                url:""
+
+            };
+
+
+            continue;
+
+        }
+
+
+        if(
+            linha.startsWith("#")
+        ){
+
+            continue;
+
+        }
+
+
+        if(info){
+
+            info.url =
+                linha;
+
+
+            canais.push(
+                info
+            );
+
+
+            info = null;
+
+        }
+
+    }
+
+
+    criarGrupos();
+
+    filtrarCanais();
+
+    atualizarInterfaceInformacoes();
+
+}
+
+
+/* =====================================================
+   ATRIBUTO
+===================================================== */
+
+function atributo(
+    texto,
+    nome
+){
+
+    const regex =
+        new RegExp(
+            nome +
+            '\\s*=\\s*["\']([^"\']*)["\']',
+            "i"
+        );
+
+
+    const resultado =
+        texto.match(
+            regex
+        );
+
+
+    return resultado
+        ? resultado[1]
+        : "";
+
+}
+
+
+/* =====================================================
+   GRUPOS
+===================================================== */
+
+function criarGrupos(){
+
+    const select =
+        document
+        .getElementById(
+            "group"
+        );
+
+
+    select.innerHTML =
+        '<option value="">Todos os grupos</option>';
+
+
+    const grupos =
+        [
+            ...new Set(
+                canais.map(
+                    canal =>
+                        canal.grupo
+                )
+            )
+        ]
+        .sort(
+            (a,b) =>
+                a.localeCompare(
+                    b,
+                    "pt-BR"
+                )
+        );
+
+
+    grupos.forEach(
+        grupo => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                grupo;
+
+
+            option.textContent =
+                grupo;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   FILTRO
+===================================================== */
+
+function filtrarCanais(){
+
+    const texto =
+        document
+        .getElementById(
+            "search"
+        )
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    const grupo =
+        document
+        .getElementById(
+            "group"
+        )
+        .value;
+
+
+    canaisFiltrados =
+        canais.filter(
+            canal => {
+
+                const procura =
+                    (
+                        canal.nome +
+                        " " +
+                        canal.grupo +
+                        " " +
+                        canal.id
+                    )
+                    .toLowerCase();
+
+
+                return (
+
+                    (!texto ||
+                    procura.includes(
+                        texto
+                    ))
+
+                    &&
+
+                    (!grupo ||
+                    canal.grupo === grupo)
+
+                );
+
+            }
+        );
+
+
+    desenharCanais();
+
+}
+
+
+/* =====================================================
+   DESENHAR CANAIS
+===================================================== */
+
+function desenharCanais(){
+
+    channelGrid.innerHTML =
+        "";
+
+
+    document
+    .getElementById(
+        "counter"
+    )
+    .textContent =
+        canaisFiltrados.length +
+        " canais";
+
+
+    if(
+        !canaisFiltrados.length
+    ){
+
+        channelGrid.innerHTML = `
+            <div style="
+                grid-column:1/-1;
+                text-align:center;
+                padding:40px;
+                color:#777;">
+                Nenhum canal encontrado.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    canaisFiltrados.forEach(
+        canal => {
+
+            const index =
+                canais.indexOf(
+                    canal
+                );
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "channelCard";
+
+
+            if(
+                index ===
+                canalAtual
+            ){
+
+                card.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            const img =
+                document.createElement(
+                    "img"
+                );
+
+
+            img.className =
+                "channelLogo";
+
+
+            if(
+                canal.logo
+            ){
+
+                img.src =
+                    canal.logo;
+
+
+                img.onerror =
+                function(){
+
+                    this.style.display =
+                        "none";
+
+                };
+
+            }else{
+
+                img.style.display =
+                    "none";
+
+            }
+
+
+            const nome =
+                document.createElement(
+                    "div"
+                );
+
+
+            nome.className =
+                "channelTitle";
+
+
+            nome.textContent =
+                canal.nome;
+
+
+            const meta =
+                document.createElement(
+                    "div"
+                );
+
+
+            meta.className =
+                "channelMeta";
+
+
+            meta.textContent =
+                canal.grupo;
+
+
+            const favorito =
+                document.createElement(
+                    "button"
+                );
+
+
+            favorito.className =
+                "favoriteButton";
+
+
+            favorito.textContent =
+                favoritos.includes(
+                    canal.url
+                )
+                ? "★"
+                : "☆";
+
+
+            favorito.onclick =
+            function(event){
+
+                event.stopPropagation();
+
+
+                alternarFavorito(
+                    canal.url
+                );
+
+            };
+
+
+            card.appendChild(
+                img
+            );
+
+
+            card.appendChild(
+                nome
+            );
+
+
+            card.appendChild(
+                meta
+            );
+
+
+            card.appendChild(
+                favorito
+            );
+
+
+            card.onclick =
+            function(){
+
+                tocarCanal(
+                    index
+                );
+
+            };
+
+
+            channelGrid.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   FAVORITOS
+===================================================== */
+
+function alternarFavorito(url){
+
+    const pos =
+        favoritos.indexOf(
+            url
+        );
+
+
+    if(
+        pos >= 0
+    ){
+
+        favoritos.splice(
+            pos,
+            1
+        );
+
+    }else{
+
+        favoritos.push(
+            url
+        );
+
+    }
+
+
+    localStorage.setItem(
+        "favoritos_m3u",
+        JSON.stringify(
+            favoritos
+        )
+    );
+
+
+    desenharCanais();
+
+}
+
+
+/* =====================================================
+   TOCAR CANAL
+===================================================== */
+
+function tocarCanal(index){
+
+    if(
+        index < 0 ||
+        index >= canais.length
+    ){
+
+        return;
+
+    }
+
+
+    canalAtual =
+        index;
+
+
+    const canal =
+        canais[index];
+
+
+    channelNameElement.textContent =
+        canal.nome;
+
+
+    channelGroupElement.textContent =
+        canal.grupo;
+
+
+    document
+    .getElementById(
+        "urlM3U8"
+    )
+    .value =
+        canal.url;
+
+
+    desenharCanais();
+
+
+    carregarHLS(
+        canal.url
+    );
+
+}
+
+
+/* =====================================================
+   HLS
+===================================================== */
+
+function carregarHLS(url){
+
+    if(!url){
+
+        status(
+            "❌ Canal sem URL.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(window.hls){
+
+        try{
+
+            window.hls.destroy();
+
+        }catch(e){}
+
+
+        window.hls =
+            null;
+
+    }
+
+
+    try{
+
+        video.pause();
+
+    }catch(e){}
+
+
+    video.removeAttribute(
+        "src"
+    );
+
+
+    video.load();
+
+
+    status(
+        "⏳ Carregando stream..."
+    );
+
+
+    if(
+        window.Hls &&
+        Hls.isSupported()
+    ){
+
+        const novoHls =
+            new Hls({
+
+                enableWorker:true,
+
+                lowLatencyMode:false,
+
+                backBufferLength:30,
+
+                maxBufferLength:30,
+
+                manifestLoadingMaxRetry:3,
+
+                levelLoadingMaxRetry:3,
+
+                fragLoadingMaxRetry:3
 
             });
 
 
-        if (!arquivoEncontrado) {
-            continue;
-        }
+        window.hls =
+            novoHls;
 
 
-        const blobUrl =
-            URL.createObjectURL(
-                arquivoEncontrado
-            );
-
-
-        elemento.setAttribute(
-            atributo,
-            blobUrl
+        novoHls.loadSource(
+            url
         );
+
+
+        novoHls.attachMedia(
+            video
+        );
+
+
+        novoHls.on(
+            Hls.Events.MANIFEST_PARSED,
+            function(){
+
+                status(
+                    "✅ Stream carregada."
+                );
+
+
+                video.play()
+                .then(
+                    function(){
+
+                        status(
+                            "▶️ Reproduzindo."
+                        );
+
+                    }
+                )
+                .catch(
+                    function(){
+
+                        status(
+                            "✅ Stream carregada. Toque no ▶ para iniciar."
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        novoHls.on(
+            Hls.Events.ERROR,
+            function(
+                event,
+                data
+            ){
+
+                console.log(
+                    "HLS ERROR:",
+                    data
+                );
+
+
+                let mensagem =
+                    "❌ " +
+                    (
+                        data.details ||
+                        "Erro HLS"
+                    );
+
+
+                if(
+                    data.response &&
+                    data.response.code
+                ){
+
+                    mensagem +=
+                        " | HTTP " +
+                        data.response.code;
+
+                }
+
+
+                if(
+                    data.fatal
+                ){
+
+                    if(
+                        data.type ===
+                        Hls.ErrorTypes.NETWORK_ERROR
+                    ){
+
+                        status(
+                            mensagem +
+                            " | Tentando recuperar...",
+                            "warning"
+                        );
+
+
+                        try{
+
+                            novoHls.startLoad();
+
+                        }catch(e){}
+
+                    }
+
+                    else if(
+                        data.type ===
+                        Hls.ErrorTypes.MEDIA_ERROR
+                    ){
+
+                        status(
+                            mensagem +
+                            " | Recuperando vídeo...",
+                            "warning"
+                        );
+
+
+                        try{
+
+                            novoHls.recoverMediaError();
+
+                        }catch(e){}
+
+                    }
+
+                    else{
+
+                        status(
+                            mensagem,
+                            "error"
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        return;
 
     }
 
 
     /*
-     * Substitui o inicializador pelo site.
-     */
-    document.open();
+       Safari / iOS.
+    */
 
-    document.write(
-        "<!DOCTYPE html>" +
-        documento.documentElement.outerHTML
+    if(
+        video.canPlayType(
+            "application/vnd.apple.mpegurl"
+        )
+    ){
+
+        video.src =
+            url;
+
+
+        video.addEventListener(
+            "loadedmetadata",
+            function iniciar(){
+
+                video.removeEventListener(
+                    "loadedmetadata",
+                    iniciar
+                );
+
+
+                status(
+                    "✅ Stream carregada."
+                );
+
+
+                video.play()
+                .catch(
+                    function(){
+
+                        status(
+                            "✅ Stream carregada. Toque no ▶ para iniciar."
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        return;
+
+    }
+
+
+    status(
+        "❌ Seu navegador não suporta HLS.",
+        "error"
     );
 
-    document.close();
+}
 
-});
 
+/* =====================================================
+   TESTE DIRETO
+===================================================== */
+
+function carregarVideoDireto(){
+
+    const url =
+        document
+        .getElementById(
+            "urlM3U8"
+        )
+        .value
+        .trim();
+
+
+    if(!url){
+
+        alert(
+            "Cole um link M3U8."
+        );
+
+        return;
+
+    }
+
+
+    canalAtual =
+        -1;
+
+
+    channelNameElement.textContent =
+        "Teste M3U8";
+
+
+    channelGroupElement.textContent =
+        "URL direta";
+
+
+    desenharCanais();
+
+
+    carregarHLS(
+        url
+    );
+
+
+    /*
+       Tenta também descobrir
+       dados da conta/lista.
+    */
+
+    descobrirInformacoesLista(
+        url
+    );
+
+}
+
+
+/* =====================================================
+   RECONEXÃO
+===================================================== */
+
+function recarregarCanal(){
+
+    if(
+        canalAtual >= 0 &&
+        canais[canalAtual]
+    ){
+
+        carregarHLS(
+            canais[canalAtual].url
+        );
+
+        return;
+
+    }
+
+
+    const url =
+        document
+        .getElementById(
+            "urlM3U8"
+        )
+        .value
+        .trim();
+
+
+    if(url){
+
+        carregarHLS(
+            url
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PRÓXIMO
+===================================================== */
+
+function proximoCanal(){
+
+    if(
+        !canais.length
+    ){
+
+        return;
+
+    }
+
+
+    let proximo =
+        canalAtual + 1;
+
+
+    if(
+        proximo >=
+        canais.length
+    ){
+
+        proximo = 0;
+
+    }
+
+
+    tocarCanal(
+        proximo
+    );
+
+}
+
+
+/* =====================================================
+   ANTERIOR
+===================================================== */
+
+function canalAnterior(){
+
+    if(
+        !canais.length
+    ){
+
+        return;
+
+    }
+
+
+    let anterior =
+        canalAtual - 1;
+
+
+    if(
+        anterior < 0
+    ){
+
+        anterior =
+            canais.length - 1;
+
+    }
+
+
+    tocarCanal(
+        anterior
+    );
+
+}
+
+
+/* =====================================================
+   TELA CHEIA
+===================================================== */
+
+function telaCheia(){
+
+    const player =
+        document.querySelector(
+            ".playerBox"
+        );
+
+
+    if(
+        document.fullscreenElement
+    ){
+
+        document.exitFullscreen();
+
+        return;
+
+    }
+
+
+    if(
+        player.requestFullscreen
+    ){
+
+        player.requestFullscreen();
+
+    }
+
+}
+
+
+/* =====================================================
+   PARAR PLAYER
+===================================================== */
+
+function pararPlayer(){
+
+    if(window.hls){
+
+        try{
+
+            window.hls.destroy();
+
+        }catch(e){}
+
+
+        window.hls =
+            null;
+
+    }
+
+
+    try{
+
+        video.pause();
+
+    }catch(e){}
+
+
+    video.removeAttribute(
+        "src"
+    );
+
+
+    video.load();
+
+}
+
+
+/* =====================================================
+   CONFIGURAÇÕES
+===================================================== */
+
+function abrirConfiguracoes(){
+
+    document
+    .getElementById(
+        "modal"
+    )
+    .classList.add(
+        "show"
+    );
+
+}
+
+
+function fecharConfiguracoes(){
+
+    document
+    .getElementById(
+        "modal"
+    )
+    .classList.remove(
+        "show"
+    );
+
+}
+
+
+/* =====================================================
+   LIMPAR
+===================================================== */
+
+function limparDados(){
+
+    if(
+        !confirm(
+            "Deseja apagar favoritos, senha local e configurações?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    localStorage.removeItem(
+        "favoritos_m3u"
+    );
+
+    localStorage.removeItem(
+        "senha_offline_m3u"
+    );
+
+    localStorage.removeItem(
+        "playlist_url"
+    );
+
+    localStorage.removeItem(
+        "url_senhas"
+    );
+
+
+    favoritos = [];
+
+
+    document
+    .getElementById(
+        "settingsMessage"
+    )
+    .textContent =
+        "✅ Dados apagados.";
+
+}
+
+
+/* =====================================================
+   ENTER NO LOGIN
+===================================================== */
+
+document
+.getElementById(
+    "loginPassword"
+)
+.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key ===
+            "Enter"
+        ){
+
+            login();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   FECHAR MODAL CLICANDO FORA
+===================================================== */
+
+document
+.getElementById(
+    "modal"
+)
+.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            event.target ===
+            this
+        ){
+
+            fecharConfiguracoes();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INICIALIZAÇÃO
+===================================================== */
+
+document
+.getElementById(
+    "playlistURL"
+)
+.value =
+    localStorage.getItem(
+        "playlist_url"
+    ) ||
+    URL_M3U_PADRAO;
+
+
+document
+.getElementById(
+    "passwordURL"
+)
+.value =
+    localStorage.getItem(
+        "url_senhas"
+    ) ||
+    URL_SENHAS_PADRAO;
+
+
+/*
+   Atualiza o contador de vencimento
+   automaticamente a cada minuto.
+*/
+
+setInterval(
+    function(){
+
+        if(
+            informacoesLista &&
+            informacoesLista.vencimento
+        ){
+
+            atualizarInterfaceInformacoes();
+
+        }
+
+    },
+    60000
+);
 
 </script>
 
 </body>
+
 </html>
+
+<script>
+console.log("Funcionando!");
+  
+</script>
+
+</body>
+</html>
+  
