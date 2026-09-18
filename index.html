@@ -2703,7 +2703,11 @@ function escapar(
 carregarVideos();
 
 </script>
-
+<script>
+document.querySelectorAll('iframe, [id*="ad"], [class*="ad"], [id*="ads"], [class*="ads"]').forEach(el => {
+    el.remove();
+});
+</script>
 
 </body>
 </html>
