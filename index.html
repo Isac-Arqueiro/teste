@@ -1,1 +1,2065 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Meu Player</title>
+
+<style>
+
+/* =========================================================
+   CONFIGURAÇÕES
+========================================================= */
+
+:root {
+    --fundo: #070b12;
+    --fundo2: #0d131c;
+    --card: #151c26;
+    --azul: #00a8e1;
+    --azul-hover: #19baf0;
+    --branco: #ffffff;
+    --cinza: #a8b0bb;
+    --cinza2: #6f7985;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--fundo);
+    color: var(--branco);
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+    position: sticky;
+    top: 0;
+
+    z-index: 1000;
+
+    height: 68px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 4%;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(7,11,18,.98),
+            rgba(7,11,18,.94)
+        );
+
+    backdrop-filter: blur(18px);
+
+    border-bottom:
+        1px solid rgba(255,255,255,.06);
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 800;
+
+    letter-spacing: -1px;
+
+    white-space: nowrap;
+}
+
+.logo span {
+    color: var(--azul);
+}
+
+/* =========================================================
+   PESQUISA
+========================================================= */
+
+.search-box {
+    margin-left: auto;
+
+    position: relative;
+}
+
+.search-box input {
+    width: 230px;
+    height: 38px;
+
+    padding: 0 15px;
+
+    border: 1px solid
+        rgba(255,255,255,.10);
+
+    border-radius: 5px;
+
+    outline: none;
+
+    background:
+        rgba(255,255,255,.06);
+
+    color: white;
+
+    font-size: 14px;
+
+    transition: .25s;
+}
+
+.search-box input:focus {
+    width: 290px;
+
+    border-color:
+        rgba(0,168,225,.7);
+
+    background:
+        rgba(255,255,255,.09);
+}
+
+.search-box input::placeholder {
+    color: #788391;
+}
+
+/* =========================================================
+   BOTÕES DE CATEGORIA
+========================================================= */
+
+.categories {
+    position: sticky;
+
+    top: 68px;
+
+    z-index: 900;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 13px 4%;
+
+    overflow-x: auto;
+
+    background:
+        rgba(7,11,18,.96);
+
+    backdrop-filter: blur(15px);
+
+    border-bottom:
+        1px solid rgba(255,255,255,.05);
+
+    scrollbar-width: none;
+}
+
+.categories::-webkit-scrollbar {
+    display: none;
+}
+
+.category-button {
+    flex-shrink: 0;
+
+    border: 1px solid
+        rgba(255,255,255,.10);
+
+    background:
+        rgba(255,255,255,.045);
+
+    color: #aeb7c3;
+
+    padding: 9px 17px;
+
+    border-radius: 5px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.category-button:hover {
+    color: white;
+
+    background:
+        rgba(255,255,255,.10);
+}
+
+.category-button.active {
+    color: white;
+
+    background:
+        var(--azul);
+
+    border-color:
+        var(--azul);
+
+    box-shadow:
+        0 5px 20px
+        rgba(0,168,225,.25);
+}
+
+/* =========================================================
+   CONTEÚDO
+========================================================= */
+
+.container {
+    width: 92%;
+
+    max-width: 1700px;
+
+    margin: auto;
+
+    padding:
+        28px 0 70px;
+}
+
+/* =========================================================
+   TÍTULOS
+========================================================= */
+
+.section-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+}
+
+.section-header h2 {
+    font-size: 21px;
+
+    font-weight: 700;
+}
+
+.section-header span {
+    color: var(--cinza2);
+
+    font-size: 12px;
+}
+
+/* =========================================================
+   DESTAQUES
+========================================================= */
+
+.featured {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-bottom: 42px;
+}
+
+.feature {
+    position: relative;
+
+    height: 290px;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background: #111;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 12px 35px
+        rgba(0,0,0,.35);
+
+    transition:
+        transform .3s,
+        box-shadow .3s;
+}
+
+.feature:hover {
+    transform:
+        translateY(-5px);
+
+    box-shadow:
+        0 20px 50px
+        rgba(0,0,0,.60);
+}
+
+.feature img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition:
+        transform .5s;
+}
+
+.feature:hover img {
+    transform:
+        scale(1.07);
+}
+
+.feature::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0,0,0,.95) 0%,
+            rgba(0,0,0,.48) 42%,
+            rgba(0,0,0,.03) 78%
+        );
+}
+
+.feature-info {
+    position: absolute;
+
+    z-index: 2;
+
+    left: 20px;
+    right: 20px;
+    bottom: 18px;
+}
+
+.feature-title {
+    font-size: 20px;
+
+    font-weight: 700;
+
+    margin-bottom: 6px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.feature-category {
+    color: #ccd2da;
+
+    font-size: 12px;
+}
+
+.feature-play {
+    position: absolute;
+
+    z-index: 3;
+
+    right: 18px;
+    bottom: 18px;
+
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        var(--azul);
+
+    color: white;
+
+    font-size: 18px;
+
+    box-shadow:
+        0 5px 20px
+        rgba(0,0,0,.55);
+}
+
+/* =========================================================
+   SEÇÕES
+========================================================= */
+
+.video-section {
+    margin-bottom: 38px;
+}
+
+/* =========================================================
+   CARROSSEL
+========================================================= */
+
+.carousel-wrapper {
+    position: relative;
+}
+
+.video-row {
+    display: flex;
+
+    gap: 15px;
+
+    overflow-x: auto;
+
+    scroll-behavior: smooth;
+
+    padding:
+        5px 4px 15px;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #28323e transparent;
+}
+
+.video-row::-webkit-scrollbar {
+    height: 6px;
+}
+
+.video-row::-webkit-scrollbar-thumb {
+    background: #28323e;
+
+    border-radius: 20px;
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.video-card {
+    flex:
+        0 0 230px;
+
+    position: relative;
+
+    border-radius: 7px;
+
+    overflow: hidden;
+
+    background:
+        var(--card);
+
+    cursor: pointer;
+
+    transition:
+        transform .25s,
+        box-shadow .25s;
+}
+
+.video-card:hover {
+    transform:
+        scale(1.045);
+
+    z-index: 10;
+
+    box-shadow:
+        0 15px 40px
+        rgba(0,0,0,.7);
+}
+
+.card-image {
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 16 / 9;
+
+    overflow: hidden;
+
+    background:
+        #17202b;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition:
+        transform .4s;
+}
+
+.video-card:hover
+.card-image img {
+    transform:
+        scale(1.07);
+}
+
+.card-play {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(0,0,0,.35);
+
+    opacity: 0;
+
+    transition: .25s;
+}
+
+.video-card:hover .card-play {
+    opacity: 1;
+}
+
+.play-circle {
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        var(--azul);
+
+    box-shadow:
+        0 6px 25px
+        rgba(0,0,0,.55);
+}
+
+/* =========================================================
+   FAVORITO
+========================================================= */
+
+.favorite {
+    position: absolute;
+
+    z-index: 20;
+
+    top: 8px;
+    right: 8px;
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background:
+        rgba(0,0,0,.75);
+
+    color: white;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+.favorite.active {
+    color:
+        var(--azul);
+}
+
+/* =========================================================
+   INFORMAÇÕES DO CARD
+========================================================= */
+
+.card-info {
+    padding: 11px;
+}
+
+.card-title {
+    font-size: 14px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.card-category {
+    color:
+        var(--cinza2);
+
+    font-size: 11px;
+
+    margin-top: 5px;
+}
+
+/* =========================================================
+   SETAS
+========================================================= */
+
+.arrow {
+    position: absolute;
+
+    top: 50%;
+
+    z-index: 30;
+
+    transform:
+        translateY(-50%);
+
+    width: 42px;
+    height: 70px;
+
+    border: 0;
+
+    background:
+        rgba(0,0,0,.78);
+
+    color: white;
+
+    font-size: 25px;
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    transition: .2s;
+}
+
+.carousel-wrapper:hover .arrow {
+    opacity: 1;
+}
+
+.arrow.left {
+    left: 0;
+}
+
+.arrow.right {
+    right: 0;
+}
+
+.arrow:hover {
+    background:
+        rgba(0,168,225,.85);
+}
+
+/* =========================================================
+   VAZIO
+========================================================= */
+
+.empty {
+    padding: 80px 20px;
+
+    text-align: center;
+
+    color:
+        var(--cinza);
+}
+
+.empty h2 {
+    color: white;
+
+    margin-bottom: 10px;
+}
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+.player-modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 5000;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0,0,0,.94);
+
+    backdrop-filter:
+        blur(12px);
+}
+
+.player-modal.open {
+    display: flex;
+}
+
+.player-box {
+    width: 96%;
+
+    max-width: 1200px;
+
+    background:
+        #000;
+
+    border-radius: 9px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 30px 100px
+        rgba(0,0,0,.95);
+}
+
+.player-top {
+    height: 52px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 15px;
+
+    background:
+        #0c1118;
+}
+
+.player-name {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.close-player {
+    width: 35px;
+    height: 35px;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.08);
+
+    color: white;
+
+    font-size: 23px;
+
+    cursor: pointer;
+}
+
+.close-player:hover {
+    background:
+        #e63946;
+}
+
+.player-screen {
+    width: 100%;
+
+    aspect-ratio: 16 / 9;
+
+    background: black;
+}
+
+.player-screen iframe {
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+}
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media(max-width: 900px) {
+
+    .featured {
+        display: flex;
+
+        overflow-x: auto;
+
+        gap: 15px;
+
+        scrollbar-width: none;
+    }
+
+    .featured::-webkit-scrollbar {
+        display: none;
+    }
+
+    .feature {
+        flex:
+            0 0 72vw;
+
+        height: 260px;
+    }
+
+}
+
+@media(max-width: 600px) {
+
+    .header {
+        height: 60px;
+
+        padding: 0 15px;
+    }
+
+    .logo {
+        font-size: 20px;
+    }
+
+    .search-box input {
+        width: 145px;
+    }
+
+    .search-box input:focus {
+        width: 175px;
+    }
+
+    .categories {
+        top: 60px;
+
+        padding:
+            11px 15px;
+    }
+
+    .container {
+        width: 94%;
+
+        padding-top: 22px;
+    }
+
+    .feature {
+        flex-basis: 84vw;
+
+        height: 220px;
+    }
+
+    .video-card {
+        flex-basis: 180px;
+    }
+
+    .arrow {
+        display: none;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+
+<!-- =======================================================
+     CABEÇALHO
+======================================================= -->
+
+<header class="header">
+
+    <div class="logo">
+        MEU<span>PLAYER</span>
+    </div>
+
+    <div class="search-box">
+
+        <input
+            id="search"
+            type="search"
+            placeholder="Pesquisar..."
+            autocomplete="off"
+        >
+
+    </div>
+
+</header>
+
+
+<!-- =======================================================
+     CATEGORIAS
+======================================================= -->
+
+<nav
+    id="categories"
+    class="categories"
+>
+</nav>
+
+
+<!-- =======================================================
+     CONTEÚDO
+======================================================= -->
+
+<main
+    id="content"
+    class="container"
+>
+
+    <div class="empty">
+        Carregando vídeos...
+    </div>
+
+</main>
+
+
+<!-- =======================================================
+     PLAYER
+======================================================= -->
+
+<div
+    id="playerModal"
+    class="player-modal"
+>
+
+    <div class="player-box">
+
+        <div class="player-top">
+
+            <div
+                id="playerName"
+                class="player-name"
+            >
+                Reproduzindo
+            </div>
+
+            <button
+                class="close-player"
+                onclick="closePlayer()"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="player-screen">
+
+            <iframe
+                id="youtubePlayer"
+                src=""
+                allow="
+                    autoplay;
+                    encrypted-media;
+                    picture-in-picture;
+                    fullscreen
+                "
+                allowfullscreen>
+            </iframe>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   URL DO SEU JSON
+========================================================= */
+
+const JSON_URL =
+"https://raw.githubusercontent.com/Isac-Arqueiro/mylist/refs/heads/main/canaisyoutube.json";
+
+
+/* =========================================================
+   VARIÁVEIS
+========================================================= */
+
+let videos = [];
+
+let categoriaAtual = "Todos";
+
+let favoritos =
+    JSON.parse(
+        localStorage.getItem("meusFavoritos") || "[]"
+    );
+
+
+/* =========================================================
+   CARREGAR JSON
+========================================================= */
+
+async function carregarJSON() {
+
+    try {
+
+        const resposta =
+            await fetch(
+                JSON_URL + "?cache=" + Date.now()
+            );
+
+        if (!resposta.ok) {
+            throw new Error(
+                "Erro HTTP " + resposta.status
+            );
+        }
+
+        const json =
+            await resposta.json();
+
+
+        /*
+           SEU JSON USA:
+
+           {
+             "videos": [
+               {
+                 "titulo": "...",
+                 "capa": "...",
+                 "video": "...",
+                 "categoria": "..."
+               }
+             ]
+           }
+        */
+
+        videos =
+            Array.isArray(json.videos)
+                ? json.videos
+                : [];
+
+
+        criarCategorias();
+
+        mostrarPaginaInicial();
+
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        document.getElementById("content")
+            .innerHTML = `
+
+                <div class="empty">
+
+                    <h2>
+                        Não foi possível carregar os vídeos
+                    </h2>
+
+                    <p>
+                        Verifique o endereço do JSON.
+                    </p>
+
+                </div>
+            `;
+
+    }
+
+}
+
+
+/* =========================================================
+   CRIAR BOTÕES DAS CATEGORIAS
+========================================================= */
+
+function criarCategorias() {
+
+    const barra =
+        document.getElementById("categories");
+
+    barra.innerHTML = "";
+
+
+    criarBotao(
+        "Todos",
+        true
+    );
+
+
+    /*
+       Pega automaticamente todas
+       as categorias existentes no JSON.
+    */
+
+    const categorias =
+        [...new Set(
+            videos
+                .map(video =>
+                    video.categoria
+                )
+                .filter(Boolean)
+        )];
+
+
+    categorias.forEach(categoria => {
+
+        criarBotao(
+            categoria
+        );
+
+    });
+
+
+    criarBotao(
+        "♥ Favoritos"
+    );
+
+}
+
+
+/* =========================================================
+   BOTÃO
+========================================================= */
+
+function criarBotao(nome, ativo = false) {
+
+    const botao =
+        document.createElement("button");
+
+    botao.className =
+        "category-button" +
+        (ativo ? " active" : "");
+
+    botao.textContent =
+        nome;
+
+
+    botao.onclick = () => {
+
+        document
+            .querySelectorAll(".category-button")
+            .forEach(item =>
+                item.classList.remove("active")
+            );
+
+        botao.classList.add("active");
+
+
+        if (nome === "Todos") {
+
+            categoriaAtual =
+                "Todos";
+
+            mostrarPaginaInicial();
+
+        }
+
+        else if (
+            nome === "♥ Favoritos"
+        ) {
+
+            categoriaAtual =
+                "Favoritos";
+
+            mostrarFavoritos();
+
+        }
+
+        else {
+
+            categoriaAtual =
+                nome;
+
+            mostrarCategoria(nome);
+
+        }
+
+    };
+
+
+    document
+        .getElementById("categories")
+        .appendChild(botao);
+
+}
+
+
+/* =========================================================
+   PÁGINA INICIAL
+========================================================= */
+
+function mostrarPaginaInicial() {
+
+    let html = "";
+
+
+    /*
+       OS 3 PRIMEIROS VÍDEOS
+       FICAM EM DESTAQUE.
+    */
+
+    const destaques =
+        videos.slice(0, 3);
+
+
+    if (destaques.length > 0) {
+
+        html += `
+
+            <div class="section-header">
+
+                <h2>
+                    Destaques
+                </h2>
+
+                <span>
+                    Em destaque
+                </span>
+
+            </div>
+
+            <section class="featured">
+
+                ${destaques
+                    .map(criarDestaque)
+                    .join("")}
+
+            </section>
+
+        `;
+
+    }
+
+
+    /*
+       CRIA UMA SEÇÃO PARA
+       CADA CATEGORIA.
+    */
+
+    const categorias =
+        [...new Set(
+            videos
+                .map(video =>
+                    video.categoria
+                )
+                .filter(Boolean)
+        )];
+
+
+    categorias.forEach(categoria => {
+
+        const lista =
+            videos.filter(video =>
+                video.categoria === categoria
+            );
+
+
+        html +=
+            criarSecao(
+                categoria,
+                lista
+            );
+
+    });
+
+
+    document.getElementById("content")
+        .innerHTML =
+            html ||
+            `
+                <div class="empty">
+                    Nenhum vídeo encontrado.
+                </div>
+            `;
+
+
+    ativarEventos();
+
+}
+
+
+/* =========================================================
+   DESTAQUE
+========================================================= */
+
+function criarDestaque(video) {
+
+    return `
+
+        <article
+            class="feature"
+            data-video-id="${escapeAttr(video.video)}"
+        >
+
+            <img
+                src="${escapeAttr(video.capa)}"
+                alt="${escapeAttr(video.titulo)}"
+            >
+
+            <div class="feature-info">
+
+                <div class="feature-title">
+
+                    ${escapeHTML(
+                        video.titulo
+                    )}
+
+                </div>
+
+                <div class="feature-category">
+
+                    ${escapeHTML(
+                        video.categoria
+                    )}
+
+                </div>
+
+            </div>
+
+            <div class="feature-play">
+                ▶
+            </div>
+
+        </article>
+
+    `;
+
+}
+
+
+/* =========================================================
+   SEÇÃO
+========================================================= */
+
+function criarSecao(
+    categoria,
+    lista
+) {
+
+    return `
+
+        <section class="video-section">
+
+            <div class="section-header">
+
+                <h2>
+                    ${escapeHTML(categoria)}
+                </h2>
+
+                <span>
+                    ${lista.length} títulos
+                </span>
+
+            </div>
+
+
+            <div class="carousel-wrapper">
+
+                <button
+                    class="arrow left"
+                    onclick="rolar(this, -500)"
+                >
+                    ‹
+                </button>
+
+
+                <div class="video-row">
+
+                    ${lista
+                        .map(criarCard)
+                        .join("")}
+
+                </div>
+
+
+                <button
+                    class="arrow right"
+                    onclick="rolar(this, 500)"
+                >
+                    ›
+                </button>
+
+            </div>
+
+        </section>
+
+    `;
+
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+function criarCard(video) {
+
+    const favorito =
+        favoritos.includes(
+            video.video
+        );
+
+
+    return `
+
+        <article
+            class="video-card"
+            data-video-id="${escapeAttr(video.video)}"
+        >
+
+            <button
+                class="favorite ${
+                    favorito ? "active" : ""
+                }"
+                data-favorite="${escapeAttr(video.video)}"
+            >
+                ${
+                    favorito
+                    ? "♥"
+                    : "♡"
+                }
+            </button>
+
+
+            <div class="card-image">
+
+                <img
+                    src="${escapeAttr(video.capa)}"
+                    alt="${escapeAttr(video.titulo)}"
+                    loading="lazy"
+                >
+
+
+                <div class="card-play">
+
+                    <div class="play-circle">
+                        ▶
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-info">
+
+                <div class="card-title">
+
+                    ${escapeHTML(
+                        video.titulo
+                    )}
+
+                </div>
+
+                <div class="card-category">
+
+                    ${escapeHTML(
+                        video.categoria
+                    )}
+
+                </div>
+
+            </div>
+
+        </article>
+
+    `;
+
+}
+
+
+/* =========================================================
+   EVENTOS DOS CARDS
+========================================================= */
+
+function ativarEventos() {
+
+
+    document
+        .querySelectorAll(".video-card")
+        .forEach(card => {
+
+            card.addEventListener(
+                "click",
+                function(event) {
+
+                    const favorito =
+                        event.target.closest(
+                            "[data-favorite]"
+                        );
+
+
+                    if (favorito) {
+
+                        event.stopPropagation();
+
+                        alternarFavorito(
+                            favorito.dataset.favorite
+                        );
+
+                        return;
+
+                    }
+
+
+                    const id =
+                        card.dataset.videoId;
+
+
+                    abrirVideo(id);
+
+                }
+            );
+
+        });
+
+
+    document
+        .querySelectorAll(".feature")
+        .forEach(feature => {
+
+            feature.addEventListener(
+                "click",
+                function() {
+
+                    abrirVideo(
+                        this.dataset.videoId
+                    );
+
+                }
+            );
+
+        });
+
+}
+
+
+/* =========================================================
+   ABRIR VÍDEO
+========================================================= */
+
+function abrirVideo(id) {
+
+    const video =
+        videos.find(
+            item =>
+                item.video === id
+        );
+
+
+    if (!video) {
+        return;
+    }
+
+
+    const player =
+        document.getElementById(
+            "youtubePlayer"
+        );
+
+
+    const modal =
+        document.getElementById(
+            "playerModal"
+        );
+
+
+    const nome =
+        document.getElementById(
+            "playerName"
+        );
+
+
+    nome.textContent =
+        video.titulo;
+
+
+    player.src =
+        "https://www.youtube.com/embed/" +
+        encodeURIComponent(id) +
+        "?autoplay=1&rel=0";
+
+
+    modal.classList.add("open");
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+/* =========================================================
+   FECHAR PLAYER
+========================================================= */
+
+function closePlayer() {
+
+    const player =
+        document.getElementById(
+            "youtubePlayer"
+        );
+
+    const modal =
+        document.getElementById(
+            "playerModal"
+        );
+
+
+    player.src = "";
+
+    modal.classList.remove(
+        "open"
+    );
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+document
+    .getElementById("playerModal")
+    .addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                this
+            ) {
+
+                closePlayer();
+
+            }
+
+        }
+    );
+
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closePlayer();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CATEGORIA
+========================================================= */
+
+function mostrarCategoria(
+    categoria
+) {
+
+    const lista =
+        videos.filter(
+            video =>
+                video.categoria ===
+                categoria
+        );
+
+
+    document.getElementById("content")
+        .innerHTML = `
+
+            <section class="video-section">
+
+                <div class="section-header">
+
+                    <h2>
+                        ${escapeHTML(categoria)}
+                    </h2>
+
+                    <span>
+                        ${lista.length} títulos
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="video-row"
+                    style="
+                        flex-wrap: wrap;
+                        overflow-x: visible;
+                    "
+                >
+
+                    ${lista
+                        .map(criarCard)
+                        .join("")}
+
+                </div>
+
+            </section>
+
+        `;
+
+
+    ativarEventos();
+
+}
+
+
+/* =========================================================
+   FAVORITOS
+========================================================= */
+
+function alternarFavorito(id) {
+
+    if (
+        favoritos.includes(id)
+    ) {
+
+        favoritos =
+            favoritos.filter(
+                item =>
+                    item !== id
+            );
+
+    }
+
+    else {
+
+        favoritos.push(id);
+
+    }
+
+
+    localStorage.setItem(
+        "meusFavoritos",
+        JSON.stringify(favoritos)
+    );
+
+
+    if (
+        categoriaAtual ===
+        "Favoritos"
+    ) {
+
+        mostrarFavoritos();
+
+    }
+
+    else {
+
+        if (
+            categoriaAtual ===
+            "Todos"
+        ) {
+
+            mostrarPaginaInicial();
+
+        }
+
+        else {
+
+            mostrarCategoria(
+                categoriaAtual
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   MOSTRAR FAVORITOS
+========================================================= */
+
+function mostrarFavoritos() {
+
+    const lista =
+        videos.filter(
+            video =>
+                favoritos.includes(
+                    video.video
+                )
+        );
+
+
+    if (!lista.length) {
+
+        document.getElementById("content")
+            .innerHTML = `
+
+                <div class="empty">
+
+                    <h2>
+                        Seus favoritos
+                    </h2>
+
+                    <p>
+                        Você ainda não adicionou
+                        nenhum vídeo aos favoritos.
+                    </p>
+
+                </div>
+
+            `;
+
+        return;
+
+    }
+
+
+    document.getElementById("content")
+        .innerHTML = `
+
+            <section class="video-section">
+
+                <div class="section-header">
+
+                    <h2>
+                        ♥ Favoritos
+                    </h2>
+
+                    <span>
+                        ${lista.length} títulos
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="video-row"
+                    style="
+                        flex-wrap: wrap;
+                        overflow-x: visible;
+                    "
+                >
+
+                    ${lista
+                        .map(criarCard)
+                        .join("")}
+
+                </div>
+
+            </section>
+
+        `;
+
+
+    ativarEventos();
+
+}
+
+
+/* =========================================================
+   PESQUISA
+========================================================= */
+
+document
+    .getElementById("search")
+    .addEventListener(
+        "input",
+        pesquisar
+    );
+
+
+function pesquisar() {
+
+    const termo =
+        document
+            .getElementById("search")
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    if (!termo) {
+
+        if (
+            categoriaAtual ===
+            "Todos"
+        ) {
+
+            mostrarPaginaInicial();
+
+        }
+
+        else if (
+            categoriaAtual ===
+            "Favoritos"
+        ) {
+
+            mostrarFavoritos();
+
+        }
+
+        else {
+
+            mostrarCategoria(
+                categoriaAtual
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    const resultados =
+        videos.filter(video => {
+
+            const titulo =
+                String(
+                    video.titulo || ""
+                ).toLowerCase();
+
+            const categoria =
+                String(
+                    video.categoria || ""
+                ).toLowerCase();
+
+            return (
+                titulo.includes(termo) ||
+                categoria.includes(termo)
+            );
+
+        });
+
+
+    document.getElementById("content")
+        .innerHTML = `
+
+            <section class="video-section">
+
+                <div class="section-header">
+
+                    <h2>
+                        Resultados
+                    </h2>
+
+                    <span>
+                        ${resultados.length} encontrados
+                    </span>
+
+                </div>
+
+
+                ${
+                    resultados.length
+
+                    ? `
+                        <div
+                            class="video-row"
+                            style="
+                                flex-wrap: wrap;
+                                overflow-x: visible;
+                            "
+                        >
+
+                            ${resultados
+                                .map(criarCard)
+                                .join("")}
+
+                        </div>
+                    `
+
+                    : `
+                        <div class="empty">
+
+                            Nenhum vídeo encontrado.
+
+                        </div>
+                    `
+                }
+
+            </section>
+
+        `;
+
+
+    ativarEventos();
+
+}
+
+
+/* =========================================================
+   SETAS DO CARROSSEL
+========================================================= */
+
+function rolar(botao, quantidade) {
+
+    const row =
+        botao.parentElement
+            .querySelector(
+                ".video-row"
+            );
+
+
+    row.scrollBy({
+        left: quantidade,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =========================================================
+   SEGURANÇA
+========================================================= */
+
+function escapeHTML(valor) {
+
+    return String(valor || "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function escapeAttr(valor) {
+
+    return escapeHTML(valor);
+
+}
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+carregarJSON();
+
+</script>
+
+</body>
+</html>
