@@ -1,76 +1,40 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Meu Player</title>
 
-
 <style>
-
-/* =====================================================
-   CORES
-===================================================== */
-
 :root {
-
     --fundo: #070b12;
-
     --fundo-menu: #0b1119;
-
     --card: #131b25;
-
     --azul: #00a8e1;
-
     --azul-claro: #19bff2;
-
     --branco: #ffffff;
-
     --cinza: #aab3be;
-
     --cinza-escuro: #687482;
-
 }
-
-
-/* =====================================================
-   RESET
-===================================================== */
 
 * {
-
     margin: 0;
-
     padding: 0;
-
     box-sizing: border-box;
-
 }
-
 
 html {
-
     scroll-behavior: smooth;
-
 }
 
-
 body {
-
     background:
-
         radial-gradient(
             circle at 50% -20%,
             rgba(0,168,225,.12),
             transparent 38%
         ),
-
         var(--fundo);
 
     color: var(--branco);
@@ -81,81 +45,55 @@ body {
         sans-serif;
 
     min-height: 100vh;
-
     overflow-x: hidden;
-
 }
-
 
 /* =====================================================
    TOPO
 ===================================================== */
 
 .topo {
-
     position: sticky;
-
     top: 0;
-
     z-index: 1000;
 
     height: 70px;
 
     display: flex;
-
     align-items: center;
 
     padding: 0 4%;
 
-    background:
+    background: rgba(7,11,18,.96);
 
-        rgba(7,11,18,.96);
-
-    backdrop-filter:
-        blur(15px);
+    backdrop-filter: blur(15px);
 
     border-bottom:
         1px solid
         rgba(255,255,255,.06);
-
 }
-
 
 .logo {
-
     font-size: 25px;
-
     font-weight: 800;
-
     letter-spacing: -1px;
-
     white-space: nowrap;
-
 }
-
 
 .logo span {
-
     color: var(--azul);
-
 }
-
 
 /* =====================================================
    PESQUISA
 ===================================================== */
 
 .pesquisa {
-
     margin-left: auto;
-
 }
 
-
 .pesquisa input {
-
     width: 240px;
-
     height: 40px;
 
     padding: 0 15px;
@@ -176,12 +114,9 @@ body {
     font-size: 14px;
 
     transition: .25s;
-
 }
 
-
 .pesquisa input:focus {
-
     width: 290px;
 
     border-color:
@@ -189,31 +124,22 @@ body {
 
     background:
         rgba(255,255,255,.09);
-
 }
-
 
 .pesquisa input::placeholder {
-
     color: #778391;
-
 }
 
-
 /* =====================================================
-   CATEGORIAS
+   MENU PRINCIPAL
 ===================================================== */
 
-.menu-categorias {
-
+.menu-principal {
     position: sticky;
-
     top: 70px;
-
     z-index: 900;
 
     display: flex;
-
     gap: 9px;
 
     padding: 13px 4%;
@@ -231,19 +157,13 @@ body {
         rgba(255,255,255,.05);
 
     scrollbar-width: none;
-
 }
 
-
-.menu-categorias::-webkit-scrollbar {
-
+.menu-principal::-webkit-scrollbar {
     display: none;
-
 }
 
-
-.botao-categoria {
-
+.botao-menu {
     flex-shrink: 0;
 
     padding: 9px 18px;
@@ -267,22 +187,16 @@ body {
     cursor: pointer;
 
     transition: .2s;
-
 }
 
-
-.botao-categoria:hover {
-
+.botao-menu:hover {
     color: white;
 
     background:
         rgba(255,255,255,.10);
-
 }
 
-
-.botao-categoria.ativo {
-
+.botao-menu.ativo {
     color: white;
 
     background:
@@ -294,68 +208,50 @@ body {
     box-shadow:
         0 5px 20px
         rgba(0,168,225,.25);
-
 }
-
 
 /* =====================================================
    CONTEÚDO
 ===================================================== */
 
 .conteudo {
-
     width: 92%;
-
     max-width: 1700px;
 
     margin: auto;
 
     padding:
         30px 0 80px;
-
 }
-
 
 /* =====================================================
    TÍTULOS
 ===================================================== */
 
 .titulo-secao {
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     margin-bottom: 15px;
-
 }
-
 
 .titulo-secao h2 {
-
     font-size: 21px;
-
 }
 
-
 .titulo-secao span {
-
     color:
         var(--cinza-escuro);
 
     font-size: 12px;
-
 }
-
 
 /* =====================================================
    DESTAQUES
 ===================================================== */
 
 .destaques {
-
     display: grid;
 
     grid-template-columns:
@@ -364,12 +260,9 @@ body {
     gap: 18px;
 
     margin-bottom: 45px;
-
 }
 
-
 .destaque {
-
     position: relative;
 
     height: 300px;
@@ -389,46 +282,33 @@ body {
     transition:
         transform .3s,
         box-shadow .3s;
-
 }
 
-
 .destaque:hover {
-
     transform:
         translateY(-5px);
 
     box-shadow:
         0 20px 50px
         rgba(0,0,0,.65);
-
 }
 
-
 .destaque img {
-
     width: 100%;
-
     height: 100%;
 
     object-fit: cover;
 
     transition:
         transform .5s;
-
 }
-
 
 .destaque:hover img {
-
     transform:
         scale(1.07);
-
 }
 
-
 .destaque::after {
-
     content: "";
 
     position: absolute;
@@ -436,36 +316,26 @@ body {
     inset: 0;
 
     background:
-
         linear-gradient(
             to top,
             rgba(0,0,0,.95),
             rgba(0,0,0,.35) 50%,
             transparent
         );
-
 }
 
-
 .destaque-info {
-
     position: absolute;
 
     z-index: 2;
 
     left: 20px;
-
     right: 20px;
-
     bottom: 18px;
-
 }
 
-
 .destaque-titulo {
-
     font-size: 20px;
-
     font-weight: 700;
 
     margin-bottom: 6px;
@@ -475,38 +345,29 @@ body {
     overflow: hidden;
 
     text-overflow: ellipsis;
-
 }
 
-
 .destaque-categoria {
-
     color:
         #c6ced8;
 
     font-size: 12px;
-
 }
 
-
 .destaque-play {
-
     position: absolute;
 
     z-index: 3;
 
     right: 18px;
-
     bottom: 18px;
 
     width: 46px;
-
     height: 46px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 50%;
@@ -515,34 +376,25 @@ body {
         var(--azul);
 
     font-size: 18px;
-
 }
 
-
 /* =====================================================
-   SEÇÃO DE VÍDEOS
+   SEÇÃO
 ===================================================== */
 
 .secao {
-
     margin-bottom: 42px;
-
 }
-
-
-.carrossel {
-
-    position: relative;
-
-}
-
 
 /* =====================================================
-   LINHA DE FILMES
+   CARROSSEL
 ===================================================== */
 
-.linha-filmes {
+.carrossel {
+    position: relative;
+}
 
+.linha-filmes {
     display: flex;
 
     gap: 15px;
@@ -559,33 +411,24 @@ body {
     scrollbar-color:
         #293542
         transparent;
-
 }
-
 
 .linha-filmes::-webkit-scrollbar {
-
     height: 6px;
-
 }
 
-
 .linha-filmes::-webkit-scrollbar-thumb {
-
     background:
         #293542;
 
     border-radius: 20px;
-
 }
-
 
 /* =====================================================
    CARD
 ===================================================== */
 
 .card {
-
     position: relative;
 
     flex:
@@ -603,12 +446,9 @@ body {
     transition:
         transform .25s,
         box-shadow .25s;
-
 }
 
-
 .card:hover {
-
     transform:
         scale(1.045);
 
@@ -617,12 +457,9 @@ body {
         rgba(0,0,0,.7);
 
     z-index: 10;
-
 }
 
-
 .card-imagem {
-
     position: relative;
 
     width: 100%;
@@ -633,35 +470,25 @@ body {
 
     background:
         #18212c;
-
 }
 
-
 .card-imagem img {
-
     width: 100%;
-
     height: 100%;
 
     object-fit: cover;
 
     transition:
         transform .4s;
-
 }
-
 
 .card:hover
 .card-imagem img {
-
     transform:
         scale(1.07);
-
 }
 
-
 .card-play {
-
     position: absolute;
 
     inset: 0;
@@ -669,7 +496,6 @@ body {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     background:
@@ -678,53 +504,40 @@ body {
     opacity: 0;
 
     transition: .25s;
-
 }
-
 
 .card:hover .card-play {
-
     opacity: 1;
-
 }
 
-
 .circulo-play {
-
     width: 44px;
-
     height: 44px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 50%;
 
     background:
         var(--azul);
-
 }
-
 
 /* =====================================================
    FAVORITO
 ===================================================== */
 
 .favorito {
-
     position: absolute;
 
     z-index: 20;
 
     top: 8px;
-
     right: 8px;
 
     width: 32px;
-
     height: 32px;
 
     border: 0;
@@ -739,33 +552,23 @@ body {
     font-size: 18px;
 
     cursor: pointer;
-
 }
-
 
 .favorito.ativo {
-
     color:
         var(--azul);
-
 }
 
-
 /* =====================================================
-   INFORMAÇÕES
+   INFORMAÇÕES DO CARD
 ===================================================== */
 
 .card-info {
-
     padding: 11px;
-
 }
 
-
 .card-titulo {
-
     font-size: 14px;
-
     font-weight: 700;
 
     white-space: nowrap;
@@ -773,28 +576,22 @@ body {
     overflow: hidden;
 
     text-overflow: ellipsis;
-
 }
 
-
 .card-categoria {
-
     margin-top: 5px;
 
     color:
         var(--cinza-escuro);
 
     font-size: 11px;
-
 }
-
 
 /* =====================================================
    SETAS
 ===================================================== */
 
 .seta {
-
     position: absolute;
 
     top: 45%;
@@ -805,7 +602,6 @@ body {
         translateY(-50%);
 
     width: 45px;
-
     height: 70px;
 
     border: 0;
@@ -822,45 +618,30 @@ body {
     opacity: 0;
 
     transition: .2s;
-
 }
-
 
 .carrossel:hover .seta {
-
     opacity: 1;
-
 }
-
 
 .seta:hover {
-
     background:
         var(--azul);
-
 }
-
 
 .seta-esquerda {
-
     left: 0;
-
 }
-
 
 .seta-direita {
-
     right: 0;
-
 }
 
-
 /* =====================================================
-   SEM RESULTADO
+   TELA VAZIA
 ===================================================== */
 
 .vazio {
-
     text-align: center;
 
     padding:
@@ -868,25 +649,175 @@ body {
 
     color:
         var(--cinza);
-
 }
 
-
 .vazio h2 {
-
     color: white;
 
     margin-bottom: 10px;
-
 }
 
+/* =====================================================
+   MENU DE GÊNEROS
+===================================================== */
+
+.generos {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(190px, 1fr));
+
+    gap: 18px;
+
+    margin-top: 20px;
+}
+
+.genero {
+    position: relative;
+
+    min-height: 125px;
+
+    padding: 22px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-end;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+    background:
+        linear-gradient(
+            135deg,
+            #111c29,
+            #0d141d
+        );
+
+    cursor: pointer;
+
+    transition:
+        transform .25s,
+        border-color .25s,
+        box-shadow .25s;
+}
+
+.genero:hover {
+    transform:
+        translateY(-4px);
+
+    border-color:
+        var(--azul);
+
+    box-shadow:
+        0 12px 30px
+        rgba(0,168,225,.15);
+}
+
+.genero::before {
+    content: "";
+
+    position: absolute;
+
+    width: 110px;
+    height: 110px;
+
+    right: -25px;
+    top: -35px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(0,168,225,.12);
+}
+
+.genero-icone {
+    position: absolute;
+
+    top: 18px;
+    right: 20px;
+
+    font-size: 27px;
+
+    opacity: .8;
+}
+
+.genero-nome {
+    position: relative;
+
+    z-index: 2;
+
+    font-size: 18px;
+
+    font-weight: 700;
+}
+
+.genero-quantidade {
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 6px;
+
+    color:
+        var(--cinza);
+
+    font-size: 12px;
+}
+
+/* =====================================================
+   BOTÃO VOLTAR
+===================================================== */
+
+.botao-voltar-lista {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+
+    padding:
+        9px 15px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.10);
+
+    border-radius: 5px;
+
+    background:
+        rgba(255,255,255,.05);
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.botao-voltar-lista:hover {
+    background:
+        var(--azul);
+
+    border-color:
+        var(--azul);
+}
 
 /* =====================================================
    PLAYER
 ===================================================== */
 
 .player-fundo {
-
     position: fixed;
 
     inset: 0;
@@ -906,19 +837,13 @@ body {
         blur(10px);
 
     padding: 20px;
-
 }
-
 
 .player-fundo.aberto {
-
     display: flex;
-
 }
 
-
 .player {
-
     width: 96%;
 
     max-width: 1200px;
@@ -932,16 +857,13 @@ body {
     box-shadow:
         0 30px 100px
         rgba(0,0,0,.95);
-
 }
-
 
 /* =====================================================
    TOPO DO PLAYER
 ===================================================== */
 
 .player-topo {
-
     position: relative;
 
     height: 55px;
@@ -956,12 +878,9 @@ body {
 
     background:
         #0c1118;
-
 }
 
-
 .botao-voltar {
-
     height: 36px;
 
     padding:
@@ -991,23 +910,17 @@ body {
     cursor: pointer;
 
     transition: .2s;
-
 }
 
-
 .botao-voltar:hover {
-
     background:
         var(--azul);
 
     border-color:
         var(--azul);
-
 }
 
-
 .nome-player {
-
     position: absolute;
 
     left: 50%;
@@ -1028,14 +941,10 @@ body {
     overflow: hidden;
 
     text-overflow: ellipsis;
-
 }
 
-
 .botao-fechar {
-
     width: 36px;
-
     height: 36px;
 
     border: 0;
@@ -1050,43 +959,31 @@ body {
     font-size: 23px;
 
     cursor: pointer;
-
 }
-
 
 .botao-fechar:hover {
-
     background:
         #e63946;
-
 }
 
-
 /* =====================================================
-   TELA DO PLAYER
+   TELA PLAYER
 ===================================================== */
 
 .tela-player {
-
     width: 100%;
 
     aspect-ratio: 16 / 9;
 
     background: black;
-
 }
 
-
 .tela-player iframe {
-
     width: 100%;
-
     height: 100%;
 
     border: 0;
-
 }
-
 
 /* =====================================================
    CELULAR
@@ -1095,7 +992,6 @@ body {
 @media(max-width: 900px) {
 
     .destaques {
-
         display: flex;
 
         overflow-x: auto;
@@ -1103,134 +999,107 @@ body {
         gap: 15px;
 
         scrollbar-width: none;
-
     }
-
 
     .destaques::-webkit-scrollbar {
-
         display: none;
-
     }
 
-
     .destaque {
-
         flex:
             0 0 72vw;
 
         height: 260px;
-
     }
 
+    .generos {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
 }
-
 
 @media(max-width: 600px) {
 
     .topo {
-
         height: 60px;
 
         padding:
             0 15px;
-
     }
-
 
     .logo {
-
         font-size: 20px;
-
     }
-
 
     .pesquisa input {
-
         width: 145px;
-
     }
-
 
     .pesquisa input:focus {
-
         width: 175px;
-
     }
 
-
-    .menu-categorias {
-
+    .menu-principal {
         top: 60px;
 
         padding:
             11px 15px;
-
     }
 
-
     .conteudo {
-
         width: 94%;
 
         padding-top:
             22px;
-
     }
 
-
     .destaque {
-
         flex-basis: 84vw;
 
         height: 220px;
-
     }
-
 
     .card {
-
         flex-basis: 180px;
-
     }
-
 
     .seta {
-
         display: none;
-
     }
-
 
     .player-fundo {
-
         padding: 8px;
-
     }
-
 
     .nome-player {
-
         width: 42%;
-
     }
-
 
     .botao-voltar span {
-
         display: none;
-
     }
 
+    .generos {
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 10px;
+    }
+
+    .genero {
+        min-height: 110px;
+
+        padding: 15px;
+    }
+
+    .genero-nome {
+        font-size: 15px;
+    }
 }
-
 </style>
-
 </head>
 
-
 <body>
-
 
 <!-- =====================================================
      TOPO
@@ -1239,33 +1108,28 @@ body {
 <header class="topo">
 
     <div class="logo">
-
         MEU<span>PLAYER</span>
-
     </div>
 
-
     <div class="pesquisa">
-
         <input
             id="pesquisa"
             type="search"
             placeholder="Pesquisar..."
             autocomplete="off"
         >
-
     </div>
 
 </header>
 
 
 <!-- =====================================================
-     CATEGORIAS
+     MENU PRINCIPAL
 ===================================================== -->
 
 <nav
     id="menuCategorias"
-    class="menu-categorias"
+    class="menu-principal"
 >
 </nav>
 
@@ -1280,9 +1144,7 @@ body {
 >
 
     <div class="vazio">
-
         Carregando vídeos...
-
     </div>
 
 </main>
@@ -1299,27 +1161,15 @@ body {
 
     <div class="player">
 
-
         <div class="player-topo">
-
-
-            <!-- BOTÃO VOLTAR -->
 
             <button
                 class="botao-voltar"
                 onclick="fecharPlayer()"
             >
-
                 ←
-
-                <span>
-                    Voltar
-                </span>
-
+                <span>Voltar</span>
             </button>
-
-
-            <!-- NOME -->
 
             <div
                 id="nomePlayer"
@@ -1328,22 +1178,15 @@ body {
                 Reproduzindo
             </div>
 
-
-            <!-- FECHAR -->
-
             <button
                 class="botao-fechar"
                 onclick="fecharPlayer()"
                 aria-label="Fechar"
             >
-
                 ×
-
             </button>
 
-
         </div>
-
 
         <div class="tela-player">
 
@@ -1361,7 +1204,6 @@ body {
 
         </div>
 
-
     </div>
 
 </div>
@@ -1370,7 +1212,7 @@ body {
 <script>
 
 /* =====================================================
-   SEU JSON
+   JSON
 ===================================================== */
 
 const JSON_URL =
@@ -1385,6 +1227,8 @@ let videos = [];
 
 let categoriaAtual = "Todos";
 
+let generoAtual = null;
+
 let favoritos =
     JSON.parse(
         localStorage.getItem(
@@ -1394,7 +1238,58 @@ let favoritos =
 
 
 /* =====================================================
-   CARREGAR
+   ÍCONES DOS GÊNEROS
+===================================================== */
+
+const iconesGeneros = {
+
+    "romance": "♥",
+
+    "comédia": "😂",
+
+    "comedia": "😂",
+
+    "ação": "⚡",
+
+    "acao": "⚡",
+
+    "aventura": "🌎",
+
+    "terror": "👻",
+
+    "suspense": "🔪",
+
+    "drama": "🎭",
+
+    "ficção científica": "🚀",
+
+    "ficcao cientifica": "🚀",
+
+    "fantasia": "🧙",
+
+    "animação": "🎨",
+
+    "animacao": "🎨",
+
+    "documentário": "🎥",
+
+    "documentario": "🎥",
+
+    "musical": "🎵",
+
+    "infantil": "🧸",
+
+    "crime": "🕵️",
+
+    "mistério": "🔎",
+
+    "misterio": "🔎"
+
+};
+
+
+/* =====================================================
+   CARREGAR JSON
 ===================================================== */
 
 async function carregarVideos() {
@@ -1408,7 +1303,6 @@ async function carregarVideos() {
                 Date.now()
             );
 
-
         if (!resposta.ok) {
 
             throw new Error(
@@ -1418,25 +1312,8 @@ async function carregarVideos() {
 
         }
 
-
         const json =
             await resposta.json();
-
-
-        /*
-           IMPORTANTE:
-
-           Seu JSON usa:
-
-           videos
-
-           e cada vídeo possui:
-
-           titulo
-           capa
-           video
-           categoria
-        */
 
         videos =
             Array.isArray(
@@ -1445,16 +1322,15 @@ async function carregarVideos() {
             ? json.videos
             : [];
 
-
         criarMenuCategorias();
 
         mostrarInicio();
 
+    }
 
-    } catch (erro) {
+    catch (erro) {
 
         console.error(erro);
-
 
         document
             .getElementById(
@@ -1483,7 +1359,7 @@ async function carregarVideos() {
 
 
 /* =====================================================
-   CRIAR MENU
+   MENU PRINCIPAL
 ===================================================== */
 
 function criarMenuCategorias() {
@@ -1493,21 +1369,24 @@ function criarMenuCategorias() {
             "menuCategorias"
         );
 
-
     menu.innerHTML = "";
 
-
-    /* TODOS */
-
-    criarBotaoCategoria(
+    criarBotaoMenu(
         "Todos",
         true
     );
 
-
     /*
-       ENCONTRAR CATEGORIAS
-       AUTOMATICAMENTE
+       Aqui ficam as categorias existentes
+       no JSON.
+
+       Exemplo:
+
+       Filmes
+       Séries
+       Animes
+       TV
+       etc.
     */
 
     const categorias =
@@ -1522,21 +1401,17 @@ function criarMenuCategorias() {
             )
         ];
 
-
     categorias.forEach(
         categoria => {
 
-            criarBotaoCategoria(
+            criarBotaoMenu(
                 categoria
             );
 
         }
     );
 
-
-    /* FAVORITOS */
-
-    criarBotaoCategoria(
+    criarBotaoMenu(
         "♥ Favoritos"
     );
 
@@ -1544,10 +1419,10 @@ function criarMenuCategorias() {
 
 
 /* =====================================================
-   BOTÃO DE CATEGORIA
+   BOTÃO MENU
 ===================================================== */
 
-function criarBotaoCategoria(
+function criarBotaoMenu(
     nome,
     ativo = false
 ) {
@@ -1557,27 +1432,23 @@ function criarBotaoCategoria(
             "button"
         );
 
-
     botao.className =
-        "botao-categoria" +
+        "botao-menu" +
         (
             ativo
             ? " ativo"
             : ""
         );
 
-
     botao.textContent =
         nome;
-
 
     botao.onclick =
         function() {
 
-
             document
                 .querySelectorAll(
-                    ".botao-categoria"
+                    ".botao-menu"
                 )
                 .forEach(
                     item =>
@@ -1585,50 +1456,78 @@ function criarBotaoCategoria(
                             .remove("ativo")
                 );
 
-
             botao.classList
                 .add("ativo");
 
-
             if (
-                nome ===
-                "Todos"
+                nome === "Todos"
             ) {
 
                 categoriaAtual =
                     "Todos";
 
+                generoAtual = null;
+
                 mostrarInicio();
+
+                return;
 
             }
 
-
-            else if (
-                nome ===
-                "♥ Favoritos"
+            if (
+                nome === "♥ Favoritos"
             ) {
 
                 categoriaAtual =
                     "Favoritos";
 
+                generoAtual = null;
+
                 mostrarFavoritos();
+
+                return;
 
             }
 
+            /*
+               SE A CATEGORIA FOR FILMES,
+               NÃO MOSTRA OS VÍDEOS.
 
-            else {
+               PRIMEIRO MOSTRA OS GÊNEROS.
+            */
+
+            if (
+                normalizar(nome) ===
+                "filmes"
+            ) {
 
                 categoriaAtual =
                     nome;
 
-                mostrarCategoria(
-                    nome
-                );
+                generoAtual = null;
+
+                mostrarGenerosFilmes();
+
+                return;
 
             }
 
-        };
+            /*
+               Para outras categorias,
+               mantém o comportamento
+               tradicional.
+            */
 
+            categoriaAtual =
+                nome;
+
+            generoAtual = null;
+
+            mostrarCategoria(
+                nome
+            );
+
+        };
 
     document
         .getElementById(
@@ -1642,24 +1541,20 @@ function criarBotaoCategoria(
 
 
 /* =====================================================
-   PÁGINA INICIAL
+   INÍCIO
 ===================================================== */
 
 function mostrarInicio() {
 
     let html = "";
 
-
-    /* =================================================
-       3 DESTAQUES
-    ================================================= */
+    generoAtual = null;
 
     const destaques =
         videos.slice(
             0,
             3
         );
-
 
     if (
         destaques.length
@@ -1679,10 +1574,7 @@ function mostrarInicio() {
 
             </div>
 
-
-            <section
-                class="destaques"
-            >
+            <section class="destaques">
 
                 ${
                     destaques
@@ -1698,11 +1590,6 @@ function mostrarInicio() {
 
     }
 
-
-    /* =================================================
-       TODAS AS CATEGORIAS
-    ================================================= */
-
     const categorias =
         [
             ...new Set(
@@ -1715,7 +1602,6 @@ function mostrarInicio() {
             )
         ];
 
-
     categorias.forEach(
         categoria => {
 
@@ -1726,7 +1612,6 @@ function mostrarInicio() {
                         categoria
                 );
 
-
             html +=
                 criarSecao(
                     categoria,
@@ -1735,7 +1620,6 @@ function mostrarInicio() {
 
         }
     );
-
 
     document
         .getElementById(
@@ -1753,6 +1637,424 @@ function mostrarInicio() {
 
             `;
 
+    ativarEventos();
+
+}
+
+
+/* =====================================================
+   FILMES -> GÊNEROS
+===================================================== */
+
+function mostrarGenerosFilmes() {
+
+    /*
+       Pega todos os vídeos cuja categoria
+       seja Filmes.
+
+       Caso seu JSON use "Filmes" em
+       categoria, funciona automaticamente.
+    */
+
+    const filmes =
+        videos.filter(
+            video =>
+                normalizar(
+                    video.categoria
+                ) ===
+                "filmes"
+        );
+
+    /*
+       Descobre os gêneros.
+
+       O JSON pode usar:
+
+       genero: "Romance"
+
+       ou:
+
+       generos: ["Romance", "Drama"]
+    */
+
+    const mapa =
+        new Map();
+
+    filmes.forEach(
+        video => {
+
+            let generos = [];
+
+            if (
+                Array.isArray(
+                    video.generos
+                )
+            ) {
+
+                generos =
+                    video.generos;
+
+            }
+
+            else if (
+                video.genero
+            ) {
+
+                generos =
+                    String(
+                        video.genero
+                    )
+                    .split(",")
+                    .map(
+                        item =>
+                            item.trim()
+                    )
+                    .filter(Boolean);
+
+            }
+
+            /*
+               Se o JSON ainda não tiver
+               gênero, coloca em "Outros".
+            */
+
+            if (
+                !generos.length
+            ) {
+
+                generos = [
+                    "Outros"
+                ];
+
+            }
+
+            generos.forEach(
+                genero => {
+
+                    if (
+                        !mapa.has(
+                            genero
+                        )
+                    ) {
+
+                        mapa.set(
+                            genero,
+                            []
+                        );
+
+                    }
+
+                    mapa
+                        .get(genero)
+                        .push(video);
+
+                }
+            );
+
+        }
+    );
+
+    let html = `
+
+        <div class="titulo-secao">
+
+            <div>
+
+                <h2>
+                    Filmes
+                </h2>
+
+            </div>
+
+            <span>
+                Escolha um gênero
+            </span>
+
+        </div>
+
+    `;
+
+    if (
+        !mapa.size
+    ) {
+
+        html += `
+
+            <div class="vazio">
+
+                <h2>
+                    Nenhum gênero encontrado
+                </h2>
+
+                <p>
+                    Verifique o campo
+                    "genero" no seu JSON.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+    else {
+
+        html += `
+            <div class="generos">
+        `;
+
+        mapa.forEach(
+            (lista, genero) => {
+
+                const chave =
+                    normalizar(
+                        genero
+                    );
+
+                const icone =
+                    iconesGeneros[
+                        chave
+                    ] ||
+                    "🎬";
+
+                html += `
+
+                    <article
+                        class="genero"
+                        data-genero="${escapar(
+                            genero
+                        )}"
+                    >
+
+                        <div
+                            class="genero-icone"
+                        >
+                            ${icone}
+                        </div>
+
+                        <div
+                            class="genero-nome"
+                        >
+                            ${escaparHTML(
+                                genero
+                            )}
+                        </div>
+
+                        <div
+                            class="genero-quantidade"
+                        >
+                            ${lista.length}
+                            ${
+                                lista.length === 1
+                                ? "filme"
+                                : "filmes"
+                            }
+                        </div>
+
+                    </article>
+
+                `;
+
+            }
+        );
+
+        html += `
+            </div>
+        `;
+
+    }
+
+    document
+        .getElementById(
+            "conteudo"
+        )
+        .innerHTML =
+            html;
+
+    ativarEventosGeneros();
+
+}
+
+
+/* =====================================================
+   EVENTOS DOS GÊNEROS
+===================================================== */
+
+function ativarEventosGeneros() {
+
+    document
+        .querySelectorAll(
+            ".genero"
+        )
+        .forEach(
+            elemento => {
+
+                elemento.onclick =
+                    function() {
+
+                        mostrarFilmesDoGenero(
+                            this.dataset.genero
+                        );
+
+                    };
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   MOSTRAR FILMES DO GÊNERO
+===================================================== */
+
+function mostrarFilmesDoGenero(
+    genero
+) {
+
+    generoAtual =
+        genero;
+
+    const filmes =
+        videos.filter(
+            video => {
+
+                if (
+                    normalizar(
+                        video.categoria
+                    ) !==
+                    "filmes"
+                ) {
+
+                    return false;
+
+                }
+
+                let generos = [];
+
+                if (
+                    Array.isArray(
+                        video.generos
+                    )
+                ) {
+
+                    generos =
+                        video.generos;
+
+                }
+
+                else if (
+                    video.genero
+                ) {
+
+                    generos =
+                        String(
+                            video.genero
+                        )
+                        .split(",")
+                        .map(
+                            item =>
+                                item.trim()
+                        );
+
+                }
+
+                if (
+                    !generos.length
+                ) {
+
+                    generos = [
+                        "Outros"
+                    ];
+
+                }
+
+                return generos.some(
+                    item =>
+                        normalizar(
+                            item
+                        ) ===
+                        normalizar(
+                            genero
+                        )
+                );
+
+            }
+        );
+
+    let html = `
+
+        <button
+            class="botao-voltar-lista"
+            onclick="mostrarGenerosFilmes()"
+        >
+            ← Voltar para gêneros
+        </button>
+
+        <section class="secao">
+
+            <div class="titulo-secao">
+
+                <h2>
+                    ${escaparHTML(
+                        genero
+                    )}
+                </h2>
+
+                <span>
+                    ${filmes.length}
+                    ${
+                        filmes.length === 1
+                        ? "filme"
+                        : "filmes"
+                    }
+                </span>
+
+            </div>
+
+            ${
+                filmes.length
+                ?
+                `
+                    <div
+                        class="linha-filmes"
+                        style="
+                            flex-wrap: wrap;
+                            overflow-x: visible;
+                        "
+                    >
+
+                        ${
+                            filmes
+                                .map(
+                                    criarCard
+                                )
+                                .join("")
+                        }
+
+                    </div>
+                `
+                :
+                `
+                    <div class="vazio">
+
+                        Nenhum filme encontrado
+                        neste gênero.
+
+                    </div>
+                `
+            }
+
+        </section>
+
+    `;
+
+    document
+        .getElementById(
+            "conteudo"
+        )
+        .innerHTML =
+            html;
 
     ativarEventos();
 
@@ -1771,42 +2073,43 @@ function criarDestaque(
 
         <article
             class="destaque"
-            data-video-id="${escapar(video.video)}"
+            data-video-id="${escapar(
+                video.video
+            )}"
         >
 
             <img
-                src="${escapar(video.capa)}"
-                alt="${escapar(video.titulo)}"
+                src="${escapar(
+                    video.capa
+                )}"
+                alt="${escapar(
+                    video.titulo
+                )}"
                 loading="lazy"
             >
 
-
             <div class="destaque-info">
 
-                <div class="destaque-titulo">
-
+                <div
+                    class="destaque-titulo"
+                >
                     ${escaparHTML(
                         video.titulo
                     )}
-
                 </div>
 
-
-                <div class="destaque-categoria">
-
+                <div
+                    class="destaque-categoria"
+                >
                     ${escaparHTML(
                         video.categoria
                     )}
-
                 </div>
 
             </div>
 
-
             <div class="destaque-play">
-
                 ▶
-
             </div>
 
         </article>
@@ -1817,7 +2120,7 @@ function criarDestaque(
 
 
 /* =====================================================
-   CRIAR SEÇÃO
+   SEÇÃO
 ===================================================== */
 
 function criarSecao(
@@ -1829,40 +2132,29 @@ function criarSecao(
 
         <section class="secao">
 
-
             <div class="titulo-secao">
 
                 <h2>
-
                     ${escaparHTML(
                         categoria
                     )}
-
                 </h2>
 
-
                 <span>
-
                     ${lista.length}
                     títulos
-
                 </span>
 
             </div>
 
-
             <div class="carrossel">
-
 
                 <button
                     class="seta seta-esquerda"
                     onclick="rolarCarrossel(this, -600)"
                 >
-
                     ‹
-
                 </button>
-
 
                 <div
                     class="linha-filmes"
@@ -1878,16 +2170,12 @@ function criarSecao(
 
                 </div>
 
-
                 <button
                     class="seta seta-direita"
                     onclick="rolarCarrossel(this, 600)"
                 >
-
                     ›
-
                 </button>
-
 
             </div>
 
@@ -1911,21 +2199,27 @@ function criarCard(
             video.video
         );
 
-
     return `
 
         <article
             class="card"
-            data-video-id="${escapar(video.video)}"
+            data-video-id="${escapar(
+                video.video
+            )}"
         >
-
 
             <button
                 class="
                     favorito
-                    ${favorito ? "ativo" : ""}
+                    ${
+                        favorito
+                        ? "ativo"
+                        : ""
+                    }
                 "
-                data-favorito="${escapar(video.video)}"
+                data-favorito="${escapar(
+                    video.video
+                )}"
                 title="Favorito"
             >
 
@@ -1937,17 +2231,19 @@ function criarCard(
 
             </button>
 
-
             <div
                 class="card-imagem"
             >
 
                 <img
-                    src="${escapar(video.capa)}"
-                    alt="${escapar(video.titulo)}"
+                    src="${escapar(
+                        video.capa
+                    )}"
+                    alt="${escapar(
+                        video.titulo
+                    )}"
                     loading="lazy"
                 >
-
 
                 <div
                     class="card-play"
@@ -1956,15 +2252,12 @@ function criarCard(
                     <div
                         class="circulo-play"
                     >
-
                         ▶
-
                     </div>
 
                 </div>
 
             </div>
-
 
             <div
                 class="card-info"
@@ -1973,26 +2266,20 @@ function criarCard(
                 <div
                     class="card-titulo"
                 >
-
                     ${escaparHTML(
                         video.titulo
                     )}
-
                 </div>
-
 
                 <div
                     class="card-categoria"
                 >
-
                     ${escaparHTML(
                         video.categoria
                     )}
-
                 </div>
 
             </div>
-
 
         </article>
 
@@ -2007,9 +2294,6 @@ function criarCard(
 
 function ativarEventos() {
 
-
-    /* CARDS */
-
     document
         .querySelectorAll(
             ".card"
@@ -2017,16 +2301,13 @@ function ativarEventos() {
         .forEach(
             card => {
 
-
                 card.onclick =
                     function(event) {
-
 
                         const botao =
                             event.target.closest(
                                 "[data-favorito]"
                             );
-
 
                         if (
                             botao
@@ -2035,17 +2316,14 @@ function ativarEventos() {
                             event
                                 .stopPropagation();
 
-
                             alternarFavorito(
                                 botao.dataset
                                     .favorito
                             );
 
-
                             return;
 
                         }
-
 
                         abrirVideo(
                             card.dataset
@@ -2057,16 +2335,12 @@ function ativarEventos() {
             }
         );
 
-
-    /* DESTAQUES */
-
     document
         .querySelectorAll(
             ".destaque"
         )
         .forEach(
             destaque => {
-
 
                 destaque.onclick =
                     function() {
@@ -2098,46 +2372,36 @@ function abrirVideo(
                 item.video === id
         );
 
-
     if (!video) {
-
         return;
-
     }
-
 
     const player =
         document.getElementById(
             "youtubePlayer"
         );
 
-
     const fundo =
         document.getElementById(
             "playerFundo"
         );
-
 
     const nome =
         document.getElementById(
             "nomePlayer"
         );
 
-
     nome.textContent =
         video.titulo;
-
 
     player.src =
         "https://www.youtube.com/embed/" +
         encodeURIComponent(id) +
         "?autoplay=1&rel=0";
 
-
     fundo.classList.add(
         "aberto"
     );
-
 
     document.body.style.overflow =
         "hidden";
@@ -2156,76 +2420,21 @@ function fecharPlayer() {
             "youtubePlayer"
         );
 
-
     const fundo =
         document.getElementById(
             "playerFundo"
         );
 
-
-    /*
-       Isso também PARA o vídeo.
-    */
-
     player.src = "";
-
 
     fundo.classList.remove(
         "aberto"
     );
 
-
     document.body.style.overflow =
         "";
 
 }
-
-
-/* =====================================================
-   ESC NO TECLADO
-===================================================== */
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key ===
-            "Escape"
-        ) {
-
-            fecharPlayer();
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   CLICAR FORA DO PLAYER
-===================================================== */
-
-document
-    .getElementById(
-        "playerFundo"
-    )
-    .addEventListener(
-        "click",
-        function(event) {
-
-
-            if (
-                event.target ===
-                this
-            ) {
-
-                fecharPlayer();
-
-            }
-
-        }
-    );
 
 
 /* =====================================================
@@ -2235,7 +2444,6 @@ document
 function alternarFavorito(
     id
 ) {
-
 
     if (
         favoritos.includes(id)
@@ -2255,14 +2463,12 @@ function alternarFavorito(
 
     }
 
-
     localStorage.setItem(
         "meusFavoritos",
         JSON.stringify(
             favoritos
         )
     );
-
 
     if (
         categoriaAtual ===
@@ -2279,6 +2485,20 @@ function alternarFavorito(
     ) {
 
         mostrarInicio();
+
+    }
+
+    else if (
+        normalizar(
+            categoriaAtual
+        ) ===
+        "filmes" &&
+        generoAtual
+    ) {
+
+        mostrarFilmesDoGenero(
+            generoAtual
+        );
 
     }
 
@@ -2306,7 +2526,6 @@ function mostrarFavoritos() {
                     video.video
                 )
         );
-
 
     if (
         !lista.length
@@ -2337,7 +2556,6 @@ function mostrarFavoritos() {
 
     }
 
-
     document
         .getElementById(
             "conteudo"
@@ -2359,7 +2577,6 @@ function mostrarFavoritos() {
 
                 </div>
 
-
                 <div
                     class="linha-filmes"
                     style="
@@ -2382,14 +2599,13 @@ function mostrarFavoritos() {
 
         `;
 
-
     ativarEventos();
 
 }
 
 
 /* =====================================================
-   CATEGORIA
+   OUTRAS CATEGORIAS
 ===================================================== */
 
 function mostrarCategoria(
@@ -2403,7 +2619,6 @@ function mostrarCategoria(
                 categoria
         );
 
-
     document
         .getElementById(
             "conteudo"
@@ -2415,23 +2630,17 @@ function mostrarCategoria(
                 <div class="titulo-secao">
 
                     <h2>
-
                         ${escaparHTML(
                             categoria
                         )}
-
                     </h2>
 
-
                     <span>
-
                         ${lista.length}
                         títulos
-
                     </span>
 
                 </div>
-
 
                 <div
                     class="linha-filmes"
@@ -2454,7 +2663,6 @@ function mostrarCategoria(
             </section>
 
         `;
-
 
     ativarEventos();
 
@@ -2486,7 +2694,6 @@ function pesquisar() {
             .toLowerCase()
             .trim();
 
-
     if (!texto) {
 
         if (
@@ -2507,6 +2714,31 @@ function pesquisar() {
 
         }
 
+        else if (
+            normalizar(
+                categoriaAtual
+            ) ===
+            "filmes" &&
+            generoAtual
+        ) {
+
+            mostrarFilmesDoGenero(
+                generoAtual
+            );
+
+        }
+
+        else if (
+            normalizar(
+                categoriaAtual
+            ) ===
+            "filmes"
+        ) {
+
+            mostrarGenerosFilmes();
+
+        }
+
         else {
 
             mostrarCategoria(
@@ -2519,11 +2751,9 @@ function pesquisar() {
 
     }
 
-
     const resultado =
         videos.filter(
             video => {
-
 
                 const titulo =
                     String(
@@ -2531,13 +2761,17 @@ function pesquisar() {
                     )
                     .toLowerCase();
 
-
                 const categoria =
                     String(
                         video.categoria || ""
                     )
                     .toLowerCase();
 
+                const genero =
+                    String(
+                        video.genero || ""
+                    )
+                    .toLowerCase();
 
                 return (
                     titulo.includes(
@@ -2545,12 +2779,14 @@ function pesquisar() {
                     ) ||
                     categoria.includes(
                         texto
+                    ) ||
+                    genero.includes(
+                        texto
                     )
                 );
 
             }
         );
-
 
     document
         .getElementById(
@@ -2572,7 +2808,6 @@ function pesquisar() {
                     </span>
 
                 </div>
-
 
                 ${
                     resultado.length
@@ -2614,7 +2849,6 @@ function pesquisar() {
 
         `;
 
-
     ativarEventos();
 
 }
@@ -2636,7 +2870,6 @@ function rolarCarrossel(
                 ".linha-filmes"
             );
 
-
     linha.scrollBy({
 
         left:
@@ -2646,6 +2879,74 @@ function rolarCarrossel(
             "smooth"
 
     });
+
+}
+
+
+/* =====================================================
+   ESCAPE
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key ===
+            "Escape"
+        ) {
+
+            fecharPlayer();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   CLICAR FORA DO PLAYER
+===================================================== */
+
+document
+    .getElementById(
+        "playerFundo"
+    )
+    .addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                this
+            ) {
+
+                fecharPlayer();
+
+            }
+
+        }
+    );
+
+
+/* =====================================================
+   NORMALIZAR TEXTO
+===================================================== */
+
+function normalizar(
+    texto
+) {
+
+    return String(
+        texto || ""
+    )
+    .normalize("NFD")
+    .replace(
+        /[\u0300-\u036f]/g,
+        ""
+    )
+    .toLowerCase()
+    .trim();
 
 }
 
@@ -2697,58 +2998,12 @@ function escapar(
 
 
 /* =====================================================
-   INICIAR SITE
+   INICIAR
 ===================================================== */
 
 carregarVideos();
 
 </script>
-<script>
-function criarCapaDoVideo(video) {
-    video.addEventListener("loadeddata", function () {
-        // Se já tiver uma capa definida, não altera
-        if (video.poster) return;
-
-        // Cria um canvas para capturar o primeiro frame
-        const canvas = document.createElement("canvas");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-
-        const contexto = canvas.getContext("2d");
-
-        // Vai para o começo do vídeo
-        video.currentTime = 0;
-
-        video.addEventListener("seeked", function capturar() {
-            contexto.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Transforma o frame em imagem
-            video.poster = canvas.toDataURL("image/jpeg", 0.85);
-
-            video.removeEventListener("seeked", capturar);
-        }, { once: true });
-    }, { once: true });
-}
-
-// Aplica em todos os vídeos da página
-document.querySelectorAll("video").forEach(criarCapaDoVideo);
-
-// Caso os vídeos sejam adicionados depois pelo carregarVideos()
-const observador = new MutationObserver(() => {
-    document.querySelectorAll("video").forEach(video => {
-        if (!video.dataset.capaCriada) {
-            video.dataset.capaCriada = "1";
-            criarCapaDoVideo(video);
-        }
-    });
-});
-
-observador.observe(document.body, {
-    childList: true,
-    subtree: true
-});
-</script>
-
 
 </body>
 </html>
