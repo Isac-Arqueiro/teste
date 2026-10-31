@@ -3,30 +3,35 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#090912">
 <title>Arqueiro Player</title>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+
 body{
   background:#090912;
   color:#fff;
   font-family:Arial,sans-serif;
   min-height:100vh;
 }
+
 header{
   padding:22px;
   text-align:center;
-  font-size:23px;
+  font-size:24px;
   font-weight:bold;
   letter-spacing:2px;
   color:#a78bfa;
 }
+
 main{
-  max-width:480px;
-  margin:30px auto;
-  padding:20px;
+  max-width:520px;
+  margin:20px auto;
+  padding:16px;
 }
+
 .panel{
   background:#151522;
   border:1px solid #29293c;
@@ -34,93 +39,169 @@ main{
   padding:24px;
   margin-bottom:20px;
 }
-h2{font-size:20px;margin-bottom:18px}
+
+h2{margin-bottom:20px;font-size:21px}
+
 label{
   display:block;
-  margin:14px 0 7px;
+  margin:15px 0 7px;
   color:#c4b5fd;
   font-size:13px;
 }
+
 input{
   width:100%;
-  padding:13px;
+  padding:14px;
   border-radius:10px;
   border:1px solid #39394c;
   background:#0d0d18;
   color:white;
   outline:none;
 }
+
 button{
   width:100%;
-  border:0;
   padding:14px;
-  margin-top:15px;
+  border:0;
   border-radius:12px;
+  margin-top:14px;
   background:#7c3aed;
   color:white;
   font-weight:bold;
   cursor:pointer;
 }
-button:hover{background:#6d28d9}
-.secondary{background:#242438}
+
+button:hover{opacity:.85}
+
+.green{background:#168d50}
+.secondary{background:#29293c}
+.danger{background:#b42338}
+
+.muted{color:#9999ad;font-size:13px}
+.center{text-align:center}
+.hidden{display:none!important}
+
 .cover{
-  width:210px;
-  height:210px;
-  margin:10px auto 25px;
+  width:220px;
+  height:220px;
+  margin:15px auto 25px;
   border-radius:22px;
   background:linear-gradient(135deg,#7c3aed,#17152c,#2563eb);
   display:flex;
   align-items:center;
   justify-content:center;
+  overflow:hidden;
   font-size:65px;
 }
-.center{text-align:center}
-.muted{color:#9999ad;font-size:14px}
+
+.cover img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
 audio{width:100%;margin-top:25px}
-.hidden{display:none}
-#musicPage{padding-top:35px}
-#musicPage .panel{padding:28px 22px}
-#shareButton{background:#168d50}
+
+.music-card{
+  background:#202033;
+  border-radius:14px;
+  padding:15px;
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.music-card img{
+  width:55px;
+  height:55px;
+  object-fit:cover;
+  border-radius:9px;
+}
+
+.music-card .info{flex:1;min-width:0}
+.music-card strong{display:block;margin-bottom:5px}
+.music-card button{width:auto;padding:9px 12px;margin:0}
+
+#musicPage{padding-top:25px}
+
+#musicPage .panel{padding:25px 20px}
+
+footer{
+  text-align:center;
+  color:#666;
+  padding:25px;
+  font-size:12px;
+}
 </style>
 </head>
+
 <body>
 
 <header>🏹 ARQUEIRO PLAYER</header>
 
 <main>
 
-<!-- ÁREA ADMINISTRATIVA -->
-<section id="adminPage" class="panel">
-<h2>Adicionar música</h2>
+<!-- ADMINISTRAÇÃO -->
+<section id="adminPage">
+
+<div class="panel">
+<h2>🎵 Cadastrar música</h2>
 
 <label>Nome da música</label>
-<input id="title" placeholder="Nome da música">
+<input id="title" placeholder="Digite o nome da música">
 
 <label>Autor / Artista</label>
-<input id="artist" placeholder="Nome do autor">
+<input id="artist" placeholder="Nome do artista">
 
 <label>Link direto do áudio (opcional)</label>
-<input id="audioUrl" placeholder="https://site.com/musica.mp3">
+<input id="audioUrl" type="url"
+placeholder="https://exemplo.com/musica.mp3">
 
 <label>Ou enviar arquivo de áudio</label>
-<input id="audioFile" type="file" accept="audio/*">
+<input id="audioFile" type="file"
+accept="audio/*">
 
-<button onclick="createMusic()">Cadastrar música</button>
-<p id="message" class="muted center" style="margin-top:15px"></p>
+<label>Capa da música (opcional)</label>
+<input id="coverFile" type="file"
+accept="image/*">
+
+<button onclick="createMusic()">
+Cadastrar música
+</button>
+
+<p id="message" class="muted center"
+style="margin-top:15px"></p>
+</div>
+
+<div class="panel">
+<h2>📚 Músicas cadastradas</h2>
+<div id="musicList"></div>
+</div>
+
 </section>
 
-<!-- PÁGINA PÚBLICA DE REPRODUÇÃO -->
+
+<!-- PÁGINA PÚBLICA -->
 <section id="musicPage" class="hidden">
+
 <div class="panel center">
-<div class="cover">🎵</div>
+
+<div class="cover" id="musicCover">
+🎵
+</div>
+
 <h2 id="musicTitle">Nome da música</h2>
-<p id="musicArtist" class="muted">Artista</p>
+
+<p id="musicArtist" class="muted">
+Nome do artista
+</p>
 
 <audio id="player" controls preload="metadata">
 Seu navegador não suporta áudio.
 </audio>
 
-<button id="shareButton" onclick="shareWhatsApp()">
+<button class="green" onclick="shareWhatsApp()">
 Compartilhar pelo WhatsApp
 </button>
 
@@ -129,94 +210,293 @@ Copiar link da música
 </button>
 
 <p class="muted" style="margin-top:25px">
-Ouça no Arqueiro Player
+Ouça no Arqueiro Player 🏹
 </p>
+
 </div>
+
 </section>
 
 </main>
 
+<footer>
+ARQUEIRO PLAYER © 2026
+</footer>
+
 <script>
-const adminPage=document.getElementById('adminPage');
-const musicPage=document.getElementById('musicPage');
-const player=document.getElementById('player');
 
-function showMusic(data){
-  adminPage.classList.add('hidden');
-  musicPage.classList.remove('hidden');
+// BANCO LOCAL DO PROTÓTIPO
+const STORAGE_KEY = "arqueiro_musicas";
 
-  document.getElementById('musicTitle').textContent=data.title;
-  document.getElementById('musicArtist').textContent=data.artist;
-
-  player.src=data.audio;
-  document.title=data.title+' - Arqueiro Player';
-
-  // Metadados para prévia de compartilhamento
-  let meta=document.createElement('meta');
-  meta.setAttribute('property','og:title');
-  meta.content=data.title+' - Arqueiro Player';
-  document.head.appendChild(meta);
-
-  let description=document.createElement('meta');
-  description.setAttribute('property','og:description');
-  description.content='Ouça '+data.title+' de '+data.artist+' no Arqueiro Player.';
-  document.head.appendChild(description);
+function getMusics(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  }catch{
+    return [];
+  }
 }
 
-function createMusic(){
-  const title=document.getElementById('title').value.trim();
-  const artist=document.getElementById('artist').value.trim();
-  const url=document.getElementById('audioUrl').value.trim();
-  const file=document.getElementById('audioFile').files[0];
+function saveMusics(musics){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(musics));
+}
 
-  if(!title||!artist||(!url&&!file)){
-    document.getElementById('message').textContent=
-      'Preencha os campos e adicione um áudio.';
+// ELEMENTOS
+const adminPage=document.getElementById("adminPage");
+const musicPage=document.getElementById("musicPage");
+const player=document.getElementById("player");
+
+// CRIAR MÚSICA
+async function createMusic(){
+
+  const title=document.getElementById("title").value.trim();
+  const artist=document.getElementById("artist").value.trim();
+  const url=document.getElementById("audioUrl").value.trim();
+
+  const audioFile=document.getElementById("audioFile").files[0];
+  const coverFile=document.getElementById("coverFile").files[0];
+
+  const message=document.getElementById("message");
+
+  if(!title || !artist || (!url && !audioFile)){
+    message.textContent="Preencha os campos e adicione um áudio.";
     return;
   }
 
   if(url){
     try{
       const parsed=new URL(url);
-      if(!['http:','https:'].includes(parsed.protocol))
+      if(!["http:","https:"].includes(parsed.protocol)){
         throw new Error();
+      }
     }catch{
-      document.getElementById('message').textContent=
-        'Informe um link HTTP ou HTTPS válido.';
+      message.textContent="Informe um link de áudio válido.";
       return;
     }
   }
 
-  const audio=file?URL.createObjectURL(file):url;
+  if(audioFile && !audioFile.type.startsWith("audio/")){
+    message.textContent="Selecione um arquivo de áudio válido.";
+    return;
+  }
 
-  showMusic({title,artist,audio});
+  if(coverFile && !coverFile.type.startsWith("image/")){
+    message.textContent="Selecione uma imagem válida.";
+    return;
+  }
 
-  document.getElementById('message').textContent=
-    'Música carregada para reprodução!';
+  const id=crypto.randomUUID();
+
+  const music={
+    id,
+    title,
+    artist,
+    audio:url || "",
+    cover:"",
+    date:new Date().toISOString()
+  };
+
+  // ARQUIVOS DO PROTÓTIPO
+  if(audioFile){
+    music.audio=await fileToDataURL(audioFile);
+  }
+
+  if(coverFile){
+    music.cover=await fileToDataURL(coverFile);
+  }
+
+  const musics=getMusics();
+
+  musics.push(music);
+
+  try{
+    saveMusics(musics);
+  }catch(e){
+    message.textContent="Armazenamento local insuficiente. Use armazenamento online na versão definitiva.";
+    return;
+  }
+
+  document.getElementById("title").value="";
+  document.getElementById("artist").value="";
+  document.getElementById("audioUrl").value="";
+  document.getElementById("audioFile").value="";
+  document.getElementById("coverFile").value="";
+
+  message.textContent="Música cadastrada com sucesso!";
+
+  renderList();
+
+  // ABRIR A MÚSICA CADASTRADA
+  openMusic(id);
 }
 
+// CONVERTER ARQUIVO
+function fileToDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// LISTAR MÚSICAS
+function renderList(){
+
+  const list=document.getElementById("musicList");
+  const musics=getMusics();
+
+  list.innerHTML="";
+
+  if(!musics.length){
+    list.innerHTML='<p class="muted">Nenhuma música cadastrada.</p>';
+    return;
+  }
+
+  musics.forEach(music=>{
+
+    const card=document.createElement("div");
+    card.className="music-card";
+
+    const img=document.createElement("img");
+    img.src=music.cover || "";
+    img.alt="";
+
+    const info=document.createElement("div");
+    info.className="info";
+
+    const name=document.createElement("strong");
+    name.textContent=music.title;
+
+    const author=document.createElement("span");
+    author.className="muted";
+    author.textContent=music.artist;
+
+    info.append(name,author);
+
+    const play=document.createElement("button");
+    play.textContent="Ouvir";
+    play.onclick=()=>openMusic(music.id);
+
+    card.append(img,info,play);
+    list.appendChild(card);
+
+  });
+}
+
+// ABRIR PÁGINA DE REPRODUÇÃO
+function openMusic(id){
+
+  const music=getMusics().find(m=>m.id===id);
+
+  if(!music)return;
+
+  history.pushState({}, "", "?musica="+encodeURIComponent(id));
+
+  showMusic(music);
+}
+
+function showMusic(music){
+
+  adminPage.classList.add("hidden");
+  musicPage.classList.remove("hidden");
+
+  document.getElementById("musicTitle").textContent=music.title;
+  document.getElementById("musicArtist").textContent=music.artist;
+
+  const cover=document.getElementById("musicCover");
+  cover.innerHTML="";
+
+  if(music.cover){
+    const img=document.createElement("img");
+    img.src=music.cover;
+    img.alt="Capa de "+music.title;
+    cover.appendChild(img);
+  }else{
+    cover.textContent="🎵";
+  }
+
+  player.src=music.audio;
+  player.load();
+
+  document.title=music.title+" - Arqueiro Player";
+
+  // Atualizar metadados da página
+  setMeta("og:title",music.title+" - Arqueiro Player");
+  setMeta("og:description","Ouça "+music.title+" de "+music.artist);
+  setMeta("og:type","music.song");
+
+  window.scrollTo(0,0);
+}
+
+function setMeta(property,content){
+
+  let meta=document.querySelector(
+    'meta[property="'+property+'"]'
+  );
+
+  if(!meta){
+    meta=document.createElement("meta");
+    meta.setAttribute("property",property);
+    document.head.appendChild(meta);
+  }
+
+  meta.content=content;
+}
+
+// COMPARTILHAR WHATSAPP
 function shareWhatsApp(){
+
+  const title=document.getElementById("musicTitle").textContent;
+  const artist=document.getElementById("musicArtist").textContent;
+
   const text=
-    'Ouça '+document.getElementById('musicTitle').textContent+
-    ' - '+document.getElementById('musicArtist').textContent+
-    '\n'+window.location.href;
+    "🎵 "+title+
+    "\nArtista: "+artist+
+    "\n\nOuça no Arqueiro Player:\n"+
+    window.location.href;
 
   window.open(
-    'https://wa.me/?text='+encodeURIComponent(text),
-    '_blank'
+    "https://wa.me/?text="+encodeURIComponent(text),
+    "_blank"
   );
 }
 
-function copyLink(){
-  navigator.clipboard.writeText(window.location.href)
-    .then(()=>alert('Link copiado!'))
-    .catch(()=>alert('Não foi possível copiar o link.'));
+// COPIAR LINK
+async function copyLink(){
+
+  try{
+    await navigator.clipboard.writeText(window.location.href);
+    alert("Link copiado!");
+  }catch{
+    alert("Não foi possível copiar o link.");
+  }
 }
 
-// Abre diretamente a música quando houver dados na URL.
-// A integração com o banco de dados será implementada depois.
+// ABRIR LINK DIRETO DA MÚSICA
+function loadFromURL(){
+
+  const params=new URLSearchParams(window.location.search);
+  const id=params.get("musica");
+
+  if(id){
+    const music=getMusics().find(m=>m.id===id);
+
+    if(music){
+      showMusic(music);
+      return;
+    }
+  }
+
+  adminPage.classList.remove("hidden");
+  musicPage.classList.add("hidden");
+
+  renderList();
+}
+
+window.addEventListener("popstate",loadFromURL);
+
+loadFromURL();
+
 </script>
 </body>
 </html>
-
-  
